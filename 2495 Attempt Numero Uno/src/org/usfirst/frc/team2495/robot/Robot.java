@@ -1,0 +1,189 @@
+package org.usfirst.frc.team2495.robot;
+
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.CANTalon;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import org.opencv.imgproc.Imgproc;
+import edu.wpi.first.wpilibj.vision.*;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+
+/**
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the IterativeRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the manifest file in the resource
+ * directory.
+ */
+public class Robot extends IterativeRobot {
+	final String BaseBreak = "Baseline Breaker"; // Auton selection cases
+	final String GearGrab = "Gear Grabber";
+	final String FuelFling = "Fuel Flinger";
+	final String DankDump = "Dank Dumper";
+	String autoSelected;
+	SendableChooser<String> chooser = new SendableChooser<>();
+	
+	HMCamera camera = new HMCamera();
+
+	CANTalon RR = new CANTalon(1); // The CANTalons
+	CANTalon RF = new CANTalon(2);
+	CANTalon LR = new CANTalon(3);
+	CANTalon LF = new CANTalon(4);
+	//CANTalon intake = new CANTalon(5);
+
+	Joystick right = new Joystick(0); // The Joysticks
+	Joystick left = new Joystick(1);
+	Joystick operator = new Joystick(2);
+
+	DoubleSolenoid extendpickup = new DoubleSolenoid(0, 1); // Solenoids
+	DoubleSolenoid droppickup = new DoubleSolenoid(2, 3);
+    DoubleSolenoid retracthood = new DoubleSolenoid(4, 5);
+
+	Relay compresscontrol = new Relay(0); // Spike that controls compressor
+	public static ADXRS450_Gyro gyro = new ADXRS450_Gyro(); // gyro
+	PowerDistributionPanel PDP = new PowerDistributionPanel(6); // PDP
+
+	DriveTrain drivetrain = new DriveTrain(RR, RF, LR, LF, gyro); // DriveTrain
+																	// object
+																	// from the
+																	// homemade
+																	// subclass
+
+	Timer time = new Timer(); // generic timer
+
+	static final int IMG_WIDTH = 320; // height and width of the camera image
+	static final int IMG_HEIGHT = 240;
+
+	VisionThread visionthread; // sepearate vision thread
+	double centerx = 0.0; // center of the x axis
+	final Object imglock = new Object();
+
+	/**
+	 * This function is run when the robot is first started up and should be
+	 * used for any initialization code.
+	 */
+	@Override
+	public void robotInit() {
+		chooser.addDefault("Baseline Breaker", BaseBreak); // move forward
+		chooser.addObject("Gear Grabber", GearGrab); // put the gear on the peg
+		chooser.addObject("Fuel Flinger", FuelFling); // shoot
+		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
+													// dump
+		SmartDashboard.putData("Alliterative Autoniomous Appointment", chooser);
+
+	}
+
+	/**
+	 * This autonomous (along with the chooser code above) shows how to select
+	 * between different autonomous modes using the dashboard. The sendable
+	 * chooser code works with the Java SmartDashboard. If you prefer the
+	 * LabVIEW Dashboard, remove all of the chooser code and uncomment the
+	 * getString line to get the auto name from the text box below the Gyro
+	 *
+	 * You can add additional auto modes by adding additional comparisons to the
+	 * switch structure below with additional strings. If using the
+	 * SendableChooser make sure to add them to the chooser code above as well.
+	 */
+	@Override
+	public void autonomousInit() {
+		autoSelected = chooser.getSelected();
+		// autoSelected = SmartDashboard.getString("Auto Selector",
+		// defaultAuto);
+		System.out.println("Auto selected: " + autoSelected);
+		gyro.calibrate();
+		time.reset();
+
+	}
+
+	/**
+	 * This function is called periodically during autonomous
+	 */
+	@Override
+	public void autonomousPeriodic() {
+		switch (autoSelected) {
+		case DankDump:
+			// Put custom auto code here
+			break;
+		case FuelFling:
+			// code
+			break;
+		case GearGrab:
+		{
+			if(camera.checkForGear())
+			{
+				drivetrain.moveDistance(7.80);
+			}
+		}
+			break;
+		case BaseBreak:
+		default:
+		{
+			drivetrain.moveDistance(12);
+			drivetrain.stop();
+		}
+			break;
+		}
+	}
+	// @Override
+	// public void teleopInit()
+	// {
+	// time.stop();
+	// time.reset();
+	// }
+
+	/**
+	 * This function is called periodically during operator control
+	 */
+	@Override
+	public void teleopPeriodic() {
+
+		// Tankdrive
+		drivetrain.joystickControl(left, right);
+
+		// Intake
+//		if (operator.getRawButton(3)) {
+//			intake.set(-.5);
+//		} else if (operator.getRawButton(4)) {
+//			intake.set(.5);
+//		} else {
+//			intake.set(0);
+//		}
+
+		// Dumper
+		if (operator.getRawButton(1)) {
+			// Dump
+		}
+
+		// Shooter
+		if (operator.getTrigger()) {
+			// code
+		}
+
+		// Climber
+		if (Timer.getMatchTime() >= 120) {
+			if (operator.getRawButton(5)) {
+				// trigger sequence of climbing
+			}
+		}
+		// Camera *Sigh*
+
+		// Send Gyro val to Dashboard
+		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
+		//send the gear status to dashboard
+		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
+	}
+
+	/**
+	 * This function is called periodically during test mode
+	 */
+	@Override
+	public void testPeriodic() {
+	}
+}
