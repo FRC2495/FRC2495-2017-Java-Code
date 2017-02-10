@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj.Timer;
 public class HMCamera extends Robot {
 
 	NetworkTable nt;
-	double[][] returned;
+	double[][] returned = new double[5][];
 
-	public HMCamera() {
-		nt = NetworkTable.getTable("myContoursReport");
+	public HMCamera(String networktable) {
+		nt = NetworkTable.getTable(networktable);
 	}
 
 	private void updateFromNT() {
