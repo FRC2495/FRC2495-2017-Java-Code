@@ -26,33 +26,33 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 public class Robot extends IterativeRobot {
 	final String BaseBreak = "Baseline Breaker"; // Auton selection cases
 	final String GearGrab = "Gear Grabber";
+	final String GearGrab2 = "Gear Grabber Right";
 	final String FuelFling = "Fuel Flinger";
 	final String DankDump = "Dank Dumper";
 	String autoSelected;
 	SendableChooser chooser;
-	
+
 	HMCamera camera;
 
 	CANTalon RR;
 	CANTalon RF;
 	CANTalon LR;
 	CANTalon LF;
-	//CANTalon intake;
+	// CANTalon intake;
 
 	Joystick right = new Joystick(0); // The Joysticks
 	Joystick left = new Joystick(1);
 	Joystick operator = new Joystick(2);
 
-//	DoubleSolenoid extendpickup = new DoubleSolenoid(0, 1); // Solenoids
-//	DoubleSolenoid droppickup = new DoubleSolenoid(2, 3);
-//    DoubleSolenoid retracthood = new DoubleSolenoid(4, 5);
+	// DoubleSolenoid extendpickup = new DoubleSolenoid(0, 1); // Solenoids
+	// DoubleSolenoid droppickup = new DoubleSolenoid(2, 3);
+	// DoubleSolenoid retracthood = new DoubleSolenoid(4, 5);
 
-//	Relay compresscontrol = new Relay(0); // Spike that controls compressor
+	// Relay compresscontrol = new Relay(0); // Spike that controls compressor
 	ADXRS450_Gyro gyro; // gyro
 	PowerDistributionPanel PDP = new PowerDistributionPanel(6); // PDP
 
 	DriveTrain drivetrain; // DriveTrain object from the homemade class
-																	
 
 	Timer time = new Timer(); // generic timer
 
@@ -79,10 +79,10 @@ public class Robot extends IterativeRobot {
 		RF = new CANTalon(2);
 		LR = new CANTalon(3);
 		LF = new CANTalon(4);
-		//intake = new CANTalon(5);
+		// intake = new CANTalon(5);
 
 		// dump
-		
+
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
@@ -123,29 +123,43 @@ public class Robot extends IterativeRobot {
 		case FuelFling:
 			// code
 			break;
-		case GearGrab:
-		{
-			if(camera.checkForGear())
-			{
+		case GearGrab: {
+			if (camera.checkForGear()) {
 				drivetrain.moveDistance(80);
 			}
 		}
+		case GearGrab2: {
+			drivetrain.moveDistance(120);
+			drivetrain.angleSpotTurn(70);
+			if (camera.checkForGear()) {
+				if (camera.getHeight()[0] == 200) {
+					drivetrain.moveForward();
+				} else {
+					drivetrain.stop();
+				}
+			}
+			drivetrain.angleSpotTurn(240);
+			drivetrain.moveDistance(20);
+			// while intaking
+			drivetrain.angleSpotTurn(90);
+			drivetrain.moveDistance(120);
+			// outtake
+		}
 			break;
 		case BaseBreak:
-		default:
-		{
+		default: {
 			drivetrain.moveDistance(120);
 			drivetrain.stop();
 		}
 			break;
 		}
 	}
-	// @Override
-	// public void teleopInit()
-	// {
-	// time.stop();
-	// time.reset();
-	// }
+
+	@Override
+	public void teleopInit() {
+		time.stop();
+		time.reset();
+	}
 
 	/**
 	 * This function is called periodically during operator control
@@ -157,13 +171,13 @@ public class Robot extends IterativeRobot {
 		drivetrain.joystickControl(left, right);
 
 		// Intake
-//		if (operator.getRawButton(3)) {
-//			intake.set(-.5);
-//		} else if (operator.getRawButton(4)) {
-//			intake.set(.5);
-//		} else {
-//			intake.set(0);
-//		}
+		// if (operator.getRawButton(3)) {
+		// intake.set(-.5);
+		// } else if (operator.getRawButton(4)) {
+		// intake.set(.5);
+		// } else {
+		// intake.set(0);
+		// }
 
 		// Dumper
 		if (operator.getRawButton(1)) {
@@ -185,7 +199,7 @@ public class Robot extends IterativeRobot {
 
 		// Send Gyro val to Dashboard
 		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
-		//send the gear status to dashboard
+		// send the gear status to dashboard
 		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
@@ -197,23 +211,22 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 	}
-	
+
 	@Override
-	public void disabledInit(){
-		SmartDashboard.putData("Alliterative Autoniomous Appointment", chooser);	
+	public void disabledInit() {
+		SmartDashboard.putData("Alliterative Autoniomous Appointment", chooser);
 	}
-	
+
 	@Override
-	public void disabledPeriodic(){
+	public void disabledPeriodic() {
 		// Send Gyro val to Dashboard
 		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
-		//send the gear status to dashboard
+		// send the gear status to dashboard
 		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
-		if(operator.getTrigger())
-		{
+		if (operator.getTrigger()) {
 			gyro.calibrate();
 		}
 	}
-	}
+}

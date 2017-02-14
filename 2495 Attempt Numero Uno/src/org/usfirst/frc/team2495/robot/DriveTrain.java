@@ -48,6 +48,13 @@ public class DriveTrain extends Robot {
 
 	}
 	
+	public void moveForward()
+	{
+		toVbs();
+		RF.set(.5);
+		LF.set(.5);
+	}
+	
 	public void stop ()
 	{
 		toVbs();
@@ -58,6 +65,8 @@ public class DriveTrain extends Robot {
 	public void angleSpotTurn (int angle) // turns on the spot to the specified angle
 	{
 		toVbs();
+		double current = gyro.getAngle();
+		angle += current;
 		if(angle > gyro.getAngle())
 		{
 			LF.set(.5);
