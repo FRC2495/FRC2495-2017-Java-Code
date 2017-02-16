@@ -40,9 +40,9 @@ public class Robot extends IterativeRobot {
 	CANTalon LF;
 	// CANTalon intake;
 
-	Joystick right = new Joystick(0); // The Joysticks
-	Joystick left = new Joystick(1);
-	Joystick operator = new Joystick(2);
+	Joystick right; // The Joysticks
+	Joystick left;
+	Joystick operator;
 
 	// DoubleSolenoid extendpickup = new DoubleSolenoid(0, 1); // Solenoids
 	// DoubleSolenoid droppickup = new DoubleSolenoid(2, 3);
@@ -62,6 +62,8 @@ public class Robot extends IterativeRobot {
 	VisionThread visionthread; // sepearate vision thread
 	double centerx = 0.0; // center of the x axis
 	final Object imglock = new Object();
+	
+	Take take;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -72,6 +74,7 @@ public class Robot extends IterativeRobot {
 		chooser = new SendableChooser();
 		chooser.addDefault("Baseline Breaker", BaseBreak); // move forward
 		chooser.addObject("Gear Grabber", GearGrab); // put the gear on the peg
+		chooser.addObject("Gear Grabber Left Side", GearGrab2);
 		chooser.addObject("Fuel Flinger", FuelFling); // shoot
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
 
@@ -86,7 +89,15 @@ public class Robot extends IterativeRobot {
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-
+		
+		Compressor compressor = new Compressor();
+		compressor.checkCompressor();
+		
+		take = new Take();
+		
+		left = new Joystick(0);
+		right = new Joystick(1);
+		operator = new Joystick(2);
 	}
 
 	/**
@@ -128,16 +139,19 @@ public class Robot extends IterativeRobot {
 				drivetrain.moveDistance(80);
 			}
 		}
+			break;
 		case GearGrab2: {
 			drivetrain.moveDistance(120);
 			drivetrain.angleSpotTurn(70);
-			if (camera.checkForGear()) {
-				if (camera.getHeight()[0] == 200) {
-					drivetrain.moveForward();
-				} else {
-					drivetrain.stop();
-				}
-			}
+//			if (camera.checkForGear()) {
+//				if (camera.getHeight()[0] == 200) {
+//					drivetrain.moveForward();
+//				} else {
+//					drivetrain.stop();
+//				}
+//			}
+			drivetrain.moveDistance(20);
+			//dropgear 
 			drivetrain.angleSpotTurn(240);
 			drivetrain.moveDistance(20);
 			// while intaking
@@ -149,7 +163,7 @@ public class Robot extends IterativeRobot {
 		case BaseBreak:
 		default: {
 			drivetrain.moveDistance(120);
-			drivetrain.stop();
+			drivetrain.waitMove();
 		}
 			break;
 		}
@@ -171,22 +185,19 @@ public class Robot extends IterativeRobot {
 		drivetrain.joystickControl(left, right);
 
 		// Intake
-		// if (operator.getRawButton(3)) {
-		// intake.set(-.5);
-		// } else if (operator.getRawButton(4)) {
-		// intake.set(.5);
-		// } else {
-		// intake.set(0);
-		// }
+		 if (operator.getRawButton(2)) {
+			 take.setPosition(Take.Position.OUT_DOWN);
+		 } else if (operator.getRawButton(3)) {
+			 take.setPosition(Take.Position.OUT_UP);
+		 } else if (operator.getRawButton(4)){
+			 take.setPosition(Take.Position.IN_UP); 
+		 }
+
+
 
 		// Dumper
-		if (operator.getRawButton(1)) {
-			// Dump
-		}
-
-		// Shooter
 		if (operator.getTrigger()) {
-			// code
+			// Dump
 		}
 
 		// Climber
