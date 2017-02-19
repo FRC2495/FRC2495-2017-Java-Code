@@ -11,10 +11,14 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+
+import java.util.ResourceBundle.Control;
+
 import org.opencv.imgproc.Imgproc;
 import edu.wpi.first.wpilibj.vision.*;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -64,7 +68,9 @@ public class Robot extends IterativeRobot {
 	final Object imglock = new Object();
 	
 	Take take;
-
+	
+	ControllerBase control;
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -98,6 +104,9 @@ public class Robot extends IterativeRobot {
 		left = new Joystick(0);
 		right = new Joystick(1);
 		operator = new Joystick(2);
+		
+		control = new ControllerBase(operator, left,right);
+		
 	}
 
 	/**
@@ -119,7 +128,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Auto selected: " + autoSelected);
 		gyro.calibrate();
 		time.reset();
-
+		take.setPosition(Take.Position.IN_UP);
 	}
 
 	/**
@@ -127,6 +136,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		
 		switch (autoSelected) {
 		case DankDump:
 			// Put custom auto code here
@@ -161,9 +171,17 @@ public class Robot extends IterativeRobot {
 		}
 			break;
 		case BaseBreak:
-		default: {
+		default: 
+		{
+			if(!drivetrain.getIsMoving())
+			{
+			System.out.println("check if moving");
 			drivetrain.moveDistance(120);
+			System.out.println("Check2");
 			drivetrain.waitMove();
+			System.out.println("Check3");
+			}
+			
 		}
 			break;
 		}
@@ -183,26 +201,29 @@ public class Robot extends IterativeRobot {
 
 		// Tankdrive
 		drivetrain.joystickControl(left, right);
+		
+		control.update();
 
-		// Intake
-		 if (operator.getRawButton(2)) {
-			 take.setPosition(Take.Position.OUT_DOWN);
-		 } else if (operator.getRawButton(3)) {
-			 take.setPosition(Take.Position.OUT_UP);
-		 } else if (operator.getRawButton(4)){
-			 take.setPosition(Take.Position.IN_UP); 
-		 }
-
-
-
-		// Dumper
-		if (operator.getTrigger()) {
-			// Dump
+		// set in/outtake to position
+		if(control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN1))
+		{
+			take.setPosition(Take.Position.OUT_DOWN);
 		}
+		else if(control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN2))
+		{
+			take.setPosition(Take.Position.OUT_UP);
+		}
+		else if(control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN3))
+		{
+			take.setPosition(Take.Position.IN_UP);
+		}
+		
+		//intake motor mapped to 4 and 5
+
 
 		// Climber
 		if (Timer.getMatchTime() >= 120) {
-			if (operator.getRawButton(5)) {
+			if (control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN5)) {
 				// trigger sequence of climbing
 			}
 		}

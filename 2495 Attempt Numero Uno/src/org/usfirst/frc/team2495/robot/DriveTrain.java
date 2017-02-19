@@ -47,9 +47,9 @@ public class DriveTrain extends Robot {
 	{
 		Rtac = (int) (ticksPerInch * dist);
 		Ltac = (int) (ticksPerInch * dist);
+		toEnc(6);
 		RF.setEncPosition(0);
 		LF.setEncPosition(0);
-		toEnc(6);
 		RF.set(Rtac);
 		LF.set(Ltac);
 		RF.enableControl();
@@ -127,10 +127,10 @@ public class DriveTrain extends Robot {
 		LF.setPID(0.4, 0, 0);
 		RF.changeControlMode(CANTalon.TalonControlMode.Position);
 		LF.changeControlMode(CANTalon.TalonControlMode.Position);
-		RF.configPeakOutputVoltage(12, -12);
-		LF.configPeakOutputVoltage(12, -12);
-		RF.configNominalOutputVoltage(forward, 0);
-		LF.configNominalOutputVoltage(forward, 0);
+		RF.configPeakOutputVoltage(forward, -forward);
+		LF.configPeakOutputVoltage(forward, -forward);
+		RF.configNominalOutputVoltage(0, 0);
+		LF.configNominalOutputVoltage(0, 0);
 		// RR.changeControlMode(CANTalon.TalonControlMode.Position);
 		// LR.changeControlMode(CANTalon.TalonControlMode.Position);
 	}
