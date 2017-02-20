@@ -33,6 +33,8 @@ public class Robot extends IterativeRobot {
 	final String GearGrab2 = "Gear Grabber Right";
 	final String FuelFling = "Fuel Flinger";
 	final String DankDump = "Dank Dumper";
+	final String AutonDone = "Auton Done";
+
 	String autoSelected;
 	SendableChooser chooser;
 
@@ -66,11 +68,11 @@ public class Robot extends IterativeRobot {
 	VisionThread visionthread; // sepearate vision thread
 	double centerx = 0.0; // center of the x axis
 	final Object imglock = new Object();
-	
+
 	Take take;
-	
+
 	ControllerBase control;
-	
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -95,18 +97,18 @@ public class Robot extends IterativeRobot {
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-		
+
 		Compressor compressor = new Compressor();
 		compressor.checkCompressor();
-		
+
 		take = new Take();
-		
+
 		left = new Joystick(0);
 		right = new Joystick(1);
 		operator = new Joystick(2);
-		
-		control = new ControllerBase(operator, left,right);
-		
+
+		control = new ControllerBase(operator, left, right);
+
 	}
 
 	/**
@@ -129,6 +131,9 @@ public class Robot extends IterativeRobot {
 		gyro.calibrate();
 		time.reset();
 		take.setPosition(Take.Position.IN_UP);
+		RF.setEncPosition(0);
+		LF.setEncPosition(0);
+
 	}
 
 	/**
@@ -136,7 +141,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+
 		
+		  SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
+		  SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
+		 
+
 		switch (autoSelected) {
 		case DankDump:
 			// Put custom auto code here
@@ -153,15 +163,15 @@ public class Robot extends IterativeRobot {
 		case GearGrab2: {
 			drivetrain.moveDistance(120);
 			drivetrain.angleSpotTurn(70);
-//			if (camera.checkForGear()) {
-//				if (camera.getHeight()[0] == 200) {
-//					drivetrain.moveForward();
-//				} else {
-//					drivetrain.stop();
-//				}
-//			}
+			// if (camera.checkForGear()) {
+			// if (camera.getHeight()[0] == 200) {
+			// drivetrain.moveForward();
+			// } else {
+			// drivetrain.stop();
+			// }
+			// }
 			drivetrain.moveDistance(20);
-			//dropgear 
+			// dropgear
 			drivetrain.angleSpotTurn(240);
 			drivetrain.moveDistance(20);
 			// while intaking
@@ -170,18 +180,17 @@ public class Robot extends IterativeRobot {
 			// outtake
 		}
 			break;
-		case BaseBreak:
-		default: 
-		{
-			if(!drivetrain.getIsMoving())
-			{
-			System.out.println("check if moving");
-			drivetrain.moveDistance(120);
-			System.out.println("Check2");
-			drivetrain.waitMove();
-			System.out.println("Check3");
+		case BaseBreak: {
+			RF.setPosition(0);
+			LF.setPosition(0);
+			if (!drivetrain.getIsMoving()) {
+				System.out.println("check if moving");
+				drivetrain.moveDistance(12);
+				 System.out.println("Check2");
+				//drivetrain.waitMove();
+				 //System.out.println("Check3");
+				autoSelected = AutonDone;
 			}
-			
 		}
 			break;
 		}
@@ -201,25 +210,19 @@ public class Robot extends IterativeRobot {
 
 		// Tankdrive
 		drivetrain.joystickControl(left, right);
-		
+
 		control.update();
 
 		// set in/outtake to position
-		if(control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN1))
-		{
+		if (control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN1)) {
 			take.setPosition(Take.Position.OUT_DOWN);
-		}
-		else if(control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN2))
-		{
+		} else if (control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN2)) {
 			take.setPosition(Take.Position.OUT_UP);
-		}
-		else if(control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN3))
-		{
+		} else if (control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN3)) {
 			take.setPosition(Take.Position.IN_UP);
 		}
-		
-		//intake motor mapped to 4 and 5
 
+		// intake motor mapped to 4 and 5
 
 		// Climber
 		if (Timer.getMatchTime() >= 120) {
