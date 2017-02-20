@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 import java.util.ResourceBundle.Control;
-
+import edu.wpi.first.wpilibj.XboxController;
 import org.opencv.imgproc.Imgproc;
 import edu.wpi.first.wpilibj.vision.*;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -70,8 +70,10 @@ public class Robot extends IterativeRobot {
 	final Object imglock = new Object();
 
 	Take take;
-
+	CANTalon spin;
 	ControllerBase control;
+	
+	boolean gearFlag, basinFlag;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -90,9 +92,8 @@ public class Robot extends IterativeRobot {
 		RF = new CANTalon(2);
 		LR = new CANTalon(3);
 		LF = new CANTalon(4);
-		// intake = new CANTalon(5);
+		spin = new CANTalon(5);//intake spin motor
 
-		// dump
 
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
@@ -101,7 +102,7 @@ public class Robot extends IterativeRobot {
 		Compressor compressor = new Compressor();
 		compressor.checkCompressor();
 
-		take = new Take();
+		take = new Take(spin);
 
 		left = new Joystick(0);
 		right = new Joystick(1);
@@ -184,12 +185,10 @@ public class Robot extends IterativeRobot {
 			RF.setPosition(0);
 			LF.setPosition(0);
 			if (!drivetrain.getIsMoving()) {
-				System.out.println("check if moving");
-				drivetrain.moveDistance(12);
-				 System.out.println("Check2");
-				//drivetrain.waitMove();
+				drivetrain.moveDistance(12);	 
+				// drivetrain.waitMove();
 				 //System.out.println("Check3");
-				autoSelected = AutonDone;
+				//autoSelected = AutonDone;
 			}
 		}
 			break;
@@ -213,20 +212,60 @@ public class Robot extends IterativeRobot {
 
 		control.update();
 
-		// set in/outtake to position
-		if (control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN1)) {
+		// set in/outtake to position outdown = a, outup = b inup = x
+		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
 			take.setPosition(Take.Position.OUT_DOWN);
-		} else if (control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN2)) {
+		} else if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.B)) {
 			take.setPosition(Take.Position.OUT_UP);
-		} else if (control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN3)) {
+		} else if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.X)) {
 			take.setPosition(Take.Position.IN_UP);
 		}
 
-		// intake motor mapped to 4 and 5
+		// intake motor mapped to LB and RB
+		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.LB))
+		{
+			take.setSpin(.5);
+		}
+		else if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.RB))
+		{
+			take.setSpin(-.5);
+		}
+		else
+		{
+			take.setSpin(0);
+		}
+		//gear bound to back
+		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.BACK))
+		{
+			if(gearFlag)
+			{
+				take.setGearPosition(Take.gearPosition.Out);
+				gearFlag = false;
+			}
+			else
+			{
+				take.setGearPosition(Take.gearPosition.In);
+				gearFlag = true;
+			}
+		}
+		//basin bound to start
+		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD,ControllerBase.GamepadButtons.START))
+		{
+			if(basinFlag)
+			{
+				take.setBasinPosition(Take.basinPosition.Up);
+				basinFlag = false;
+			}
+			else
+			{
+				take.setBasinPosition(Take.basinPosition.Down);
+				basinFlag = true;
+			}
+		}
 
-		// Climber
+		// Climber bound to y but can only be actived 2 minutes into the match
 		if (Timer.getMatchTime() >= 120) {
-			if (control.getPressedDown(ControllerBase.Joysticks.OPERATOR, ControllerBase.JoystickButtons.BTN5)) {
+			if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.Y)) {
 				// trigger sequence of climbing
 			}
 		}

@@ -125,11 +125,11 @@ public class DriveTrain extends Robot {
 		toVbs();
 		double current = gyro.getAngle();
 		angle += current;
-		if (angle > gyro.getAngle()) {
+		if (angle > gyro.getAngle() + 2) {
 			LF.set(.5);
 			RF.set(-.5);
 
-		} else if (angle < gyro.getAngle()) {
+		} else if (angle < gyro.getAngle() - 2) {
 			LF.set(-.5);
 			RF.set(.5);
 			// LR.set(-.5);
@@ -137,7 +137,7 @@ public class DriveTrain extends Robot {
 		} else {
 			LF.set(0);
 			RF.set(0);
-			// LR.set(0);
+			// LR.set(0); 
 			// RR.set(0);
 		}
 	}

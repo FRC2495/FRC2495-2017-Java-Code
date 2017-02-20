@@ -78,7 +78,7 @@ public class ControllerBase {
 	 * namespaces for the gamepad, left joystick, and right joystick
 	 */
 	public enum Joysticks {
-		OPERATOR,	// 0
+		GAMEPAD,	// 0
 		LEFT_STICK,	// 1
 		RIGHT_STICK	// 2
 	}
@@ -95,13 +95,13 @@ public class ControllerBase {
 	 * @param leftStick  the {@code Joystick} to use for the left joystick.
 	 * @param rightStick the {@code Joystick} to use for the right joystick.
 	 */
-	public ControllerBase(Joystick operator, Joystick leftStick, Joystick rightStick) {		
+	public ControllerBase(Joystick gamepad, Joystick leftStick, Joystick rightStick) {		
 		btn = new boolean[ControllerBase.MAX_NUMBER_CONTROLLERS][ControllerBase.MAX_NUMBER_BUTTONS];
 		btnPrev = new boolean[ControllerBase.MAX_NUMBER_CONTROLLERS][ControllerBase.MAX_NUMBER_BUTTONS];
 		
 		// CAUTION: joysticks are indexed according to order defined in Joysticks enum
 		// Therefore changes in Joysticks enum need to be reflected here...
-		joysticks = new Joystick[]{operator, leftStick, rightStick};
+		joysticks = new Joystick[]{gamepad, leftStick, rightStick};
 	}
 	
 	/**
@@ -165,11 +165,11 @@ public class ControllerBase {
 	 */
 	public void rumble(boolean rumble) {
 		if (rumble) {
-			joysticks[Joysticks.OPERATOR.ordinal()].setRumble(Joystick.RumbleType.kLeftRumble, 1);
-			joysticks[Joysticks.OPERATOR.ordinal()].setRumble(Joystick.RumbleType.kRightRumble, 1);
+			joysticks[Joysticks.GAMEPAD.ordinal()].setRumble(Joystick.RumbleType.kLeftRumble, 1);
+			joysticks[Joysticks.GAMEPAD.ordinal()].setRumble(Joystick.RumbleType.kRightRumble, 1);
 		} else {
-			joysticks[Joysticks.OPERATOR.ordinal()].setRumble(Joystick.RumbleType.kLeftRumble, 0);
-			joysticks[Joysticks.OPERATOR.ordinal()].setRumble(Joystick.RumbleType.kRightRumble, 0);
+			joysticks[Joysticks.GAMEPAD.ordinal()].setRumble(Joystick.RumbleType.kLeftRumble, 0);
+			joysticks[Joysticks.GAMEPAD.ordinal()].setRumble(Joystick.RumbleType.kRightRumble, 0);
 		}		
 	}
 }

@@ -2,23 +2,38 @@ package org.usfirst.frc.team2495.robot;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import com.ctre.CANTalon;
 
 
 public class Take {
 	Timer timer;
-	
-	DoubleSolenoid outin, downup;
+	CANTalon spin;
+	DoubleSolenoid outin, downup, gear, basin;
 
 	public enum Position {
 		IN_UP, OUT_DOWN, OUT_UP;
 	}
+	
+	public enum basinPosition
+	{
+		Up,Down;
+	}
+	
+	public enum gearPosition
+	{
+		In,Out;
+	}
 
-	public Take() {
+	public Take(CANTalon Spin) {
 		outin = new DoubleSolenoid(6, 1, 0);
 		downup = new DoubleSolenoid(6, 2, 3);
+		gear = new DoubleSolenoid(6, 4, 5);
+		basin = new DoubleSolenoid(6, 6, 7);
 		timer = new Timer();
+		spin = Spin;
+		spin.enableBrakeMode(true);
+		spin.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 	}
 	
 	private TimerTask schedule(final Runnable r, long delay)
@@ -50,6 +65,45 @@ public class Take {
 			case OUT_UP: {
 				outin.set(DoubleSolenoid.Value.kReverse);
 				downup.set(DoubleSolenoid.Value.kReverse);
+				break;
+			}
+		}
+	}
+	
+	public void setSpin(double speed)
+	{
+		spin.set(speed);
+	}
+	
+	public void setBasinPosition(basinPosition pos)
+	{
+		switch(pos)
+		{
+			case Up:
+				{
+					basin.set(DoubleSolenoid.Value.kForward);
+					break;
+				}
+			case Down:
+				{
+					basin.set(DoubleSolenoid.Value.kReverse);
+					break;
+				}
+		}
+	}
+	
+	public void setGearPosition(gearPosition pos)
+	{
+		switch(pos)
+		{
+			case In:
+			{
+				gear.set(DoubleSolenoid.Value.kReverse);
+				break;
+			}
+			case Out:
+			{
+				gear.set(DoubleSolenoid.Value.kForward);
 				break;
 			}
 		}
