@@ -8,7 +8,7 @@ import com.ctre.CANTalon;
 
 public class Take {
 	Timer timer;
-	CANTalon spin;
+	CANTalon spin, climb;
 	DoubleSolenoid outin, downup, gear, basin;
 
 	public enum Position {
@@ -25,15 +25,18 @@ public class Take {
 		In,Out;
 	}
 
-	public Take(CANTalon Spin) {
-		outin = new DoubleSolenoid(6, 1, 0);
-		downup = new DoubleSolenoid(6, 2, 3);
-		gear = new DoubleSolenoid(6, 4, 5);
-		basin = new DoubleSolenoid(6, 6, 7);
+	public Take(CANTalon Spin, CANTalon Climb) {
+		outin = new DoubleSolenoid(7, 1, 0);
+		downup = new DoubleSolenoid(7, 2, 3);
+		gear = new DoubleSolenoid(7, 4, 5);
+		basin = new DoubleSolenoid(7, 6, 7);
 		timer = new Timer();
 		spin = Spin;
 		spin.enableBrakeMode(true);
 		spin.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+		climb = Climb;
+		climb.enableBrakeMode(true);
+		climb.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 	}
 	
 	private TimerTask schedule(final Runnable r, long delay)
@@ -73,6 +76,11 @@ public class Take {
 	public void setSpin(double speed)
 	{
 		spin.set(speed);
+	}
+	
+	public void setClimb(double speed)
+	{
+		climb.set(speed);
 	}
 	
 	public void setBasinPosition(basinPosition pos)

@@ -7,6 +7,7 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -50,11 +51,6 @@ public class Robot extends IterativeRobot {
 	Joystick left;
 	Joystick operator;
 
-	// DoubleSolenoid extendpickup = new DoubleSolenoid(0, 1); // Solenoids
-	// DoubleSolenoid droppickup = new DoubleSolenoid(2, 3);
-	// DoubleSolenoid retracthood = new DoubleSolenoid(4, 5);
-
-	// Relay compresscontrol = new Relay(0); // Spike that controls compressor
 	ADXRS450_Gyro gyro; // gyro
 	PowerDistributionPanel PDP = new PowerDistributionPanel(6); // PDP
 
@@ -70,7 +66,7 @@ public class Robot extends IterativeRobot {
 	final Object imglock = new Object();
 
 	Take take;
-	CANTalon spin;
+	CANTalon spin, climb;
 	ControllerBase control;
 	
 	boolean gearFlag, basinFlag;
@@ -84,8 +80,7 @@ public class Robot extends IterativeRobot {
 		chooser = new SendableChooser();
 		chooser.addDefault("Baseline Breaker", BaseBreak); // move forward
 		chooser.addObject("Gear Grabber", GearGrab); // put the gear on the peg
-		chooser.addObject("Gear Grabber Left Side", GearGrab2);
-		chooser.addObject("Fuel Flinger", FuelFling); // shoot
+		chooser.addObject("Gear Grabber Left Side (WIP DO NOT PICK)", GearGrab2);
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
 
 		RR = new CANTalon(1); // The CANTalons
@@ -93,7 +88,8 @@ public class Robot extends IterativeRobot {
 		LR = new CANTalon(3);
 		LF = new CANTalon(4);
 		spin = new CANTalon(5);//intake spin motor
-
+		climb = new CANTalon(6); // climber motor 
+		//TODO gotta replace PCM CAN ID with 7 and get climb on board. 
 
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
@@ -102,7 +98,7 @@ public class Robot extends IterativeRobot {
 		Compressor compressor = new Compressor();
 		compressor.checkCompressor();
 
-		take = new Take(spin);
+		take = new Take(spin, climb);
 
 		left = new Joystick(0);
 		right = new Joystick(1);
@@ -134,7 +130,6 @@ public class Robot extends IterativeRobot {
 		take.setPosition(Take.Position.IN_UP);
 		RF.setEncPosition(0);
 		LF.setEncPosition(0);
-
 	}
 
 	/**
@@ -152,13 +147,12 @@ public class Robot extends IterativeRobot {
 		case DankDump:
 			// Put custom auto code here
 			break;
-		case FuelFling:
-			// code
-			break;
 		case GearGrab: {
-			if (camera.checkForGear()) {
-				drivetrain.moveDistance(80);
-			}
+				drivetrain.moveDistance(75);
+				drivetrain.angleSpotTurn(180);
+				drivetrain.moveDistance(20);
+				take.setGearPosition(Take.gearPosition.Out);
+			
 		}
 			break;
 		case GearGrab2: {
@@ -172,7 +166,7 @@ public class Robot extends IterativeRobot {
 			// }
 			// }
 			drivetrain.moveDistance(20);
-			// dropgear
+			take.setGearPosition(Take.gearPosition.Out);
 			drivetrain.angleSpotTurn(240);
 			drivetrain.moveDistance(20);
 			// while intaking
@@ -185,14 +179,13 @@ public class Robot extends IterativeRobot {
 			RF.setPosition(0);
 			LF.setPosition(0);
 			if (!drivetrain.getIsMoving()) {
-				drivetrain.moveDistance(12);	 
-				// drivetrain.waitMove();
-				 //System.out.println("Check3");
-				//autoSelected = AutonDone;
+				drivetrain.moveDistance(95);
 			}
 		}
 			break;
 		}
+		
+		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
 	}
 
 	@Override
@@ -209,9 +202,8 @@ public class Robot extends IterativeRobot {
 
 		// Tankdrive
 		drivetrain.joystickControl(left, right);
-
 		control.update();
-
+		
 		// set in/outtake to position outdown = a, outup = b inup = x
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
 			take.setPosition(Take.Position.OUT_DOWN);
@@ -222,13 +214,13 @@ public class Robot extends IterativeRobot {
 		}
 
 		// intake motor mapped to LB and RB
-		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.LB))
+		if(operator.getRawButton(ControllerBase.GamepadButtons.LB))
 		{
-			take.setSpin(.5);
+			take.setSpin(1);
 		}
-		else if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.RB))
+		else if(operator.getRawButton(ControllerBase.GamepadButtons.RB))
 		{
-			take.setSpin(-.5);
+			take.setSpin(-1);
 		}
 		else
 		{
@@ -265,8 +257,14 @@ public class Robot extends IterativeRobot {
 
 		// Climber bound to y but can only be actived 2 minutes into the match
 		if (Timer.getMatchTime() >= 120) {
+			double set = .5;
 			if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.Y)) {
-				// trigger sequence of climbing
+				take.setClimb(set);
+				set += .005;
+			}
+			else 
+			{
+				take.setClimb(0);
 			}
 		}
 		// Camera *Sigh*
@@ -277,6 +275,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
+		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
 	}
 
 	/**
@@ -299,8 +298,10 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
-		if (operator.getTrigger()) {
+		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.R3)) {
 			gyro.calibrate();
 		}
+		
+		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
 	}
 }

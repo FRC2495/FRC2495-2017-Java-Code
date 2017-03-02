@@ -55,8 +55,8 @@ public class DriveTrain extends Robot {
 	{
 		RF.setPosition(0);
 		LF.setPosition(0);
-		Rtac = (dist / revMulti);
-		Ltac = (dist / revMulti);
+		Rtac = (dist / revMulti) + RF.getEncPosition();
+		Ltac = (dist / revMulti) + LF.getEncPosition();
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
 		toEnc(4);
 		RF.enableControl();
@@ -70,16 +70,13 @@ public class DriveTrain extends Robot {
 
 	public boolean checkMoveDistance() {
 		if (isMoving) {
-			int Renc = Math.abs(RF.getEncPosition());
-			int Lenc = Math.abs(LF.getEncPosition());
+			int Renc = (RF.getEncPosition());
+			int Lenc = (LF.getEncPosition());
 			//System.out.println("Renc,Lenc" + Renc + " " + Lenc);
 /*			isMoving = !(Renc > Rtac - TICK_THRESH && Renc < Rtac + TICK_THRESH && 
 						Lenc > Ltac - TICK_THRESH && Lenc < Ltac + TICK_THRESH);*/
-			
-			SmartDashboard.putNumber("Right Enc Value on Autonomous", Math.abs(RF.getEncPosition()));
-			SmartDashboard.putNumber("Left Enc Value on Antonomous", Math.abs(LF.getEncPosition()));
 		
-			isMoving = Renc < Math.abs(Rtac) && Lenc < Math.abs(Ltac);
+			isMoving = Renc < Rtac && Lenc < Ltac;
 			if(!isMoving)
 			{
 				System.out.println("You have reached the target.");

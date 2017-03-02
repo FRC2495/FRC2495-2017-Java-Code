@@ -10,6 +10,8 @@ public class HMCamera extends Robot {
 	NetworkTable nt;
 	double[] area, width, height, centerX, centerY;
 	double[] def = {}; // Return an empty array by default.
+	double largestRectNum;
+	double largestRectArea;
 
 	public HMCamera(String networktable) {
 		nt = NetworkTable.getTable(networktable);
@@ -22,6 +24,15 @@ public class HMCamera extends Robot {
 		height = nt.getNumberArray("height", def);
 		centerX = nt.getNumberArray("centerX", def);
 		centerY = nt.getNumberArray("centerY", def);
+		
+//		largestRectArea = area[0];
+//		largestRectNum = 0;
+//		for (int i = 1; i < area.length; i++) { // saves an iteration by
+//													// starting at 1
+//			if (area[i] >= largestRectArea) {
+//				largestRectNum = i;
+//			}
+//		}
 	}
 
 	public boolean checkForGear()
