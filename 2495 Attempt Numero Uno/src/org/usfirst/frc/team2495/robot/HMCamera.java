@@ -5,6 +5,9 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.vision.*;
 import edu.wpi.first.wpilibj.Timer;
 
+//[GA] please add java doc explaining what the purpose of this class is
+//Also please explain why it is extending the Robot class (or not make it extend the Robot class if not justified)
+//GRIP could help you locating the target of your choice (at least distance and angle) - let's talk more
 public class HMCamera extends Robot {
 
 	NetworkTable nt;

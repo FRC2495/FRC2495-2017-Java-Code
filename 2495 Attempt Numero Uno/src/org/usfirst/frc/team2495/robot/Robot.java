@@ -29,6 +29,9 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	
+	//[GA] please explain what the various auton modes are really doing
+	// (and list the assumptions made regarding the starting positions)
 	final String BaseBreak = "Baseline Breaker"; // Auton selection cases
 	final String GearGrab = "Gear Grabber";
 	final String GearGrab2 = "Gear Grabber Right";
@@ -52,6 +55,7 @@ public class Robot extends IterativeRobot {
 	Joystick operator;
 
 	ADXRS450_Gyro gyro; // gyro
+	//[GA] consider centralizing all the device numbers/ports in one location (e.g. Ports.java)
 	PowerDistributionPanel PDP = new PowerDistributionPanel(6); // PDP
 
 	DriveTrain drivetrain; // DriveTrain object from the homemade class
@@ -61,6 +65,7 @@ public class Robot extends IterativeRobot {
 	static final int IMG_WIDTH = 320; // height and width of the camera image
 	static final int IMG_HEIGHT = 240;
 
+	// [GA] what is all this for?
 	VisionThread visionthread; // sepearate vision thread
 	double centerx = 0.0; // center of the x axis
 	final Object imglock = new Object();
@@ -83,6 +88,7 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Gear Grabber Left Side (WIP DO NOT PICK)", GearGrab2);
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
 
+		//[GA] consider centralizing all the device numbers/ports in one location (e.g. Ports.java)
 		RR = new CANTalon(1); // The CANTalons
 		RF = new CANTalon(2);
 		LR = new CANTalon(3);
@@ -93,7 +99,7 @@ public class Robot extends IterativeRobot {
 
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
-		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); //[GA] is this properly configured out of the box?
 
 		Compressor compressor = new Compressor();
 		compressor.checkCompressor();
@@ -125,7 +131,9 @@ public class Robot extends IterativeRobot {
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
-		gyro.calibrate();
+		gyro.calibrate(); // [GA] this is not a good idea to do this here as it takes a few secs
+		// however it is imprant to keep your button to calibrate the gyro during disabledPeriodic()
+		
 		time.reset();
 		take.setPosition(Take.Position.IN_UP);
 		RF.setEncPosition(0);
@@ -138,7 +146,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 
-		
+		// [GA] you would get a lot by using a logger (so you can check what happened afterwards). 
 		  SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		  SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
 		 
@@ -147,7 +155,7 @@ public class Robot extends IterativeRobot {
 		case DankDump:
 			// Put custom auto code here
 			break;
-		case GearGrab: {
+		case GearGrab: { // [GA] this will not work as intended because all instructions will be executed at about the same time
 				drivetrain.moveDistance(75);
 				drivetrain.angleSpotTurn(180);
 				drivetrain.moveDistance(20);
@@ -155,7 +163,7 @@ public class Robot extends IterativeRobot {
 			
 		}
 			break;
-		case GearGrab2: {
+		case GearGrab2: { // [GA] this will not work as intended because all instructions will be executed at about the same time
 			drivetrain.moveDistance(120);
 			drivetrain.angleSpotTurn(70);
 			// if (camera.checkForGear()) {
@@ -192,6 +200,8 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		time.stop();
 		time.reset();
+		
+		//[GA] you should also stop the drivetrain
 	}
 
 	/**
@@ -202,7 +212,7 @@ public class Robot extends IterativeRobot {
 
 		// Tankdrive
 		drivetrain.joystickControl(left, right);
-		control.update();
+		control.update(); // [GA] it would be more logical to call control.update() before drivetrain.joystickControl(left, right);
 		
 		// set in/outtake to position outdown = a, outup = b inup = x
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
@@ -298,6 +308,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
+		
+		// [GA] this requires that you call update() on the controller base
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.R3)) {
 			gyro.calibrate();
 		}

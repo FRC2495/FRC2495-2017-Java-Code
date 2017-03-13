@@ -25,6 +25,7 @@ public class Take {
 		In,Out;
 	}
 
+	// [GA] avoid using Pascal case for variables. Use spin_in and climb_in for example.
 	public Take(CANTalon Spin, CANTalon Climb) {
 		outin = new DoubleSolenoid(7, 1, 0);
 		downup = new DoubleSolenoid(7, 2, 3);

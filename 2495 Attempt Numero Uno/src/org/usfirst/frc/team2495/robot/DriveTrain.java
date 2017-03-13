@@ -11,15 +11,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 
+// [GA] please add java doc explaining what the purpose of this class is
+// Also please explain why it is extending the Robot class (or not make it extend the Robot class if not justified)
 public class DriveTrain extends Robot {
 
 	double Ltac, Rtac;
-	final int TICK_THRESH = 50;
+	final int TICK_THRESH = 50; // [GA] as you are using revolutions as unit of movement clean up unneeded stuff
 	boolean isMoving;
-	CANTalon RR, RF, LR, LF;
+	CANTalon RR, RF, LR, LF; // [GA] avoid using all uppercase variable names - reserve that for constants
 	ADXRS450_Gyro gyro;
 	int tickcount = 1024;
-	double inchesPerTick = 4 * Math.PI / tickcount;
+	double inchesPerTick = 4 * Math.PI / tickcount; // [GA] please define a symbolic constant for the diameter of the wheel as it is used in multiple places
 	double ticksPerInch = tickcount / (4 * Math.PI);
 	double revMulti = 4 * Math.PI;
 	final int TIMEOUT_MS = 15000;
@@ -38,6 +40,7 @@ public class DriveTrain extends Robot {
 		LR.enableBrakeMode(true);
 		LF.enableBrakeMode(true);
 		
+		// [GA] simply noting that unit of distance will be revolutions when using position mode as side effect of using CtreMagEncoder
 		RF.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		LF.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		RF.reverseOutput(true);
@@ -76,7 +79,7 @@ public class DriveTrain extends Robot {
 /*			isMoving = !(Renc > Rtac - TICK_THRESH && Renc < Rtac + TICK_THRESH && 
 						Lenc > Ltac - TICK_THRESH && Lenc < Ltac + TICK_THRESH);*/
 		
-			isMoving = Renc < Rtac && Lenc < Ltac;
+			isMoving = Renc < Rtac && Lenc < Ltac; // [GA] would that work if you are going backwards?
 			if(!isMoving)
 			{
 				System.out.println("You have reached the target.");
@@ -116,6 +119,7 @@ public class DriveTrain extends Robot {
 
 	}
 
+	// [GA] please explain how this method should be used (including preconditions and postconditions)
 	public void angleSpotTurn(int angle) // turns on the spot to the specified
 											// angle
 	{
@@ -139,6 +143,7 @@ public class DriveTrain extends Robot {
 		}
 	}
 
+	// [GA] it would be better to call this method toEncPos() as encoders can also be used for other modes (e.g. speed)
 	public void toEnc(int forward) // sets the talons to encoder control
 	{
 		RF.setPID(0.4, 0, 0);
@@ -159,6 +164,7 @@ public class DriveTrain extends Robot {
 		// LR.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 	}
 
+	// [GA] no issue when the joysticks are resting? 
 	public void joystickControl(Joystick r, Joystick l) // sets talons to
 														// joystick control
 	{
