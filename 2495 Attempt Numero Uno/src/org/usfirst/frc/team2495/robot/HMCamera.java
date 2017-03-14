@@ -41,6 +41,18 @@ public class HMCamera{
 		} while (!isCoherent() && retry_count < MAX_NT_RETRY);
 	}
 	
+	private void processInformation() {
+		// step 1: verify we have at least two targets
+		
+		// step 2: get the index of the largest two targets
+		
+		// step 3: calculate the bounding box of the largest two targets (i.e. the small rectangle that encompasses the largest two targets)
+		
+		// step 4: calculate the distance to the virtual target represented by the bounding box of the largest two targets
+		
+		// step 5: calculate the angle delta between the current robot heading and the center of the virtual target		
+	}
+	
 	public boolean isCoherent() {
 		return (area != null && width != null && height != null && centerX != null
 				&& centerY != null && area.length == width.length
@@ -55,12 +67,13 @@ public class HMCamera{
 		} else {
 			return 0; // best answer in that case
 		}
-	}
+	}	
 	
 	public boolean acquireTargets() {
 		updateFromNT(); // gets the latest info
 
 		if (isCoherent() && getNumberOfTargets() > 0) { // if we have targets 
+			processInformation();
 			return true;
 		} else {
 			return false;
