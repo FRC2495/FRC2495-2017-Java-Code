@@ -7,11 +7,11 @@ public class HMCamera {
 	NetworkTable nt;
 	double[] area, width, height, centerX, centerY;
 	int largeAIndex, largeBIndex = 0;
-	
+
 	private static final int HORIZONTAL_CAMERA_RES_PIXELS = 320;
-	private static final int VERTICAL_CAMERA_RES_PIXELS = 240;	
-	private static final double VERTICAL_FOV_DEGREES = 48;
-	private static final double HORIZONTAL_FOV_DEGREES = 48;
+	private static final int VERTICAL_CAMERA_RES_PIXELS = 240;
+	private static final double VERTICAL_FOV_DEGREES = 58;
+	private static final double HORIZONTAL_FOV_DEGREES = 58;
 	private static final int TARGET_HEIGHT_INCHES = 5;
 	private static final double TARGET_WIDTH_INCHES = 10.5;
 
@@ -33,6 +33,8 @@ public class HMCamera {
 		double[] def = {}; // Return an empty array by default.
 		int retry_count = 0;
 		setLocalTables(null, null, null, null, null);
+		largeAIndex = 0;
+		largeBIndex = 0;
 
 		// We cannot get arrays atomically but at least we can make sure they
 		// have the same size
@@ -106,37 +108,43 @@ public class HMCamera {
 	public boolean checkForGearLift() {
 		return getNumberOfTargets() > 1; // gear lift is at least two targets
 	}
-	
-	public double getDistanceToTargetA()
-	{
-		double diagTargetDistance = TARGET_HEIGHT_INCHES
-                 * (VERTICAL_CAMERA_RES_PIXELS / height[largeAIndex]) / 2.0
-                 / Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
-		return diagTargetDistance;
+
+	public double getDistanceToTargetA() {
+		if (isCoherent() && largeAIndex != 0) {
+			double diagTargetDistance = TARGET_HEIGHT_INCHES * (VERTICAL_CAMERA_RES_PIXELS / height[largeAIndex]) / 2.0
+					/ Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
+			return diagTargetDistance;
+		} else
+			return Double.POSITIVE_INFINITY;
 	}
-	
-	public double getDistanceToTargetB()
-	{
-		double diagTargetDistance = TARGET_HEIGHT_INCHES
-            * (VERTICAL_CAMERA_RES_PIXELS / width[largeBIndex]) / 2.0
-            / Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
-		return diagTargetDistance;
+
+	public double getDistanceToTargetB() {
+		if (isCoherent() && largeBIndex != 0) {
+			double diagTargetDistance = TARGET_HEIGHT_INCHES * (VERTICAL_CAMERA_RES_PIXELS / width[largeBIndex]) / 2.0
+					/ Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
+			return diagTargetDistance;
+		} else
+			return Double.POSITIVE_INFINITY;
 	}
-	
-	public double getAngleToTurnToA()
-	{
-		double diff = (getCenterX()[largeAIndex] - (HORIZONTAL_CAMERA_RES_PIXELS / 2))
-                 / HORIZONTAL_CAMERA_RES_PIXELS;
-        double angle = diff * HORIZONTAL_FOV_DEGREES;
-        return angle;
+
+	public double getAngleToTurnToA() {
+		if (isCoherent() && largeAIndex != 0) {
+			double diff = (getCenterX()[largeAIndex] - (HORIZONTAL_CAMERA_RES_PIXELS / 2))
+					/ HORIZONTAL_CAMERA_RES_PIXELS;
+			double angle = diff * HORIZONTAL_FOV_DEGREES;
+			return angle;
+		} else
+			return Double.POSITIVE_INFINITY;
 	}
-	
-	public double getAngleToTurnToB()
-	{
-		double diff = (getCenterX()[largeBIndex] - (HORIZONTAL_CAMERA_RES_PIXELS / 2))
-                 / HORIZONTAL_CAMERA_RES_PIXELS;
-        double angle = diff * HORIZONTAL_FOV_DEGREES;
-        return angle;
+
+	public double getAngleToTurnToB() {
+		if (isCoherent() && largeBIndex != 0) {
+			double diff = (getCenterX()[largeBIndex] - (HORIZONTAL_CAMERA_RES_PIXELS / 2))
+					/ HORIZONTAL_CAMERA_RES_PIXELS;
+			double angle = diff * HORIZONTAL_FOV_DEGREES;
+			return angle;
+		} else
+			return Double.POSITIVE_INFINITY;
 	}
 
 	public double[] getArea() {
