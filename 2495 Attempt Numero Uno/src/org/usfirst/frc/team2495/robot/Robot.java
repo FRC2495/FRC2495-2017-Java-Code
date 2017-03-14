@@ -285,6 +285,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
 		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
+		SmartDashboard.putNumber("Distance to Target", camera.getDistanceToCenterOfTargets());
+		SmartDashboard.putNumber("Angle to Target", camera.getAngleToTurnToCenterOfTargets());
 	}
 
 	/**
