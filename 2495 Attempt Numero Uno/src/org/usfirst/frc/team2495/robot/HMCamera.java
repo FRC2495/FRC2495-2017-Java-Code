@@ -120,7 +120,7 @@ public class HMCamera {
 
 	public double getDistanceToTargetB() {
 		if (isCoherent() && largeBIndex != 0) {
-			double diagTargetDistance = TARGET_HEIGHT_INCHES * (VERTICAL_CAMERA_RES_PIXELS / width[largeBIndex]) / 2.0
+			double diagTargetDistance = TARGET_HEIGHT_INCHES * (VERTICAL_CAMERA_RES_PIXELS / height[largeBIndex]) / 2.0
 					/ Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
 			return diagTargetDistance;
 		} else
@@ -134,7 +134,7 @@ public class HMCamera {
 			double angle = diff * HORIZONTAL_FOV_DEGREES;
 			return angle;
 		} else
-			return Double.POSITIVE_INFINITY;
+			return 0;
 	}
 
 	public double getAngleToTurnToB() {
@@ -144,7 +144,17 @@ public class HMCamera {
 			double angle = diff * HORIZONTAL_FOV_DEGREES;
 			return angle;
 		} else
-			return Double.POSITIVE_INFINITY;
+			return 0;
+	}
+	
+	public double getDistanceToCenterOfTargets()
+	{
+		return (getDistanceToTargetA() + getDistanceToTargetB()) / 2;
+	}
+	
+	public double getAngleToTurnToCenterOfTargets()
+	{
+		return (getAngleToTurnToA() + getAngleToTurnToB()) / 2;
 	}
 
 	public double[] getArea() {
