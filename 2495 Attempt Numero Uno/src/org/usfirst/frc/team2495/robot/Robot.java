@@ -94,7 +94,6 @@ public class Robot extends IterativeRobot {
 		LF = new CANTalon(4);
 		spin = new CANTalon(5);//intake spin motor
 		climb = new CANTalon(6); // climber motor 
-		//TODO gotta replace PCM CAN ID with 7 and get climb on board. 
 
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
@@ -110,6 +109,7 @@ public class Robot extends IterativeRobot {
 		operator = new Joystick(2);
 
 		control = new ControllerBase(operator, left, right);
+		gyro.calibrate(); 
 
 	}
 
@@ -130,9 +130,7 @@ public class Robot extends IterativeRobot {
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
-		gyro.calibrate(); // [GA] this is not a good idea to do this here as it takes a few secs
-		// however it is imprant to keep your button to calibrate the gyro during disabledPeriodic()
-		
+		gyro.calibrate(); 
 		time.reset();
 		take.setPosition(Take.Position.IN_UP);
 		RF.setEncPosition(0);
@@ -154,7 +152,7 @@ public class Robot extends IterativeRobot {
 		case DankDump:
 			// Put custom auto code here
 			break;
-		case GearGrab: { // [GA] this will not work as intended because all instructions will be executed at about the same time
+		case GearGrab: { 
 				drivetrain.moveDistance(75);
 				drivetrain.waitMove();
 				drivetrain.angleSpotTurn(180);
@@ -165,7 +163,7 @@ public class Robot extends IterativeRobot {
 			
 		}
 			break;
-		case GearGrabRight: { // [GA] this will not work as intended because all instructions will be executed at about the same time
+		case GearGrabRight: { // TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(120);
 			drivetrain.angleSpotTurn(70);
 			// if (camera.checkForGear()) {
@@ -202,8 +200,7 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		time.stop();
 		time.reset();
-		
-		//[GA] you should also stop the drivetrain
+		drivetrain.stop();
 	}
 
 	/**
@@ -214,7 +211,7 @@ public class Robot extends IterativeRobot {
 
 		// Tankdrive
 		control.update();
-		drivetrain.joystickControl(left, right);
+		drivetrain.joystickControl(left, right); //TODO calibrate joysticks
 		
 		// set in/outtake to position outdown = a, outup = b inup = x
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {

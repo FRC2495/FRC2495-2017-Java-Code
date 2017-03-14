@@ -115,8 +115,7 @@ public class DriveTrain {
 
 	}
 
-	// [GA] please explain how this method should be used (including
-	// preconditions and postconditions)
+	// fixed
 	public void angleSpotTurn(int angle) // turns on the spot to the specified angle clockwise is positive movement
 	{
 		toVbs();
@@ -158,7 +157,7 @@ public class DriveTrain {
 		// LR.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 	}
 
-	// [GA] no issue when the joysticks are resting?
+	// [GA] no issue when the joysticks are resting? [SP] yeah its fine when its resting
 	public void joystickControl(Joystick r, Joystick l) // sets talons to
 														// joystick control
 	{
