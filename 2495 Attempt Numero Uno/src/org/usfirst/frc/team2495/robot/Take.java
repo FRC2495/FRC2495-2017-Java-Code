@@ -26,10 +26,10 @@ public class Take {
 	}
 
 	public Take(CANTalon spin_in, CANTalon climb_in) {
-		outin = new DoubleSolenoid(7, 1, 0);
-		downup = new DoubleSolenoid(7, 2, 3);
-		gear = new DoubleSolenoid(7, 4, 5);
-		basin = new DoubleSolenoid(7, 6, 7);
+		outin = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.INTAKE_OUT, Ports.PCM.INTAKE_IN);
+		downup = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.INTAKE_DOWN, Ports.PCM.INTAKE_UP);
+		gear = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.GEAR_IN, Ports.PCM.GEAR_OUT);
+		basin = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.BASIN_DOWN, Ports.PCM.BASIN_UP);
 		timer = new Timer();
 		spin = spin_in;
 		spin.enableBrakeMode(true);

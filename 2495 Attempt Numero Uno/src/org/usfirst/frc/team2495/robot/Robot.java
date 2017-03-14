@@ -88,12 +88,12 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
 
 		//[GA] consider centralizing all the device numbers/ports in one location (e.g. Ports.java)
-		RR = new CANTalon(1); // The CANTalons
-		RF = new CANTalon(2);
-		LR = new CANTalon(3);
-		LF = new CANTalon(4);
-		spin = new CANTalon(5);//intake spin motor
-		climb = new CANTalon(6); // climber motor 
+		RR = new CANTalon(Ports.CAN.RIGHT_REAR); // The CANTalons
+		RF = new CANTalon(Ports.CAN.RIGHT_FRONT);
+		LR = new CANTalon(Ports.CAN.LEFT_REAR);
+		LF = new CANTalon(Ports.CAN.LEFT_FRONT);
+		spin = new CANTalon(Ports.CAN.SPIN);//intake spin motor
+		climb = new CANTalon(Ports.CAN.CLIMB); // climber motor 
 
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
@@ -104,9 +104,9 @@ public class Robot extends IterativeRobot {
 
 		take = new Take(spin, climb);
 
-		left = new Joystick(0);
-		right = new Joystick(1);
-		operator = new Joystick(2);
+		left = new Joystick(Ports.USB.LEFT);
+		right = new Joystick(Ports.USB.RIGHT);
+		operator = new Joystick(Ports.USB.GAMEPAD);
 
 		control = new ControllerBase(operator, left, right);
 		gyro.calibrate(); 
