@@ -6,6 +6,12 @@ public class HMCamera {
 
 	NetworkTable nt;
 	double[] area, width, height, centerX, centerY;
+	int largeAIndex, largeBIndex = 0;
+	
+	private static final int HORIZONTAL_CAMERA_RES_PIXELS = 320;
+	public static final double HFOV_DEGREES = 48;
+	public static final int TARGET_HEIGHT_INCHES = 8;
+	public static final int INCHES_IN_FEET = 12;
 
 	private static final int MAX_NT_RETRY = 5;
 
@@ -39,7 +45,6 @@ public class HMCamera {
 	}
 
 	private void processInformation() {
-		int largeAIndex, largeBIndex = 0;
 		double[] areaSave = area;
 		if (areaSave.length >= 2) {
 			largeAIndex = 0;
@@ -56,9 +61,9 @@ public class HMCamera {
 			}
 		}
 
-		// step 1: verify we have at least two targets
+		// step 1: verify we have at least two targets Done
 
-		// step 2: get the index of the largest two targets
+		// step 2: get the index of the largest two targets Done
 
 		// step 3: calculate the bounding box of the largest two targets (i.e.
 		// the small rectangle that encompasses the largest two targets)
@@ -98,6 +103,38 @@ public class HMCamera {
 
 	public boolean checkForGearLift() {
 		return getNumberOfTargets() > 1; // gear lift is at least two targets
+	}
+	
+	public double getDistanceToTargetA()
+	{
+		double diagTargetDistance = (TARGET_HEIGHT_INCHES / INCHES_IN_FEET)
+                 * (HORIZONTAL_CAMERA_RES_PIXELS / height[largeAIndex]) / 2.0
+                 / Math.tan(Math.toRadians(HFOV_DEGREES / 2));
+		return diagTargetDistance;
+	}
+	
+	public double getDistanceToTargetB()
+	{
+		double diagTargetDistance = (TARGET_HEIGHT_INCHES / INCHES_IN_FEET)
+            * (HORIZONTAL_CAMERA_RES_PIXELS / width[largeBIndex]) / 2.0
+            / Math.tan(Math.toRadians(HFOV_DEGREES / 2));
+		return diagTargetDistance;
+	}
+	
+	public double getAngleToTurnToA()
+	{
+		double diff = (getCenterX()[largeAIndex] - (HORIZONTAL_CAMERA_RES_PIXELS / 2))
+                 / HORIZONTAL_CAMERA_RES_PIXELS;
+        double angle = diff * HFOV_DEGREES;
+        return angle;
+	}
+	
+	public double getAngleToTurnToB()
+	{
+		double diff = (getCenterX()[largeBIndex] - (HORIZONTAL_CAMERA_RES_PIXELS / 2))
+                 / HORIZONTAL_CAMERA_RES_PIXELS;
+        double angle = diff * HFOV_DEGREES;
+        return angle;
 	}
 
 	public double[] getArea() {
