@@ -32,11 +32,10 @@ public class Robot extends IterativeRobot {
 	
 	//[GA] please explain what the various auton modes are really doing
 	// (and list the assumptions made regarding the starting positions)
-	final String BaseBreak = "Baseline Breaker"; // Auton selection cases
-	final String GearGrab = "Gear Grabber";
-	final String GearGrab2 = "Gear Grabber Right";
-	final String FuelFling = "Fuel Flinger";
-	final String DankDump = "Dank Dumper";
+	final String BaseBreak = "Baseline Breaker"; // Auton selection cases Dead Reckoning
+	final String GearGrab = "Gear Grabber"; // Center gear placement
+	final String GearGrabRight = "Gear Grabber Right"; // Right Gear Placement
+	final String DankDump = "Dank Dumper"; //Dump Case 
 	final String AutonDone = "Auton Done";
 
 	String autoSelected;
@@ -85,7 +84,7 @@ public class Robot extends IterativeRobot {
 		chooser = new SendableChooser();
 		chooser.addDefault("Baseline Breaker", BaseBreak); // move forward
 		chooser.addObject("Gear Grabber", GearGrab); // put the gear on the peg
-		chooser.addObject("Gear Grabber Left Side (WIP DO NOT PICK)", GearGrab2);
+		chooser.addObject("Gear Grabber Left Side (WIP DO NOT PICK)", GearGrabRight);
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
 
 		//[GA] consider centralizing all the device numbers/ports in one location (e.g. Ports.java)
@@ -99,7 +98,7 @@ public class Robot extends IterativeRobot {
 
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
-		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); //[GA] is this properly configured out of the box?
+		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); 
 
 		Compressor compressor = new Compressor();
 		compressor.checkCompressor();
@@ -157,13 +156,16 @@ public class Robot extends IterativeRobot {
 			break;
 		case GearGrab: { // [GA] this will not work as intended because all instructions will be executed at about the same time
 				drivetrain.moveDistance(75);
+				drivetrain.waitMove();
 				drivetrain.angleSpotTurn(180);
-				drivetrain.moveDistance(20);
+				drivetrain.waitMove();
+				drivetrain.moveDistance(-20);
+				drivetrain.waitMove();
 				take.setGearPosition(Take.gearPosition.Out);
 			
 		}
 			break;
-		case GearGrab2: { // [GA] this will not work as intended because all instructions will be executed at about the same time
+		case GearGrabRight: { // [GA] this will not work as intended because all instructions will be executed at about the same time
 			drivetrain.moveDistance(120);
 			drivetrain.angleSpotTurn(70);
 			// if (camera.checkForGear()) {
@@ -211,8 +213,8 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 
 		// Tankdrive
+		control.update();
 		drivetrain.joystickControl(left, right);
-		control.update(); // [GA] it would be more logical to call control.update() before drivetrain.joystickControl(left, right);
 		
 		// set in/outtake to position outdown = a, outup = b inup = x
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
@@ -308,8 +310,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
-		
-		// [GA] this requires that you call update() on the controller base
+		control.update();
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.R3)) {
 			gyro.calibrate();
 		}
