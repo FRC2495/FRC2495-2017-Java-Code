@@ -9,10 +9,11 @@ public class HMCamera {
 	int largeAIndex, largeBIndex = 0;
 	
 	private static final int HORIZONTAL_CAMERA_RES_PIXELS = 320;
-	private static final int VERTICAL_CAMERA_RES_PIXELS = 240;
+	private static final int VERTICAL_CAMERA_RES_PIXELS = 240;	
+	private static final double VERTICAL_FOV_DEGREES = 48;
 	private static final double HORIZONTAL_FOV_DEGREES = 48;
-	private static final int TARGET_HEIGHT_INCHES = 8;
-	private static final int INCHES_IN_FEET = 12;
+	private static final int TARGET_HEIGHT_INCHES = 5;
+	private static final double TARGET_WIDTH_INCHES = 10.5;
 
 	private static final int MAX_NT_RETRY = 5;
 
@@ -108,17 +109,17 @@ public class HMCamera {
 	
 	public double getDistanceToTargetA()
 	{
-		double diagTargetDistance = (TARGET_HEIGHT_INCHES / INCHES_IN_FEET)
+		double diagTargetDistance = TARGET_HEIGHT_INCHES
                  * (VERTICAL_CAMERA_RES_PIXELS / height[largeAIndex]) / 2.0
-                 / Math.tan(Math.toRadians(HORIZONTAL_FOV_DEGREES / 2));
+                 / Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
 		return diagTargetDistance;
 	}
 	
 	public double getDistanceToTargetB()
 	{
-		double diagTargetDistance = (TARGET_HEIGHT_INCHES / INCHES_IN_FEET)
+		double diagTargetDistance = TARGET_HEIGHT_INCHES
             * (VERTICAL_CAMERA_RES_PIXELS / width[largeBIndex]) / 2.0
-            / Math.tan(Math.toRadians(HORIZONTAL_FOV_DEGREES / 2));
+            / Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
 		return diagTargetDistance;
 	}
 	
