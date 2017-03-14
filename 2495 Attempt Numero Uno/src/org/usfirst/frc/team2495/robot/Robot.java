@@ -281,7 +281,7 @@ public class Robot extends IterativeRobot {
 		// Send Gyro val to Dashboard
 		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
 		// send the gear status to dashboard
-		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
+		SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
 		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
@@ -304,7 +304,7 @@ public class Robot extends IterativeRobot {
 		// Send Gyro val to Dashboard
 		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
 		// send the gear status to dashboard
-		SmartDashboard.putBoolean("Gear Good?", camera.checkForGear());
+		SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
 		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
 		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
 		control.update();

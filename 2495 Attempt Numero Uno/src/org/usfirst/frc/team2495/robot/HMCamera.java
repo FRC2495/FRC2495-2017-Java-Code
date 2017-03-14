@@ -1,72 +1,93 @@
 package org.usfirst.frc.team2495.robot;
 
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.vision.*;
-import edu.wpi.first.wpilibj.Timer;
 
-//[GA] please add java doc explaining what the purpose of this class is
-//Also please explain why it is extending the Robot class (or not make it extend the Robot class if not justified)
-//GRIP could help you locating the target of your choice (at least distance and angle) - let's talk more
-public class HMCamera extends Robot {
+public class HMCamera{
 
 	NetworkTable nt;
 	double[] area, width, height, centerX, centerY;
-	double[] def = {}; // Return an empty array by default.
-	int largestRectNum = 0;
-	double largestRectArea;
+	
+	private static final int MAX_NT_RETRY = 5;
 
 	public HMCamera(String networktable) {
 		nt = NetworkTable.getTable(networktable);
 	}
 
+	private void setLocalTables(double[] area, double[] width, double[] height, double[] centerX,  double[] centerY) {
+		this.area = area;
+		this.width = width;
+		this.height = height;
+		this.centerX = centerX;
+		this.centerY = centerY;
+	}
+	
 	private void updateFromNT() {
-		// Get data from NetworkTable
-		area = nt.getNumberArray("area", def);
-		width = nt.getNumberArray("width", def);
-		height = nt.getNumberArray("height", def);
-		centerX = nt.getNumberArray("centerX", def);
-		centerY = nt.getNumberArray("centerY", def);
+		double[] def = {}; // Return an empty array by default.		
+		int retry_count = 0;
+		setLocalTables(null, null, null, null, null);	
 
-		if (!area.equals(def)) {
-			largestRectArea = area[0];
-			largestRectNum = 0;
-			for (int i = 1; i < area.length; i++) { // saves an iteration by
-				// starting at 1
-				if (area[i] >= largestRectArea) {
-					largestRectNum = i;
-				}
-			}
+		// We cannot get arrays atomically but at least we can make sure they
+		// have the same size
+		do {
+			// Get data from NetworkTable
+			setLocalTables(
+					nt.getNumberArray("area", def),
+					nt.getNumberArray("width", def),
+					nt.getNumberArray("height", def),
+					nt.getNumberArray("centerX", def),
+					nt.getNumberArray("centerY", def));
+
+			retry_count++;
+		} while (!isCoherent() && retry_count < MAX_NT_RETRY);
+	}
+	
+	public boolean isCoherent() {
+		return (area != null && width != null && height != null && centerX != null
+				&& centerY != null && area.length == width.length
+				&& area.length == height.length && area.length == centerX.length
+				&& area.length == centerY.length);
+	}
+	
+	public int getNumberOfTargets()
+	{
+		if (isCoherent()) {
+			return area.length; // all tables have the same size so any length can be used (might be zero)
+		} else {
+			return 0; // best answer in that case
 		}
 	}
+	
+	public boolean acquireTargets() {
+		updateFromNT(); // gets the latest info
 
-	public boolean checkForGear() {
-		updateFromNT();
-		return area[largestRectNum] > 0;
+		if (isCoherent() && getNumberOfTargets() > 0) { // if we have targets 
+			return true;
+		} else {
+			return false;
 		}
+	}
+ 
+	public boolean checkForGearLift() {
+		return getNumberOfTargets() > 1; // gear lift is at least two targets
+	}
 
 	public double[] getArea() {
-		updateFromNT();
 		return area;
 	}
 
 	public double[] getWidth() {
-		updateFromNT();
 		return width;
 	}
 
 	public double[] getHeight() {
-		updateFromNT();
 		return height;
 	}
 
 	public double[] getCenterX() {
-		updateFromNT();
 		return centerX;
 	}
 
 	public double[] getCenterY() {
-		updateFromNT();
 		return centerY;
 	}
 }
