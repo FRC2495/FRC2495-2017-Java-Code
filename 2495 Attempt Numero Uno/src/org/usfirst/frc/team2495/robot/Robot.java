@@ -114,14 +114,18 @@ public class Robot extends IterativeRobot {
 	 * You can add additional auto modes by adding additional comparisons to the
 	 * switch structure below with additional strings. If using the
 	 * SendableChooser make sure to add them to the chooser code above as well.
+	 * 
+	 * @return This is the intilization code for the autonomous, this code does:
+	 * Sets the selecetd auton,
+	 * Prints the selected Auton,
+	 * Resets the timer,
+	 * Puts the intake in the IN_UP / starting position,
+	 * Resets Encoders.
 	 */
 	@Override
 	public void autonomousInit() {
 		autoSelected = (String) chooser.getSelected();
-		// autoSelected = SmartDashboard.getString("Auto Selector",
-		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
-		//gyro.calibrate(); you do NOT want to waste time calibrating at the beginning of a match 
 		time.reset();
 		take.setPosition(Take.Position.IN_UP);
 		RF.setEncPosition(0);
@@ -130,6 +134,10 @@ public class Robot extends IterativeRobot {
 
 	/**
 	 * This function is called periodically during autonomous
+	 * 
+	 * @return Update to Smart Dash,
+	 * chooses what auton to run,
+	 * updates smart dash again
 	 */
 	@Override
 	public void autonomousPeriodic() {
@@ -192,6 +200,18 @@ public class Robot extends IterativeRobot {
 
 	/**
 	 * This function is called periodically during operator control
+	 *  
+	 *  @return This code does:
+	 *  checks for control updates,
+	 *  checks to see if we are still moving after auton,
+	 *  throws tankdrive controls to the joysticks,
+	 *  sets intake/outtake position,
+	 *  checks to see if a spin command is being given,
+	 *  sets gear position,
+	 *  sets basin position,
+	 *  sets climber motor but only able to be done in the last 30 secs of match,
+	 *  updates the smart dash,
+	 *  debug commands for left joystick.
 	 */
 	@Override
 	public void teleopPeriodic() {
@@ -311,7 +331,12 @@ public class Robot extends IterativeRobot {
 	public void disabledInit() {
 		SmartDashboard.putData("Alliterative Autoniomous Appointment", chooser);
 	}
-
+	/**
+	 * @return This code does:
+	 * updates controls
+	 * allows an access to calibrate the gyro
+	 * updates smart dash
+	 */
 	@Override
 	public void disabledPeriodic() {	
 		control.update();
