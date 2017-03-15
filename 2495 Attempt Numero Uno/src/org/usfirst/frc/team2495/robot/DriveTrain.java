@@ -101,28 +101,20 @@ public class DriveTrain {
 			}
 		}
 	}
-	
-	private double arclength(int angle) //returns the inches needed to be moved to turn the specified angle
+
+	private double arclength(int angle) // returns the inches needed to be moved
+										// to turn the specified angle
 	{
 		return Math.toRadians(angle) * RADIUS_DRIVEVETRAIN_INCHES;
 	}
-	
-	public void moveDistanceAlongArc(int angle)
-	{
+
+	public void moveDistanceAlongArc(int angle) {
 		double dist = arclength(angle);
-		double ldist,rdist;
-		
-		if(angle > 0)
-		{
-			ldist = dist;
-			rdist = -dist;
-		}
-		else 
-		{
-			ldist = -dist;
-			rdist = dist;
-		}
-		
+		double ldist, rdist;
+
+		ldist = dist;
+		rdist = -dist;
+
 		RF.setPosition(0);
 		LF.setPosition(0);
 		Rtac = (dist / revMulti) + RF.getEncPosition();
@@ -135,7 +127,7 @@ public class DriveTrain {
 		LF.set(Ltac);
 
 		isMoving = true;
-		
+
 	}
 
 	public void moveForward() {
@@ -153,13 +145,16 @@ public class DriveTrain {
 	}
 
 	// fixed
-	public void angleSpotTurn(int angle) // turns on the spot to the specified angle clockwise is positive movement
+	public void angleSpotTurn(int angle) // turns on the spot to the specified
+											// angle clockwise is positive
+											// movement
 	{
 		toVbs();
 		stop();
 		double current = gyro.getAngle();
 		double heading = angle + current;
-		while ((heading > gyro.getAngle() + 2 || heading < gyro.getAngle() - 2) && DriverStation.getInstance().isAutonomous()) {
+		while ((heading > gyro.getAngle() + 2 || heading < gyro.getAngle() - 2)
+				&& DriverStation.getInstance().isAutonomous()) {
 			if (heading > gyro.getAngle() + 2) {
 				LF.set(.5);
 				RF.set(-.5);
@@ -194,7 +189,8 @@ public class DriveTrain {
 		// LR.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 	}
 
-	// [GA] no issue when the joysticks are resting? [SP] yeah its fine when its resting
+	// [GA] no issue when the joysticks are resting? [SP] yeah its fine when its
+	// resting
 	public void joystickControl(Joystick r, Joystick l) // sets talons to
 														// joystick control
 	{
