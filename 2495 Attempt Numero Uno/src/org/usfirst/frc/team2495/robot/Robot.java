@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
 
 	ADXRS450_Gyro gyro; // gyro
 	
-	PowerDistributionPanel PDP = new PowerDistributionPanel(/*Ports.CAN.PCM*/6); // PDP FIXME SHOULD THIS BE 6 OR 7???
+	PowerDistributionPanel PDP = new PowerDistributionPanel(Ports.CAN.PDP); //TODO switch PDP ID to 0
 
 	DriveTrain drivetrain; // DriveTrain object from the homemade class
 

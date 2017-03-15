@@ -20,6 +20,7 @@ public class Ports {
 			public static final int SPIN = 5;
 			public static final int CLIMB = 6;
 			public static final int PCM = 7;
+			public static final int PDP = 0;
 		}
 		
 		public static class USB{
