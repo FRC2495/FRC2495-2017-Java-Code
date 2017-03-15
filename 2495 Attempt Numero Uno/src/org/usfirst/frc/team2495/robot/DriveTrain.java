@@ -23,6 +23,7 @@ public class DriveTrain {
 	double revMulti = 4 * Math.PI;
 	final int TIMEOUT_MS = 15000;
 	final double REV_THRESH = .125;
+	final int RADIUS_DRIVEVETRAIN_INCHES = 13;
 
 	public DriveTrain(CANTalon rr, CANTalon rf, CANTalon lr, CANTalon lf, ADXRS450_Gyro Gyro) {
 		RR = rr; // sets the talons from the constructer to the talons used here
@@ -99,6 +100,42 @@ public class DriveTrain {
 				break;
 			}
 		}
+	}
+	
+	private double arclength(int angle) //returns the inches needed to be moved to turn the specified angle
+	{
+		return Math.toRadians(angle) * RADIUS_DRIVEVETRAIN_INCHES;
+	}
+	
+	public void moveDistanceAlongArc(int angle)
+	{
+		double dist = arclength(angle);
+		double ldist,rdist;
+		
+		if(angle > 0)
+		{
+			ldist = dist;
+			rdist = -dist;
+		}
+		else 
+		{
+			ldist = -dist;
+			rdist = dist;
+		}
+		
+		RF.setPosition(0);
+		LF.setPosition(0);
+		Rtac = (dist / revMulti) + RF.getEncPosition();
+		Ltac = (dist / revMulti) + LF.getEncPosition();
+		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
+		toEnc(4);
+		RF.enableControl();
+		LF.enableControl();
+		RF.set(Rtac);
+		LF.set(Ltac);
+
+		isMoving = true;
+		
 	}
 
 	public void moveForward() {
