@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class DriveTrain implements PIDOutput {
 
 	double Ltac, Rtac;
-	boolean isMoving;
+	boolean isMoving, isTurning;
 	CANTalon RR, RF, LR, LF; // [GA] avoid using all uppercase variable names -
 								// reserve that for constants
 	ADXRS450_Gyro gyro;
@@ -65,6 +65,7 @@ public class DriveTrain implements PIDOutput {
     	turnPidController.setOutputRange(-.5, .5); // output range NOTE: might need to change signs
 	}
 
+	// this method needs to be paired with checkAngleSpotTurnUsingPidController()
 	public void angleSpotTurnUsingPidController(int angle) {
 		toVbs(); // switches to percentage vbus
 		stop(); // resets state
@@ -75,17 +76,45 @@ public class DriveTrain implements PIDOutput {
 		turnPidController.setSetpoint(heading); // sets the heading
 		turnPidController.enable(); // begins running
 		
-		while (!turnPidController.onTarget() && DriverStation.getInstance().isAutonomous()) {
+		isTurning = true;
+	}
+	
+	public boolean checkAngleSpotTurnUsingPidController() {
+		if (isTurning) {
+			isTurning = !turnPidController.onTarget();
+			
+			if (!isTurning) {
+				System.out.println("You have reached the target (turning).");
+				stop();
+				toVbs();
+			}
+
+		}
+		return isTurning;
+	}
+	
+	// do not use in teleop - for auton only
+	public void waitAngleSpotTurnUsingPidController() {
+		long start = Calendar.getInstance().getTimeInMillis();
+		
+		while (checkAngleSpotTurnUsingPidController()) {
+			if (!DriverStation.getInstance().isAutonomous()
+					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
+				System.out.println("You went over the time limit (turning)");
+				stop();
+				break;
+			}
+
 			try {
-				Thread.sleep(50); // sleeps a little
+				Thread.sleep(20); // sleeps a little
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
-		
-		turnPidController.disable(); //stops running
+		}		
+		stop();
 	}
-	
+
+	// this method needs to be paired with checkMoveDistance()
 	public void moveDistance(double dist) // moves the distance in inch given
 	{
 		RF.setPosition(0);
@@ -113,7 +142,7 @@ public class DriveTrain implements PIDOutput {
 			// isMoving = Renc < Rtac && Lenc < Ltac; // [GA] would that work if
 			// you are going backwards?
 			if (!isMoving) {
-				System.out.println("You have reached the target.");
+				System.out.println("You have reached the target (moving).");
 				stop();
 				toVbs();
 			}
@@ -122,14 +151,22 @@ public class DriveTrain implements PIDOutput {
 		return isMoving;
 	}
 
-	public void waitMove() {
+	// do not use in teleop - for auton only
+	public void waitMoveDistance() {
 		long start = Calendar.getInstance().getTimeInMillis();
+		
 		while (checkMoveDistance()) {
 			if (!DriverStation.getInstance().isAutonomous()
 					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
-				System.out.println("You went over the time limit");
+				System.out.println("You went over the time limit (moving)");
 				stop();
 				break;
+			}
+			
+			try {
+				Thread.sleep(20); // sleeps a little
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -140,6 +177,7 @@ public class DriveTrain implements PIDOutput {
 		return Math.toRadians(angle) * RADIUS_DRIVEVETRAIN_INCHES;
 	}
 
+	// this method needs to be paired with checkMoveDistance()
 	public void moveDistanceAlongArc(int angle) {
 		double dist = arclength(angle);
 		double ldist, rdist;
@@ -159,7 +197,6 @@ public class DriveTrain implements PIDOutput {
 		LF.set(Ltac);
 
 		isMoving = true;
-
 	}
 
 	public void moveForward() {
@@ -169,14 +206,15 @@ public class DriveTrain implements PIDOutput {
 	}
 
 	public void stop() {
+		turnPidController.disable(); // exits PID loop
 		toVbs();
 		RF.set(0);
 		LF.set(0);
 		isMoving = false;
-
+		isTurning = false;
 	}
 
-	// fixed
+	// this method is blocking (will only return once the turn is completed if ever) - do not use in teleop
 	public void angleSpotTurn(int angle) // turns on the spot to the specified
 											// angle clockwise is positive
 											// movement
@@ -226,11 +264,14 @@ public class DriveTrain implements PIDOutput {
 	public void joystickControl(Joystick r, Joystick l) // sets talons to
 														// joystick control
 	{
-		toVbs();
-		RF.set(r.getY());
-		LF.set(-l.getY());
-		// RR.set(r.getY());
-		// LR.set(l.getY());
+		if (!isMoving && !isTurning) // if we are already doing a move or turn we don't take over
+		{
+			toVbs();
+			RF.set(r.getY());
+			LF.set(-l.getY());
+			// RR.set(r.getY());
+			// LR.set(l.getY());
+		}
 	}
 
 	public int getREncVal() {

@@ -137,21 +137,20 @@ public class Robot extends IterativeRobot {
 		
 		switch (autoSelected) {
 		case DankDump:
-			// Put custom auto code here
+				// Put custom auto code here
 			break;
-		case GearGrab: { 
-				drivetrain.moveDistance(75);
-				drivetrain.waitMove();
-				drivetrain.angleSpotTurn(180);
-				drivetrain.waitMove();
-				drivetrain.moveDistance(-20);
-				drivetrain.waitMove();
-				take.setGearPosition(Take.gearPosition.Out);
-			
-		}
+		case GearGrab:
+			drivetrain.moveDistance(75);
+			drivetrain.waitMoveDistance();
+			drivetrain.angleSpotTurn(180);
+			drivetrain.waitMoveDistance();
+			drivetrain.moveDistance(-20);
+			drivetrain.waitMoveDistance();
+			take.setGearPosition(Take.gearPosition.Out);
 			break;
-		case GearGrabRight: { // TODO get measurements and fix this so its like GearGrab
+		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(120);
+			drivetrain.waitMoveDistance();
 			drivetrain.angleSpotTurn(70);
 			// if (camera.checkForGear()) {
 			// if (camera.getHeight()[0] == 200) {
@@ -161,22 +160,22 @@ public class Robot extends IterativeRobot {
 			// }
 			// }
 			drivetrain.moveDistance(20);
+			drivetrain.waitMoveDistance();
 			take.setGearPosition(Take.gearPosition.Out);
 			drivetrain.angleSpotTurn(240);
 			drivetrain.moveDistance(20);
+			drivetrain.waitMoveDistance();
 			// while intaking
 			drivetrain.angleSpotTurn(90);
 			drivetrain.moveDistance(120);
+			drivetrain.waitMoveDistance();
 			// outtake
-		}
 			break;
-		case BaseBreak: {
+		case BaseBreak:
 			RF.setPosition(0);
 			LF.setPosition(0);
-			if (!drivetrain.getIsMoving()) {
-				drivetrain.moveDistance(95);
-			}
-		}
+			drivetrain.moveDistance(95);
+			drivetrain.waitMoveDistance();
 			break;
 		}
 		
@@ -188,7 +187,7 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		time.stop();
 		time.reset();
-		drivetrain.stop();
+		drivetrain.stop(); // very important!
 	}
 
 	/**
@@ -197,6 +196,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		control.update();
+		
+		drivetrain.checkMoveDistance(); // checks if we are done moving if we were moving
+		drivetrain.checkAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning
 		
 		// Tankdrive		
 		drivetrain.joystickControl(left, right); //TODO calibrate joysticks
