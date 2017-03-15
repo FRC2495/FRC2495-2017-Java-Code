@@ -272,15 +272,15 @@ public class Robot extends IterativeRobot {
 
 		updateToSmartDash();
 		// only enable these if debugging 
-		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN10))
+		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN9))
 		{
 			drivetrain.angleSpotTurn(90);
 		}
-		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN9))
+		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN8))
 		{
 			drivetrain.angleSpotTurn(-90);
 		}
-		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN8))
+		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN7))
 		{
 			drivetrain.moveDistance(12);
 		}
