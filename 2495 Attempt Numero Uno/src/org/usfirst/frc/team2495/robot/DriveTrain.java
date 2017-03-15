@@ -7,6 +7,7 @@ import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -25,6 +26,8 @@ public class DriveTrain implements PIDOutput {
 	final int TIMEOUT_MS = 15000;
 	final double REV_THRESH = .125;
 	final int RADIUS_DRIVEVETRAIN_INCHES = 13;
+	
+	PIDController turnPidController;
 
 	public DriveTrain(CANTalon rr, CANTalon rf, CANTalon lr, CANTalon lf, ADXRS450_Gyro Gyro) {
 		RR = rr; // sets the talons from the constructer to the talons used here
@@ -53,8 +56,36 @@ public class DriveTrain implements PIDOutput {
 		RR.set(RF.getDeviceID());
 		// RF.setEncPosition(0);
 		// LF.setEncPosition(0);
+		
+    	//creates a PID controller
+		turnPidController = new PIDController(0.17, 0.0002, 0.0, Gyro, this);
+    	turnPidController.setContinuous(true); // because -180 degrees is the same as 180 degrees
+    	turnPidController.setAbsoluteTolerance(1); // 1 degree error tolerated
+    	turnPidController.setInputRange(-180, 180); // valid input range 
+    	turnPidController.setOutputRange(-.5, .5); // output range NOTE: might need to change signs
 	}
 
+	public void angleSpotTurnUsingPidController(int angle) {
+		toVbs(); // switches to percentage vbus
+		stop(); // resets state
+		
+		double current = gyro.getAngle();
+		double heading = angle + current; // calculates new heading
+		
+		turnPidController.setSetpoint(heading); // sets the heading
+		turnPidController.enable(); // begins running
+		
+		while (!turnPidController.onTarget() && DriverStation.getInstance().isAutonomous()) {
+			try {
+				Thread.sleep(50); // sleeps a little
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		turnPidController.disable(); //stops running
+	}
+	
 	public void moveDistance(double dist) // moves the distance in inch given
 	{
 		RF.setPosition(0);
