@@ -57,11 +57,12 @@ public class Robot extends IterativeRobot {
 
 	Timer time = new Timer(); // generic timer
 
-	double centerx = 0.0; // center of the x axis
-
 	Take take;
 	CANTalon spin, climb;
+	
 	ControllerBase control;
+	
+	Compressor compressor; // the compressor's lifecycle needs to be the same as the robot
 	
 	boolean gearFlag, basinFlag;
 
@@ -77,7 +78,6 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Gear Grabber Left Side (WIP DO NOT PICK)", GearGrabRight);
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
 
-		//[GA] consider centralizing all the device numbers/ports in one location (e.g. Ports.java)
 		RR = new CANTalon(Ports.CAN.RIGHT_REAR); // The CANTalons
 		RF = new CANTalon(Ports.CAN.RIGHT_FRONT);
 		LR = new CANTalon(Ports.CAN.LEFT_REAR);
@@ -85,11 +85,11 @@ public class Robot extends IterativeRobot {
 		spin = new CANTalon(Ports.CAN.SPIN);//intake spin motor
 		climb = new CANTalon(Ports.CAN.CLIMB); // climber motor 
 
+		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); // we want to instantiate before we pass to drivetrain		
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
 		camera = new HMCamera("myContoursReport");
-		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); 
-
-		Compressor compressor = new Compressor();
+ 
+		compressor = new Compressor();
 		compressor.checkCompressor();
 
 		take = new Take(spin, climb);
