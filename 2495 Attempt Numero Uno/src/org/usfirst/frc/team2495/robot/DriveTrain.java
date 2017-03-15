@@ -7,12 +7,13 @@ import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 
 // [GA] please add java doc explaining what the purpose of this class is [SP] no idea how to do javadoc
-public class DriveTrain {
+public class DriveTrain implements PIDOutput {
 
 	double Ltac, Rtac;
 	boolean isMoving;
@@ -211,6 +212,13 @@ public class DriveTrain {
 
 	public boolean getIsMoving() {
 		return isMoving;
+	}
+
+	@Override
+	public void pidWrite(double output) {
+		toVbs();
+		RF.set(-output); //NOTE: sign might need to be reverted
+		LF.set(output); //NOTE: sign might need to be reverted		
 	}
 
 }
