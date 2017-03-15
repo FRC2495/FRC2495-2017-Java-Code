@@ -117,8 +117,8 @@ public class DriveTrain {
 
 		RF.setPosition(0);
 		LF.setPosition(0);
-		Rtac = (dist / revMulti) + RF.getEncPosition();
-		Ltac = (dist / revMulti) + LF.getEncPosition();
+		Rtac = (rdist / revMulti) + RF.getEncPosition();
+		Ltac = (ldist / revMulti) + LF.getEncPosition();
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
 		toEnc(4);
 		RF.enableControl();
