@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot {
 	
 	//[GA] please explain what the various auton modes are really doing
 	// (and list the assumptions made regarding the starting positions)
-	final String BaseBreak = "Baseline Breaker"; // Auton selection cases Dead Reckoning
+	final String BaseBreak = "Baseline Breaker"; // Auton selection cases Dead Reckoning requires a start that is not gonna run into the steamship
 	final String GearGrab = "Gear Grabber"; // Center gear placement
 	final String GearGrabRight = "Gear Grabber Right"; // Right Gear Placement
 	final String DankDump = "Dank Dumper"; //Dump Case 
@@ -115,7 +115,7 @@ public class Robot extends IterativeRobot {
 	 * switch structure below with additional strings. If using the
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 * 
-	 * @return This is the intilization code for the autonomous, this code does:
+	 * This is the intilization code for the autonomous, this code does:
 	 * Sets the selecetd auton,
 	 * Prints the selected Auton,
 	 * Resets the timer,
@@ -135,7 +135,8 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during autonomous
 	 * 
-	 * @return Update to Smart Dash,
+	 * This code does:
+	 * Update to Smart Dash,
 	 * chooses what auton to run,
 	 * updates smart dash again
 	 */
@@ -201,7 +202,7 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during operator control
 	 *  
-	 *  @return This code does:
+	 *  This code does:
 	 *  checks for control updates,
 	 *  checks to see if we are still moving after auton,
 	 *  throws tankdrive controls to the joysticks,
@@ -332,7 +333,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Alliterative Autoniomous Appointment", chooser);
 	}
 	/**
-	 * @return This code does:
+	 * This code does:
 	 * updates controls
 	 * allows an access to calibrate the gyro
 	 * updates smart dash
