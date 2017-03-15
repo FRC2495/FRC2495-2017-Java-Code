@@ -143,11 +143,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 
-		// [GA] you would get a lot by using a logger (so you can check what happened afterwards). 
-		  SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
-		  SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
-		 
-
+		updateToSmartDash();
 		switch (autoSelected) {
 		case DankDump:
 			// Put custom auto code here
@@ -278,15 +274,7 @@ public class Robot extends IterativeRobot {
 		}
 		// Camera *Sigh*
 
-		// Send Gyro val to Dashboard
-		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
-		// send the gear status to dashboard
-		SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
-		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
-		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
-		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
-		SmartDashboard.putNumber("Distance to Target", camera.getDistanceToCenterOfTargets());
-		SmartDashboard.putNumber("Angle to Target", camera.getAngleToTurnToCenterOfTargets());
+		updateToSmartDash();
 	}
 
 	/**
@@ -303,17 +291,25 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void disabledPeriodic() {
-		// Send Gyro val to Dashboard
-		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
-		// send the gear status to dashboard
-		SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
-		SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
-		SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
+		updateToSmartDash();
 		control.update();
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.R3)) {
 			gyro.calibrate();
 		}
 		
 		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
+	}
+	
+	public void updateToSmartDash()
+	{
+		// Send Gyro val to Dashboard
+        SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
+        // send the gear status to dashboard
+        SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
+        SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
+        SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
+        SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
+        SmartDashboard.putNumber("Distance to Target", camera.getDistanceToCenterOfTargets());
+        SmartDashboard.putNumber("Angle to Target", camera.getAngleToTurnToCenterOfTargets());
 	}
 }
