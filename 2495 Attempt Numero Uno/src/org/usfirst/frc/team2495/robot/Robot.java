@@ -15,10 +15,6 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 import java.util.ResourceBundle.Control;
 import edu.wpi.first.wpilibj.XboxController;
-import org.opencv.imgproc.Imgproc;
-import edu.wpi.first.wpilibj.vision.*;
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 /**
@@ -54,20 +50,14 @@ public class Robot extends IterativeRobot {
 	Joystick operator;
 
 	ADXRS450_Gyro gyro; // gyro
-	//[GA] consider centralizing all the device numbers/ports in one location (e.g. Ports.java)
-	PowerDistributionPanel PDP = new PowerDistributionPanel(6); // PDP
+	
+	PowerDistributionPanel PDP = new PowerDistributionPanel(/*Ports.CAN.PCM*/6); // PDP FIXME SHOULD THIS BE 6 OR 7???
 
 	DriveTrain drivetrain; // DriveTrain object from the homemade class
 
 	Timer time = new Timer(); // generic timer
 
-	static final int IMG_WIDTH = 320; // height and width of the camera image
-	static final int IMG_HEIGHT = 240;
-
-	// [GA] what is all this for?
-	VisionThread visionthread; // sepearate vision thread
 	double centerx = 0.0; // center of the x axis
-	final Object imglock = new Object();
 
 	Take take;
 	CANTalon spin, climb;
@@ -109,8 +99,9 @@ public class Robot extends IterativeRobot {
 		operator = new Joystick(Ports.USB.GAMEPAD);
 
 		control = new ControllerBase(operator, left, right);
+		
 		gyro.calibrate(); 
-
+		gyro.reset();
 	}
 
 	/**
@@ -130,7 +121,7 @@ public class Robot extends IterativeRobot {
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
-		gyro.calibrate(); 
+		//gyro.calibrate(); you do NOT want to waste time calibrating at the beginning of a match 
 		time.reset();
 		take.setPosition(Take.Position.IN_UP);
 		RF.setEncPosition(0);
@@ -142,8 +133,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-
 		updateToSmartDash();
+		
 		switch (autoSelected) {
 		case DankDump:
 			// Put custom auto code here
@@ -189,7 +180,8 @@ public class Robot extends IterativeRobot {
 			break;
 		}
 		
-		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
+		updateToSmartDash();
+		//SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
 	}
 
 	@Override
@@ -204,9 +196,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-
-		// Tankdrive
 		control.update();
+		
+		// Tankdrive		
 		drivetrain.joystickControl(left, right); //TODO calibrate joysticks
 		
 		// set in/outtake to position outdown = a, outup = b inup = x
@@ -231,6 +223,7 @@ public class Robot extends IterativeRobot {
 		{
 			take.setSpin(0);
 		}
+		
 		//gear bound to back
 		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.BACK))
 		{
@@ -245,6 +238,7 @@ public class Robot extends IterativeRobot {
 				gearFlag = true;
 			}
 		}
+		
 		//basin bound to start
 		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD,ControllerBase.GamepadButtons.START))
 		{
@@ -290,14 +284,16 @@ public class Robot extends IterativeRobot {
 	}
 
 	@Override
-	public void disabledPeriodic() {
-		updateToSmartDash();
+	public void disabledPeriodic() {	
 		control.update();
+		
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.R3)) {
 			gyro.calibrate();
+			gyro.reset();
 		}
 		
-		SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
+		updateToSmartDash();
+		//SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
 	}
 	
 	public void updateToSmartDash()
