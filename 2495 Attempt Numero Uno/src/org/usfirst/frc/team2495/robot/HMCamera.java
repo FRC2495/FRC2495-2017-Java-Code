@@ -13,7 +13,7 @@ public class HMCamera {
 	private static final double VERTICAL_FOV_DEGREES = 58;
 	private static final double HORIZONTAL_FOV_DEGREES = 58;
 	private static final int TARGET_HEIGHT_INCHES = 5;
-	private static final double TARGET_WIDTH_INCHES = 10.5;
+	private static final double TARGET_WIDTH_INCHES = 2;
 
 	private static final int MAX_NT_RETRY = 5;
 
@@ -117,11 +117,31 @@ public class HMCamera {
 		} else
 			return Double.POSITIVE_INFINITY;
 	}
+	
+	public double getDistanceToTargetAUsingHorizontalFov()
+	{
+		if (isCoherent() && largeAIndex != 0) {
+			double diagTargetDistance = TARGET_WIDTH_INCHES * (HORIZONTAL_CAMERA_RES_PIXELS / width[largeAIndex]) / 2.0
+					/ Math.tan(Math.toRadians(HORIZONTAL_FOV_DEGREES / 2));
+			return diagTargetDistance;
+		} else
+			return Double.POSITIVE_INFINITY;
+	}
 
 	public double getDistanceToTargetB() {
 		if (isCoherent() && largeBIndex != 0) {
 			double diagTargetDistance = TARGET_HEIGHT_INCHES * (VERTICAL_CAMERA_RES_PIXELS / height[largeBIndex]) / 2.0
 					/ Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
+			return diagTargetDistance;
+		} else
+			return Double.POSITIVE_INFINITY;
+	}
+	
+	public double getDistanceToTargetBUsingHorizontalFov()
+	{
+		if (isCoherent() && largeBIndex != 0) {
+			double diagTargetDistance = TARGET_WIDTH_INCHES * (HORIZONTAL_CAMERA_RES_PIXELS / width[largeBIndex]) / 2.0
+					/ Math.tan(Math.toRadians(HORIZONTAL_FOV_DEGREES / 2));
 			return diagTargetDistance;
 		} else
 			return Double.POSITIVE_INFINITY;
@@ -150,6 +170,11 @@ public class HMCamera {
 	public double getDistanceToCenterOfTargets()
 	{
 		return (getDistanceToTargetA() + getDistanceToTargetB()) / 2;
+	}
+	
+	public double getDistanceToCenterOfTargetsUsingHorizontalFov()
+	{
+		return ((getDistanceToTargetAUsingHorizontalFov() + getDistanceToTargetBUsingHorizontalFov()) /2);
 	}
 	
 	public double getAngleToTurnToCenterOfTargets()

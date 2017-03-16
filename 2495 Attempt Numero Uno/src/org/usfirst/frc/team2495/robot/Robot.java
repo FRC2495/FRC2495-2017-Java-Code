@@ -26,8 +26,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  */
 public class Robot extends IterativeRobot {
 	
-	//[GA] please explain what the various auton modes are really doing
-	// (and list the assumptions made regarding the starting positions)
 	final String BaseBreak = "Baseline Breaker"; // Auton selection cases Dead Reckoning requires a start that is not gonna run into the steamship
 	final String GearGrab = "Gear Grabber"; // Center gear placement
 	final String GearGrabRight = "Gear Grabber Right"; // Right Gear Placement
@@ -43,7 +41,6 @@ public class Robot extends IterativeRobot {
 	CANTalon RF;
 	CANTalon LR;
 	CANTalon LF;
-	// CANTalon intake;
 
 	Joystick right; // The Joysticks
 	Joystick left;
@@ -51,7 +48,7 @@ public class Robot extends IterativeRobot {
 
 	ADXRS450_Gyro gyro; // gyro
 	
-	PowerDistributionPanel PDP = new PowerDistributionPanel(Ports.CAN.PDP); //TODO switch PDP ID to 0
+	PowerDistributionPanel PDP = new PowerDistributionPanel(Ports.CAN.PDP);
 
 	DriveTrain drivetrain; // DriveTrain object from the homemade class
 
@@ -189,7 +186,6 @@ public class Robot extends IterativeRobot {
 		}
 		
 		updateToSmartDash();
-		//SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
 	}
 
 	@Override
@@ -348,7 +344,6 @@ public class Robot extends IterativeRobot {
 		}
 		
 		updateToSmartDash();
-		//SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
 	}
 	
 	public void updateToSmartDash()
@@ -362,5 +357,6 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
         SmartDashboard.putNumber("Distance to Target", camera.getDistanceToCenterOfTargets());
         SmartDashboard.putNumber("Angle to Target", camera.getAngleToTurnToCenterOfTargets());
+        SmartDashboard.putNumber("Distance to Target Using Horizontal FOV", camera.getDistanceToCenterOfTargetsUsingHorizontalFov());
 	}
 }
