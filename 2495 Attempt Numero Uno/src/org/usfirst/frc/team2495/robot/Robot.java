@@ -55,13 +55,15 @@ public class Robot extends IterativeRobot {
 	Timer time = new Timer(); // generic timer
 
 	Take take;
-	CANTalon spin, climb;
+	CANTalon spin, climb,basin;
 	
 	ControllerBase control;
 	
 	Compressor compressor; // the compressor's lifecycle needs to be the same as the robot
 	
 	boolean gearFlag, basinFlag;
+	
+	Basin basinControl;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -81,6 +83,7 @@ public class Robot extends IterativeRobot {
 		LF = new CANTalon(Ports.CAN.LEFT_FRONT);
 		spin = new CANTalon(Ports.CAN.SPIN);//intake spin motor
 		climb = new CANTalon(Ports.CAN.CLIMB); // climber motor 
+		basin = new CANTalon(Ports.CAN.BASIN);
 
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); // we want to instantiate before we pass to drivetrain		
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
@@ -97,8 +100,11 @@ public class Robot extends IterativeRobot {
 
 		control = new ControllerBase(operator, left, right);
 		
+		basinControl = new Basin(basin);
+		
 		gyro.calibrate(); 
 		gyro.reset();
+		//basinControl.home();
 	}
 
 	/**
@@ -263,12 +269,12 @@ public class Robot extends IterativeRobot {
 		{
 			if(basinFlag)
 			{
-				take.setBasinPosition(Take.basinPosition.Up);
+				basinControl.moveUp();
 				basinFlag = false;
 			}
 			else
 			{
-				take.setBasinPosition(Take.basinPosition.Down);
+				basinControl.moveDown();
 				basinFlag = true;
 			}
 		}
@@ -286,8 +292,20 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		// Camera *Sigh*
-
+		
+		//Stops the robot moving if pressed
+		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN10) || 
+		   control.getPressedDown(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN10))
+		{
+			drivetrain.stop();
+		}
+		else
+		{
+			
+		}
+		
 		updateToSmartDash();
+		
 		// only enable these if debugging 
 		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN9))
 		{
@@ -305,15 +323,11 @@ public class Robot extends IterativeRobot {
 		{
 			
 		}
+		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN6))
+		{
+			basinControl.home();
+		}
 		
-		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN10))
-		{
-			drivetrain.stop();
-		}
-		else
-		{
-			
-		}
 		
 	}
 
@@ -358,5 +372,6 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Distance to Target", camera.getDistanceToCenterOfTargets());
         SmartDashboard.putNumber("Angle to Target", camera.getAngleToTurnToCenterOfTargets());
         SmartDashboard.putNumber("Distance to Target Using Horizontal FOV", camera.getDistanceToCenterOfTargetsUsingHorizontalFov());
+        SmartDashboard.putBoolean("Basin Limit Switch", basinControl.getLimitSwitchState());
 	}
 }

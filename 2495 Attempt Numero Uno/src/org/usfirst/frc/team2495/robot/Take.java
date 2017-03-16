@@ -9,15 +9,10 @@ import com.ctre.CANTalon;
 public class Take {
 	Timer timer;
 	CANTalon spin, climb;
-	DoubleSolenoid outin, downup, gear, basin;
+	DoubleSolenoid outin, downup, gear;
 
 	public enum Position {
 		IN_UP, OUT_DOWN, OUT_UP;
-	}
-	
-	public enum basinPosition
-	{
-		Up,Down;
 	}
 	
 	public enum gearPosition
@@ -29,7 +24,6 @@ public class Take {
 		outin = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.INTAKE_OUT, Ports.PCM.INTAKE_IN);
 		downup = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.INTAKE_DOWN, Ports.PCM.INTAKE_UP);
 		gear = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.GEAR_IN, Ports.PCM.GEAR_OUT);
-		basin = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.BASIN_DOWN, Ports.PCM.BASIN_UP);
 		timer = new Timer();
 		spin = spin_in;
 		spin.enableBrakeMode(true);
@@ -81,23 +75,6 @@ public class Take {
 	public void setClimb(double speed)
 	{
 		climb.set(speed);
-	}
-	
-	public void setBasinPosition(basinPosition pos)
-	{
-		switch(pos)
-		{
-			case Up:
-				{
-					basin.set(DoubleSolenoid.Value.kForward);
-					break;
-				}
-			case Down:
-				{
-					basin.set(DoubleSolenoid.Value.kReverse);
-					break;
-				}
-		}
 	}
 	
 	public void setGearPosition(gearPosition pos)
