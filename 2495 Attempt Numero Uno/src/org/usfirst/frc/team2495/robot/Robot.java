@@ -222,6 +222,7 @@ public class Robot extends IterativeRobot {
 		
 		drivetrain.checkMoveDistance(); // checks if we are done moving if we were moving
 		drivetrain.checkAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning
+		basinControl.checkHome();
 		
 		// Tankdrive		
 		drivetrain.joystickControl(left, right); //TODO calibrate joysticks
@@ -267,14 +268,17 @@ public class Robot extends IterativeRobot {
 		//basin bound to start
 		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD,ControllerBase.GamepadButtons.START))
 		{
+			System.out.println("Button Pushed");
 			if(basinFlag)
 			{
 				basinControl.moveUp();
+				System.out.println("Should be Moving");
 				basinFlag = false;
 			}
 			else
 			{
 				basinControl.moveDown();
+				System.out.println("Should be Moving");
 				basinFlag = true;
 			}
 		}
@@ -368,10 +372,14 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
         SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
         SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
+        SmartDashboard.putBoolean("isMoving?", drivetrain.isMoving());
+        SmartDashboard.putBoolean("isTurning?", drivetrain.isTurning());
         SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());
         SmartDashboard.putNumber("Distance to Target", camera.getDistanceToCenterOfTargets());
         SmartDashboard.putNumber("Angle to Target", camera.getAngleToTurnToCenterOfTargets());
         SmartDashboard.putNumber("Distance to Target Using Horizontal FOV", camera.getDistanceToCenterOfTargetsUsingHorizontalFov());
         SmartDashboard.putBoolean("Basin Limit Switch", basinControl.getLimitSwitchState());
+        SmartDashboard.putNumber("Basin Enc Position", basinControl.getEncPosition());
+        SmartDashboard.putBoolean("IsHoming?", basinControl.isHoming());
 	}
 }

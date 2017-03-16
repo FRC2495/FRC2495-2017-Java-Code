@@ -282,8 +282,12 @@ public class DriveTrain implements PIDOutput {
 		return (int) (LF.getPosition() * 1);// inchesPerTick);
 	}
 
-	public boolean getIsMoving() {
+	public boolean isMoving() {
 		return isMoving;
+	}
+	
+	public boolean isTurning(){
+		return isTurning;
 	}
 
 	@Override
