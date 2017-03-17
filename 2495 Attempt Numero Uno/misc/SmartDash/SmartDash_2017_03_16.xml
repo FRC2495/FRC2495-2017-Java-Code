@@ -1,5 +1,8 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="Basin IsMoving?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1140" y="273"/>
+	</widget>
 	<widget field="isMoving?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
 		<location x="1146" y="205"/>
 	</widget>

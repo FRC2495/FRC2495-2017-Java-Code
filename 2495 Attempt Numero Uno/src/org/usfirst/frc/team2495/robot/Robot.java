@@ -223,6 +223,7 @@ public class Robot extends IterativeRobot {
 		drivetrain.checkMoveDistance(); // checks if we are done moving if we were moving
 		drivetrain.checkAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning
 		basinControl.checkHome();
+		basinControl.checkMove();
 		
 		// Tankdrive		
 		drivetrain.joystickControl(left, right); //TODO calibrate joysticks
@@ -381,5 +382,6 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putBoolean("Basin Limit Switch", basinControl.getLimitSwitchState());
         SmartDashboard.putNumber("Basin Enc Position", basinControl.getEncPosition());
         SmartDashboard.putBoolean("IsHoming?", basinControl.isHoming());
+        SmartDashboard.putBoolean("Basin IsMoving?", basinControl.isMoving());
 	}
 }
