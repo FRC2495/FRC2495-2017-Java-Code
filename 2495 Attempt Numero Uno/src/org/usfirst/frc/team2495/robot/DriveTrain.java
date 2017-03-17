@@ -21,11 +21,12 @@ public class DriveTrain implements PIDOutput {
 	CANTalon RR, RF, LR, LF; // [GA] avoid using all uppercase variable names -
 								// reserve that for constants
 	ADXRS450_Gyro gyro;
-	int tickcount = 1024;
-	double revMulti = 4 * Math.PI;
-	final int TIMEOUT_MS = 15000;
-	final double REV_THRESH = .125;
-	final int RADIUS_DRIVEVETRAIN_INCHES = 13;
+	
+	static final double REV_MULTI = 4 * Math.PI;
+	static final int TIMEOUT_MS = 15000;
+	static final double REV_THRESH = .125;
+	static final int RADIUS_DRIVEVETRAIN_INCHES = 13;
+	static final double MOVING_VOLTAGE = 4.0; // value above 1.0 makes no sense
 	
 	PIDController turnPidController;
 
@@ -119,10 +120,10 @@ public class DriveTrain implements PIDOutput {
 	{
 		RF.setPosition(0);
 		LF.setPosition(0);
-		Rtac = (dist / revMulti) + RF.getEncPosition();
-		Ltac = (dist / revMulti) + LF.getEncPosition();
+		Rtac = (dist / REV_MULTI) + RF.getEncPosition();
+		Ltac = (dist / REV_MULTI) + LF.getEncPosition();
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
-		toEnc(4);
+		toEnc(MOVING_VOLTAGE);
 		RF.enableControl();
 		LF.enableControl();
 		RF.set(Rtac);
@@ -133,8 +134,8 @@ public class DriveTrain implements PIDOutput {
 
 	public boolean checkMoveDistance() {
 		if (isMoving) {
-			int Renc = (RF.getEncPosition());
-			int Lenc = (LF.getEncPosition());
+			int Renc = (RF.getEncPosition()); // FIXME getPosition() is probably what we need here
+			int Lenc = (LF.getEncPosition()); // FIXME getPosition() is probably what we need here
 			// System.out.println("Renc,Lenc" + Renc + " " + Lenc);
 			isMoving = !(Renc > Rtac - REV_THRESH && Renc < Rtac + REV_THRESH && Lenc > Ltac - REV_THRESH
 					&& Lenc < Ltac + REV_THRESH);
@@ -146,7 +147,6 @@ public class DriveTrain implements PIDOutput {
 				stop();
 				toVbs();
 			}
-
 		}
 		return isMoving;
 	}
@@ -187,10 +187,10 @@ public class DriveTrain implements PIDOutput {
 
 		RF.setPosition(0);
 		LF.setPosition(0);
-		Rtac = (rdist / revMulti) + RF.getEncPosition();
-		Ltac = (ldist / revMulti) + LF.getEncPosition();
+		Rtac = (rdist / REV_MULTI) + RF.getEncPosition();
+		Ltac = (ldist / REV_MULTI) + LF.getEncPosition();
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
-		toEnc(4);
+		toEnc(MOVING_VOLTAGE);
 		RF.enableControl();
 		LF.enableControl();
 		RF.set(Rtac);
@@ -239,7 +239,7 @@ public class DriveTrain implements PIDOutput {
 
 	// [GA] it would be better to call this method toEncPos() as encoders can
 	// also be used for other modes (e.g. speed)
-	public void toEnc(int forward) // sets the talons to encoder control
+	public void toEnc(double forward) // sets the talons to encoder control
 	{
 		RF.setPID(0.4, 0, 0);
 		LF.setPID(0.4, 0, 0);
@@ -255,8 +255,6 @@ public class DriveTrain implements PIDOutput {
 	{
 		RF.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 		LF.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-		// RR.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-		// LR.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 	}
 
 	// [GA] no issue when the joysticks are resting? [SP] yeah its fine when its
@@ -275,11 +273,11 @@ public class DriveTrain implements PIDOutput {
 	}
 
 	public int getREncVal() {
-		return (int) (RF.getPosition() * 1);// inchesPerTick);
+		return (int) (RF.getPosition() * 1);
 	}
 
 	public int getLEncVal() {
-		return (int) (LF.getPosition() * 1);// inchesPerTick);
+		return (int) (LF.getPosition() * 1);
 	}
 
 	public boolean isMoving() {

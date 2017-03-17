@@ -5,14 +5,17 @@ import com.ctre.CANTalon.FeedbackDevice;
 
 public class Basin {
 	CANTalon basin;
+	
 	static final double SCREW_PITCH_INCHES_PER_REV = .75;
 	static final int LENGTH_OF_SCREW_INCHES = 8;
+	
 	boolean isHomingPart1, isHomingPart2, isMoving;
+	
 	static final double REV_THRESH = .125;
 	static final double OFFSET_INCHES = 1;
 	static final double GEAR_RATIO = 187.0 / 2;
 	static final double HOMING_VOLTAGE = 0.1;
-	static final double MOVING_VOLTAGE = 4.0;
+	static final double MOVING_VOLTAGE = 4.0; // value above 1.0 makes no sense
 	
 	double tac;
 	boolean hasBeenHomed = false;
