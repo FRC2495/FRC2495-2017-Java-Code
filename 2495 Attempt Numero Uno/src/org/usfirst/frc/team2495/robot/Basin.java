@@ -37,6 +37,13 @@ public class Basin {
 		return basin.isRevLimitSwitchClosed();
 	}
 
+	private void homePart1() {
+		// assumes toVbs() already called
+		basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
+		basin.set(HOMING_VOLTAGE); // we start moving down
+		isHomingPart1 = true;
+	}
+	
 	private void homePart2() {
 		basin.set(0); // we stop
 		toEncPosition(MOVING_VOLTAGE_VOLTS); // we switch to position mode
@@ -54,14 +61,12 @@ public class Basin {
 		toVbs(); // switches to vbs
 		
 		if (!getLimitSwitchState()) { // if we are not already at the switch
-			basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
-			basin.set(HOMING_VOLTAGE); // we start moving down
-			isHomingPart1 = true; // we need to go down to find limit switch
-			isHomingPart2 = true; // then we need to go to virtual zero
+			//isHomingPart1 = true; // we need to go down to find limit switch					
+			homePart1();
+			isHomingPart2 = true; // then we need to go to virtual zero later
 		} else {
 			isHomingPart1 = false; // we don't need to go down
-			isHomingPart2 = true; // but we still need to go to virtual zero
-			
+			//isHomingPart2 = true; // but we still need to go to virtual zero		
 			homePart2(); // we start part 2 directly
 		}
 	}
@@ -82,7 +87,6 @@ public class Basin {
 
 			if (!isHomingPart2) {
 				System.out.println("You have reached the virtual zero.");
-				hasBeenHomed = true;
 				try {
 					Thread.sleep(100); // we wait a little for the screw to fully stop
 				} catch (InterruptedException e) {
@@ -91,6 +95,7 @@ public class Basin {
 				}
 				toVbs(); // we switch back to vbus
 				basin.setPosition(0); // we mark the virtual zero
+				hasBeenHomed = true;
 			}
 		}
 
