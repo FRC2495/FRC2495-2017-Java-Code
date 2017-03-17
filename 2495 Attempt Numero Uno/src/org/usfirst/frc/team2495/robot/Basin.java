@@ -10,7 +10,7 @@ public class Basin {
 	boolean isHomingPart1, isHomingPart2, isMoving;
 	final double REV_THRESH = .125;
 	final double OFFSET_INCHES = 1;
-	final double GEAR_RATIO = 187;
+	final double GEAR_RATIO = 187.0/2;
 	double tac;
 
 	public Basin(CANTalon basin_in) {
@@ -69,7 +69,7 @@ public class Basin {
 				isHomingPart2 = true;
 			}
 		} else if (isHomingPart2) {
-			int enc = basin.getEncPosition();
+			double enc = basin.getPosition();
 
 			isHomingPart2 = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
 			
@@ -81,6 +81,7 @@ public class Basin {
 					System.out.println("HOW?!?!?!??!");
 					e.printStackTrace();
 				}
+				toVbs();
 				basin.setPosition(0);
 			}
 		}
@@ -91,7 +92,7 @@ public class Basin {
 	public boolean checkMove()
 	{
 		if (isMoving) {
-				int enc = basin.getEncPosition();
+				double enc = basin.getPosition();
 
 				isMoving = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
 				
