@@ -15,7 +15,7 @@ public class Basin {
 	static final double OFFSET_INCHES = 1;
 	static final double GEAR_RATIO = 187.0 / 2;
 	static final double HOMING_VOLTAGE = 0.1;
-	static final double MOVING_VOLTAGE = 4.0; // value above 1.0 makes no sense
+	static final double MOVING_VOLTAGE_VOLTS = 4.0;
 	
 	double tac;
 	boolean hasBeenHomed = false;
@@ -39,7 +39,7 @@ public class Basin {
 
 	private void homePart2() {
 		basin.set(0); // we stop
-		toEncPosition(MOVING_VOLTAGE); // we switch to position mode
+		toEncPosition(MOVING_VOLTAGE_VOLTS); // we switch to position mode
 		basin.setPosition(0); // we set the current position to zero [we might need to move this up one line]		
 		basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
 		basin.enableControl(); // we enable control
@@ -114,7 +114,7 @@ public class Basin {
 
 	public void moveUp() {
 		if (hasBeenHomed) {
-			toEncPosition(MOVING_VOLTAGE);
+			toEncPosition(MOVING_VOLTAGE_VOLTS);
 			System.out.println("Moving Up");
 			basin.enableControl();
 			tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES);
@@ -127,7 +127,7 @@ public class Basin {
 
 	public void moveDown() {
 		if (hasBeenHomed) {
-			toEncPosition(MOVING_VOLTAGE);
+			toEncPosition(MOVING_VOLTAGE_VOLTS);
 			System.out.println("Moving Down");
 			basin.enableControl();
 			tac = -convertInchesToRev(0);

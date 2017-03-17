@@ -26,7 +26,7 @@ public class DriveTrain implements PIDOutput {
 	static final int TIMEOUT_MS = 15000;
 	static final double REV_THRESH = .125;
 	static final int RADIUS_DRIVEVETRAIN_INCHES = 13;
-	static final double MOVING_VOLTAGE = 4.0; // value above 1.0 makes no sense
+	static final double MOVING_VOLTAGE_VOLTS = 4.0;
 	
 	PIDController turnPidController;
 
@@ -123,7 +123,7 @@ public class DriveTrain implements PIDOutput {
 		Rtac = (dist / REV_MULTI) + RF.getEncPosition();
 		Ltac = (dist / REV_MULTI) + LF.getEncPosition();
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
-		toEnc(MOVING_VOLTAGE);
+		toEnc(MOVING_VOLTAGE_VOLTS);
 		RF.enableControl();
 		LF.enableControl();
 		RF.set(Rtac);
@@ -190,7 +190,7 @@ public class DriveTrain implements PIDOutput {
 		Rtac = (rdist / REV_MULTI) + RF.getEncPosition();
 		Ltac = (ldist / REV_MULTI) + LF.getEncPosition();
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
-		toEnc(MOVING_VOLTAGE);
+		toEnc(MOVING_VOLTAGE_VOLTS);
 		RF.enableControl();
 		LF.enableControl();
 		RF.set(Rtac);
