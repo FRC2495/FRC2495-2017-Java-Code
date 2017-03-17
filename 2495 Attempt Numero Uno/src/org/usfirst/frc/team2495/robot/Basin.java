@@ -31,6 +31,7 @@ public class Basin {
 	}
 
 	public void home() {
+		hasBeenHomed = false;
 		toVbs();
 		if (!getLimitSwitchState()) {
 			basin.set(.1);

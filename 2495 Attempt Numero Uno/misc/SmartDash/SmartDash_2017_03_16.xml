@@ -1,5 +1,15 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="Basin Has Been Homed?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1138" y="311"/>
+		<height>14</height>
+	</widget>
+	<widget field="Basin IsHoming?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1140" y="291"/>
+	</widget>
+	<widget field="Basin Position" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1046" y="417"/>
+	</widget>
 	<widget field="Basin Target" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="890" y="417"/>
 		<height>20</height>
