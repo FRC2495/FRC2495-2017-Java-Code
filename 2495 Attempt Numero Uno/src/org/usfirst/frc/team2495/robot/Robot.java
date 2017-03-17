@@ -105,7 +105,7 @@ public class Robot extends IterativeRobot {
 		
 		gyro.calibrate(); 
 		gyro.reset();
-		//basinControl.home();
+		basinControl.home();
 	}
 
 	/**
@@ -383,8 +383,9 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putBoolean("Basin Limit Switch", basinControl.getLimitSwitchState());
         SmartDashboard.putNumber("Basin Position", basinControl.getPosition());
         SmartDashboard.putNumber("Basin Enc Position", basinControl.getEncPosition());
-        SmartDashboard.putBoolean("IsHoming?", basinControl.isHoming());
+        SmartDashboard.putBoolean("Basin IsHoming?", basinControl.isHoming());
         SmartDashboard.putBoolean("Basin IsMoving?", basinControl.isMoving());
         SmartDashboard.putNumber("Basin Target", basinControl.getTarget());
+        SmartDashboard.putBoolean("Basin Has Been Homed?", basinControl.hasBeenHomed());
 	}
 }

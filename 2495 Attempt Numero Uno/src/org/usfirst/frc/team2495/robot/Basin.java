@@ -5,13 +5,14 @@ import com.ctre.CANTalon.FeedbackDevice;
 
 public class Basin {
 	CANTalon basin;
-	static final double SCREW_PITCH_INCHES_PER_REV = .75; 
+	static final double SCREW_PITCH_INCHES_PER_REV = .75;
 	static final int LENGTH_OF_SCREW_INCHES = 8;
 	boolean isHomingPart1, isHomingPart2, isMoving;
 	final double REV_THRESH = .125;
 	final double OFFSET_INCHES = 1;
-	final double GEAR_RATIO = 187.0/2;
+	final double GEAR_RATIO = 187.0 / 2;
 	double tac;
+	boolean hasBeenHomed = false;
 
 	public Basin(CANTalon basin_in) {
 		basin = basin_in;
@@ -35,9 +36,7 @@ public class Basin {
 			basin.set(.1);
 			isHomingPart1 = true;
 			isHomingPart2 = true;
-		}
-		else
-		{
+		} else {
 			isHomingPart1 = false;
 			isHomingPart2 = true;
 			basin.set(0);
@@ -49,14 +48,13 @@ public class Basin {
 			basin.set(tac);
 			isHomingPart2 = true;
 		}
-		
+
 	}
-	
-	public boolean checkHome()
-	{
+
+	public boolean checkHome() {
 		if (isHomingPart1) {
 			isHomingPart1 = !getLimitSwitchState();
-				
+
 			if (!isHomingPart1) {
 				System.out.println("You have reached the home.");
 				basin.set(0);
@@ -72,9 +70,10 @@ public class Basin {
 			double enc = basin.getPosition();
 
 			isHomingPart2 = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
-			
+
 			if (!isHomingPart2) {
 				System.out.println("You have reached the virtual zero.");
+				hasBeenHomed = true;
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -85,17 +84,16 @@ public class Basin {
 				basin.setPosition(0);
 			}
 		}
-		
+
 		return isHoming();
 	}
-	
-	public boolean checkMove()
-	{
-		if (isMoving) {
-				double enc = basin.getPosition();
 
-				isMoving = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
-				
+	public boolean checkMove() {
+		if (isMoving) {
+			double enc = basin.getPosition();
+
+			isMoving = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
+
 			if (!isMoving) {
 				System.out.println("You have reached the target (basin moving).");
 				toVbs();
@@ -105,54 +103,56 @@ public class Basin {
 		}
 		return isMoving;
 	}
-	
-	public void moveUp()
-	{
-		toEncPosition(4);
-		System.out.println("Moving Up");
-		basin.enableControl();
-		tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES);
-		basin.set(tac);
-		isMoving = true;
+
+	public void moveUp() {
+		if (hasBeenHomed) {
+			toEncPosition(4);
+			System.out.println("Moving Up");
+			basin.enableControl();
+			tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES);
+			basin.set(tac);
+			isMoving = true;
+		} else {
+			System.out.println("You have not been home, your mother must be worried sick");
+		}
+
 	}
-	
-	public void moveDown()
-	{	
-		toEncPosition(4);
-		System.out.println("Moving Down");
-		basin.enableControl();
-		tac = -convertInchesToRev(0);
-		basin.set(tac);
-		isMoving = true;
+
+	public void moveDown() {
+		if (hasBeenHomed) {
+			toEncPosition(4);
+			System.out.println("Moving Down");
+			basin.enableControl();
+			tac = -convertInchesToRev(0);
+			basin.set(tac);
+			isMoving = true;
+		} else {
+			System.out.println("You have not been home, your mother must be worried sick");
+		}
+
 	}
-	
-	public double getPosition()
-	{
+
+	public double getPosition() {
 		return basin.getPosition();
 	}
-	
-	public double getEncPosition()
-	{
+
+	public double getEncPosition() {
 		return basin.getEncPosition();
 	}
-	
-	public boolean isHoming()
-	{
+
+	public boolean isHoming() {
 		return isHomingPart1 || isHomingPart2;
 	}
-	
-	public boolean isMoving()
-	{
+
+	public boolean isMoving() {
 		return isMoving;
 	}
-	
-	private double convertInchesToRev (double inches)
-	{
+
+	private double convertInchesToRev(double inches) {
 		return inches / SCREW_PITCH_INCHES_PER_REV * GEAR_RATIO;
 	}
-	
-	private double convertRevtoInches (double rev)
-	{
+
+	private double convertRevtoInches(double rev) {
 		return rev * SCREW_PITCH_INCHES_PER_REV / GEAR_RATIO;
 	}
 
@@ -167,9 +167,14 @@ public class Basin {
 		basin.configNominalOutputVoltage(0, 0);
 		basin.configNominalOutputVoltage(0, 0);
 	}
-	
-	public double getTarget(){
+
+	public double getTarget() {
 		return tac;
+	}
+	
+	public boolean hasBeenHomed()
+	{
+		return hasBeenHomed;
 	}
 
 }
