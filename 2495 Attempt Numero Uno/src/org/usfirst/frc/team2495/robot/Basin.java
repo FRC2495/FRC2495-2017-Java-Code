@@ -8,64 +8,69 @@ public class Basin {
 	static final double SCREW_PITCH_INCHES_PER_REV = .75;
 	static final int LENGTH_OF_SCREW_INCHES = 8;
 	boolean isHomingPart1, isHomingPart2, isMoving;
-	final double REV_THRESH = .125;
-	final double OFFSET_INCHES = 1;
-	final double GEAR_RATIO = 187.0 / 2;
+	static final double REV_THRESH = .125;
+	static final double OFFSET_INCHES = 1;
+	static final double GEAR_RATIO = 187.0 / 2;
+	static final double HOMING_VOLTAGE = 0.1;
+	static final double MOVING_VOLTAGE = 4.0;
+	
 	double tac;
 	boolean hasBeenHomed = false;
 
 	public Basin(CANTalon basin_in) {
 		basin = basin_in;
-		basin.enableBrakeMode(true);
+		basin.enableBrakeMode(true); // enables break mode
 		basin.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-		basin.enableLimitSwitch(false, true);
+		basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
 		basin.setInverted(false);
-		basin.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		basin.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative); // specifies encoder used
 		isHomingPart1 = false;
 		isHomingPart2 = false;
 		isMoving = false;
 	}
 
+	// returns the state of the limit switch
 	public boolean getLimitSwitchState() {
 		return basin.isRevLimitSwitchClosed();
 	}
 
+	private void homePart2() {
+		basin.set(0); // we stop
+		toEncPosition(MOVING_VOLTAGE); // we switch to position mode
+		basin.setPosition(0); // we set the current position to zero [we might need to move this up one line]		
+		basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
+		basin.enableControl(); // we enable control
+		tac = -convertInchesToRev(OFFSET_INCHES);
+		basin.set(tac); // we move to virtual zero
+		isHomingPart2 = true;
+	}
+	
+	// homes the basin
 	public void home() {
-		hasBeenHomed = false;
-		toVbs();
-		if (!getLimitSwitchState()) {
-			basin.set(.1);
-			isHomingPart1 = true;
-			isHomingPart2 = true;
+		hasBeenHomed = false; // flags that it has not been homed
+		toVbs(); // switches to vbs
+		
+		if (!getLimitSwitchState()) { // if we are not already at the switch
+			basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
+			basin.set(HOMING_VOLTAGE); // we start moving down
+			isHomingPart1 = true; // we need to go down to find limit switch
+			isHomingPart2 = true; // then we need to go to virtual zero
 		} else {
-			isHomingPart1 = false;
-			isHomingPart2 = true;
-			basin.set(0);
-			toEncPosition(4);
-			basin.setPosition(0);
-			basin.enableLimitSwitch(false, false);
-			basin.enableControl();
-			tac = -convertInchesToRev(OFFSET_INCHES);
-			basin.set(tac);
-			isHomingPart2 = true;
+			isHomingPart1 = false; // we don't need to go down
+			isHomingPart2 = true; // but we still need to go to virtual zero
+			
+			homePart2(); // we start part 2 directly
 		}
-
 	}
 
 	public boolean checkHome() {
 		if (isHomingPart1) {
-			isHomingPart1 = !getLimitSwitchState();
+			isHomingPart1 = !getLimitSwitchState(); // we are not done until we reach the switch
 
 			if (!isHomingPart1) {
 				System.out.println("You have reached the home.");
-				basin.set(0);
-				toEncPosition(4);
-				basin.setPosition(0);
-				basin.enableLimitSwitch(false, false);
-				basin.enableControl();
-				tac = -convertInchesToRev(OFFSET_INCHES);
-				basin.set(tac);
-				isHomingPart2 = true;
+				
+				homePart2(); // we move on to part 2
 			}
 		} else if (isHomingPart2) {
 			double enc = basin.getPosition();
@@ -76,13 +81,13 @@ public class Basin {
 				System.out.println("You have reached the virtual zero.");
 				hasBeenHomed = true;
 				try {
-					Thread.sleep(100);
+					Thread.sleep(100); // we wait a little for the screw to fully stop
 				} catch (InterruptedException e) {
 					System.out.println("HOW?!?!?!??!");
 					e.printStackTrace();
 				}
-				toVbs();
-				basin.setPosition(0);
+				toVbs(); // we switch back to vbus
+				basin.setPosition(0); // we mark the virtual zero
 			}
 		}
 
@@ -100,14 +105,13 @@ public class Basin {
 				toVbs();
 				basin.set(0);
 			}
-
 		}
 		return isMoving;
 	}
 
 	public void moveUp() {
 		if (hasBeenHomed) {
-			toEncPosition(4);
+			toEncPosition(MOVING_VOLTAGE);
 			System.out.println("Moving Up");
 			basin.enableControl();
 			tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES);
@@ -116,12 +120,11 @@ public class Basin {
 		} else {
 			System.out.println("You have not been home, your mother must be worried sick");
 		}
-
 	}
 
 	public void moveDown() {
 		if (hasBeenHomed) {
-			toEncPosition(4);
+			toEncPosition(MOVING_VOLTAGE);
 			System.out.println("Moving Down");
 			basin.enableControl();
 			tac = -convertInchesToRev(0);
@@ -130,7 +133,6 @@ public class Basin {
 		} else {
 			System.out.println("You have not been home, your mother must be worried sick");
 		}
-
 	}
 
 	public double getPosition() {
@@ -161,7 +163,7 @@ public class Basin {
 		basin.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 	}
 
-	private void toEncPosition(int forward) {
+	private void toEncPosition(double forward) {
 		basin.setPID(0.4, 0, 0);
 		basin.changeControlMode(CANTalon.TalonControlMode.Position);
 		basin.configPeakOutputVoltage(forward, -forward);
