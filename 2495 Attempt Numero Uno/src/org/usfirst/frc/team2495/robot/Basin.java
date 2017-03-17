@@ -6,9 +6,11 @@ import com.ctre.CANTalon.FeedbackDevice;
 public class Basin {
 	CANTalon basin;
 	static final double SCREW_PITCH_INCHES_PER_REV = .75; 
-	static final int LENGTH_OF_SCREW_INCHES = 13;
-	boolean isHoming, isMoving;
+	static final int LENGTH_OF_SCREW_INCHES = 8;
+	boolean isHomingPart1, isHomingPart2, isMoving;
 	final double REV_THRESH = .125;
+	final double OFFSET_INCHES = 1;
+	final double GEAR_RATIO = 187;
 	double tac;
 
 	public Basin(CANTalon basin_in) {
@@ -18,7 +20,8 @@ public class Basin {
 		basin.enableLimitSwitch(false, true);
 		basin.setInverted(false);
 		basin.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
-		isHoming = false;
+		isHomingPart1 = false;
+		isHomingPart2 = false;
 		isMoving = false;
 	}
 
@@ -30,35 +33,59 @@ public class Basin {
 		toVbs();
 		if (!getLimitSwitchState()) {
 			basin.set(.1);
-			isHoming = true;
+			isHomingPart1 = true;
+			isHomingPart2 = true;
 		}
 		else
 		{
-			isHoming = false;
+			isHomingPart1 = false;
+			isHomingPart2 = true;
+			basin.set(0);
+			toEncPosition(4);
+			basin.setPosition(0);
+			basin.enableLimitSwitch(false, false);
+			basin.enableControl();
+			tac = -convertInchesToRev(OFFSET_INCHES);
+			basin.set(tac);
+			isHomingPart2 = true;
 		}
 		
 	}
 	
 	public boolean checkHome()
 	{
-		if (isHoming) {
-				isHoming = !getLimitSwitchState();
+		if (isHomingPart1) {
+			isHomingPart1 = !getLimitSwitchState();
 				
-			if (!isHoming) {
-				System.out.println("You have reached the target (home).");
+			if (!isHomingPart1) {
+				System.out.println("You have reached the home.");
 				basin.set(0);
 				toEncPosition(4);
+				basin.setPosition(0);
+				basin.enableLimitSwitch(false, false);
+				basin.enableControl();
+				tac = -convertInchesToRev(OFFSET_INCHES);
+				basin.set(tac);
+				isHomingPart2 = true;
+			}
+		} else if (isHomingPart2) {
+			int enc = basin.getEncPosition();
+
+			isHomingPart2 = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
+			
+			if (!isHomingPart2) {
+				System.out.println("You have reached the virtual zero.");
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					System.out.println("HOW?!?!?!??!");
 					e.printStackTrace();
 				}
-				basin.setEncPosition(0);
+				basin.setPosition(0);
 			}
-
 		}
-		return isHoming;
+		
+		return isHoming();
 	}
 	
 	public boolean checkMove()
@@ -82,9 +109,8 @@ public class Basin {
 	{
 		toEncPosition(4);
 		System.out.println("Moving Up");
-		basin.setSafetyEnabled(false);
 		basin.enableControl();
-		tac = -convertInchesToRev(100);
+		tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES);
 		basin.set(tac);
 		isMoving = true;
 	}
@@ -94,9 +120,14 @@ public class Basin {
 		toEncPosition(4);
 		System.out.println("Moving Down");
 		basin.enableControl();
-		tac = 0;
+		tac = -convertInchesToRev(0);
 		basin.set(tac);
 		isMoving = true;
+	}
+	
+	public double getPosition()
+	{
+		return basin.getPosition();
 	}
 	
 	public double getEncPosition()
@@ -106,7 +137,7 @@ public class Basin {
 	
 	public boolean isHoming()
 	{
-		return isHoming;
+		return isHomingPart1 || isHomingPart2;
 	}
 	
 	public boolean isMoving()
@@ -116,7 +147,12 @@ public class Basin {
 	
 	private double convertInchesToRev (double inches)
 	{
-		return inches / SCREW_PITCH_INCHES_PER_REV;
+		return inches / SCREW_PITCH_INCHES_PER_REV * GEAR_RATIO;
+	}
+	
+	private double convertRevtoInches (double rev)
+	{
+		return rev * SCREW_PITCH_INCHES_PER_REV / GEAR_RATIO;
 	}
 
 	private void toVbs() {
@@ -129,6 +165,10 @@ public class Basin {
 		basin.configPeakOutputVoltage(forward, -forward);
 		basin.configNominalOutputVoltage(0, 0);
 		basin.configNominalOutputVoltage(0, 0);
+	}
+	
+	public double getTarget(){
+		return tac;
 	}
 
 }

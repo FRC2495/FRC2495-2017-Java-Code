@@ -61,7 +61,8 @@ public class Robot extends IterativeRobot {
 	
 	Compressor compressor; // the compressor's lifecycle needs to be the same as the robot
 	
-	boolean gearFlag, basinFlag;
+	boolean gearFlag;
+	boolean basinFlagUp = true;
 	
 	Basin basinControl;
 
@@ -270,17 +271,17 @@ public class Robot extends IterativeRobot {
 		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD,ControllerBase.GamepadButtons.START))
 		{
 			System.out.println("Button Pushed");
-			if(basinFlag)
+			if(basinFlagUp)
 			{
 				basinControl.moveUp();
 				System.out.println("Should be Moving");
-				basinFlag = false;
+				basinFlagUp = false;
 			}
 			else
 			{
 				basinControl.moveDown();
 				System.out.println("Should be Moving");
-				basinFlag = true;
+				basinFlagUp = true;
 			}
 		}
 
@@ -380,8 +381,10 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Angle to Target", camera.getAngleToTurnToCenterOfTargets());
         SmartDashboard.putNumber("Distance to Target Using Horizontal FOV", camera.getDistanceToCenterOfTargetsUsingHorizontalFov());
         SmartDashboard.putBoolean("Basin Limit Switch", basinControl.getLimitSwitchState());
+        SmartDashboard.putNumber("Basin Position", basinControl.getPosition());
         SmartDashboard.putNumber("Basin Enc Position", basinControl.getEncPosition());
         SmartDashboard.putBoolean("IsHoming?", basinControl.isHoming());
         SmartDashboard.putBoolean("Basin IsMoving?", basinControl.isMoving());
+        SmartDashboard.putNumber("Basin Target", basinControl.getTarget());
 	}
 }
