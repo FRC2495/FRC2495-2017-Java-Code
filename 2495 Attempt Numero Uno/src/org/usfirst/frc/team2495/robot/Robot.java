@@ -134,8 +134,7 @@ public class Robot extends IterativeRobot {
 		System.out.println("Auto selected: " + autoSelected);
 		time.reset();
 		take.setPosition(Take.Position.IN_UP);
-		RF.setEncPosition(0);
-		LF.setEncPosition(0);
+		drivetrain.resetEncoders();
 	}
 
 	/**

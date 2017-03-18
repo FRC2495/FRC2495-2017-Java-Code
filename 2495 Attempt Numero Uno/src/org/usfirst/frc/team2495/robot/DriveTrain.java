@@ -304,5 +304,10 @@ public class DriveTrain implements PIDOutput {
 		RF.set(+output);
 		LF.set(+output);		
 	}
-
+	
+	public void resetEncoders() {
+		toVbs();
+		RF.setEncPosition(0);
+		LF.setEncPosition(0);
+	}
 }
