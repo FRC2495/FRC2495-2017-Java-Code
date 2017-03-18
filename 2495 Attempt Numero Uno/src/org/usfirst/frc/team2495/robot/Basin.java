@@ -46,8 +46,8 @@ public class Basin {
 	
 	private void homePart2() {
 		basin.set(0); // we stop
+		basin.setPosition(0); // we set the current position to zero	
 		toEncPosition(MOVING_VOLTAGE_VOLTS); // we switch to position mode
-		basin.setPosition(0); // we set the current position to zero [we might need to move this up one line]		
 		basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
 		basin.enableControl(); // we enable control
 		tac = -convertInchesToRev(OFFSET_INCHES);
@@ -95,6 +95,7 @@ public class Basin {
 				}
 				toVbs(); // we switch back to vbus
 				basin.setPosition(0); // we mark the virtual zero
+				basin.enableLimitSwitch(false, true); // just in case
 				hasBeenHomed = true;
 			}
 		}
