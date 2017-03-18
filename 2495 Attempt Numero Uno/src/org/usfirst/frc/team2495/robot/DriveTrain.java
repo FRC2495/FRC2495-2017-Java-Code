@@ -134,14 +134,12 @@ public class DriveTrain implements PIDOutput {
 
 	public boolean checkMoveDistance() {
 		if (isMoving) {
-			int Renc = (RF.getEncPosition()); // FIXME getPosition() is probably what we need here
-			int Lenc = (LF.getEncPosition()); // FIXME getPosition() is probably what we need here
+			double Renc = RF.getPosition(); 
+			double Lenc = LF.getPosition(); 
 			// System.out.println("Renc,Lenc" + Renc + " " + Lenc);
 			isMoving = !(Renc > Rtac - REV_THRESH && Renc < Rtac + REV_THRESH && Lenc > Ltac - REV_THRESH
 					&& Lenc < Ltac + REV_THRESH);
 
-			// isMoving = Renc < Rtac && Lenc < Ltac; // [GA] would that work if
-			// you are going backwards?
 			if (!isMoving) {
 				System.out.println("You have reached the target (moving).");
 				stop();

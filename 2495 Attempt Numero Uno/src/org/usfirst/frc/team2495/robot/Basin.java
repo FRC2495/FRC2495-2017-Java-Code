@@ -61,7 +61,7 @@ public class Basin {
 		toVbs(); // switches to vbs
 		
 		if (!getLimitSwitchState()) { // if we are not already at the switch
-			//isHomingPart1 = true; // we need to go down to find limit switch					
+			//isHomingPart1 = tru	e; // we need to go down to find limit switch					
 			homePart1();
 			isHomingPart2 = true; // then we need to go to virtual zero later
 		} else {
