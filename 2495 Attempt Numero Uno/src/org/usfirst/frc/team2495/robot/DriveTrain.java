@@ -31,12 +31,13 @@ public class DriveTrain implements PIDOutput {
 	
 	PIDController turnPidController;
 
-	public DriveTrain(CANTalon rr, CANTalon rf, CANTalon lr, CANTalon lf, ADXRS450_Gyro Gyro, Robot robot_in) {
+	public DriveTrain(CANTalon rr, CANTalon rf, CANTalon lr, CANTalon lf, ADXRS450_Gyro gyro_in, Robot robot_in) {
 		RR = rr; // sets the talons from the constructer to the talons used here
 		RF = rf;
 		LR = lr;
 		LF = lf;
 		robot = robot_in;
+		gyro = gyro_in;
 
 		// LF.setInverted(true); // inverts left side
 		// LR.setInverted(true);
@@ -65,7 +66,7 @@ public class DriveTrain implements PIDOutput {
 		// LF.setEncPosition(0);
 		
     	//creates a PID controller
-		turnPidController = new PIDController(0.17, 0.0002, 0.0, Gyro, this);
+		turnPidController = new PIDController(0.17, 0.0002, 0.0, gyro, this);
     	turnPidController.setContinuous(true); // because -180 degrees is the same as 180 degrees
     	turnPidController.setAbsoluteTolerance(1); // 1 degree error tolerated
     	turnPidController.setInputRange(-180, 180); // valid input range 

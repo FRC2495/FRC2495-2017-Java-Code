@@ -395,5 +395,6 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putBoolean("Basin IsMoving?", basinControl.isMoving());
         SmartDashboard.putNumber("Basin Target", basinControl.getTarget());
         SmartDashboard.putBoolean("Basin Has Been Homed?", basinControl.hasBeenHomed());
+        SmartDashboard.putString("Auton selected", autoSelected!=null?autoSelected:"none");
 	}
 }
