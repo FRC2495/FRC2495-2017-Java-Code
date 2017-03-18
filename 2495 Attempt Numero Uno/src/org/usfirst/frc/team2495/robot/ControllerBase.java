@@ -140,6 +140,11 @@ public class ControllerBase {
 		return btn[contNum.ordinal()][buttonNum] && !btnPrev[contNum.ordinal()][buttonNum]; 
 	}	
 	
+	public boolean getHeld(Joysticks contNum, int buttonNum)
+	{
+		return btn[contNum.ordinal()][buttonNum];
+	}
+	
 	/**
 	 * <pre>
 	 * public boolean getReleased(Joysticks contNum, 

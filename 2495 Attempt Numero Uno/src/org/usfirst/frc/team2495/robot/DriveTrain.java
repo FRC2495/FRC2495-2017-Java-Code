@@ -52,7 +52,7 @@ public class DriveTrain implements PIDOutput {
 		RF.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		LF.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		
-		RF.reverseOutput(false); // no need to reverse output
+		RF.reverseOutput(true); // we need to reverse output
 		LF.reverseOutput(false); // no need to reverse output
 		
 		LF.reverseSensor(true); // lf encoder reversed
@@ -129,11 +129,12 @@ public class DriveTrain implements PIDOutput {
 	{
 		toVbs();
 		RF.setPosition(0);
-		LF.setPosition(0);
-		Rtac = (dist / REV_MULTI) + RF.getEncPosition();
-		Ltac = (dist / REV_MULTI) + LF.getEncPosition();
-		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
+		LF.setPosition(0);	
+		resetEncoders();
 		toEnc(MOVING_VOLTAGE_VOLTS);
+		Rtac = (dist / REV_MULTI);
+		Ltac = (dist / REV_MULTI);
+		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
 		RF.enableControl();
 		LF.enableControl();
 		RF.set(Rtac);
@@ -196,9 +197,11 @@ public class DriveTrain implements PIDOutput {
 		rdist = -dist;
 		toVbs();
 		RF.setPosition(0);
-		LF.setPosition(0);
-		Rtac = (rdist / REV_MULTI) + RF.getEncPosition();
-		Ltac = (ldist / REV_MULTI) + LF.getEncPosition();
+		LF.setPosition(0);	
+		resetEncoders();
+
+		Rtac = (rdist / REV_MULTI);
+		Ltac = (ldist / REV_MULTI);
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
 		toEnc(MOVING_VOLTAGE_VOLTS);
 		RF.enableControl();
@@ -283,13 +286,21 @@ public class DriveTrain implements PIDOutput {
 	}
 
 	public int getREncVal() {
-		return (int) (RF.getPosition() * 1);
+		return (int) (RF.getEncPosition());
 	}
 
 	public int getLEncVal() {
-		return (int) (LF.getPosition() * 1);
+		return (int) (LF.getEncPosition());
 	}
 
+	public int getRVal() {
+		return (int) (RF.getPosition());
+	}
+
+	public int getLVal() {
+		return (int) (LF.getPosition());
+	}
+	
 	public boolean isMoving() {
 		return isMoving;
 	}

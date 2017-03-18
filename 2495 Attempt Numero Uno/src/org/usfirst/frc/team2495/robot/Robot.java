@@ -295,7 +295,7 @@ public class Robot extends IterativeRobot {
 		// Climber bound to y but can only be actived 2 minutes into the match
 		
 			double set = .5;
-			if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.Y)) {
+			if (control.getHeld(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.Y)) { 
 				take.setClimb(set);
 				set += .005;
 			}
@@ -379,6 +379,8 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
         // send the gear status to dashboard
         SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
+        SmartDashboard.putNumber("Right Value", drivetrain.getRVal());
+        SmartDashboard.putNumber("Left Value", drivetrain.getLVal());
         SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
         SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
         SmartDashboard.putBoolean("isMoving?", drivetrain.isMoving());
