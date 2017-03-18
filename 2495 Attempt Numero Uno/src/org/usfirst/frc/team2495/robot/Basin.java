@@ -7,7 +7,7 @@ public class Basin {
 	CANTalon basin;
 	
 	static final double SCREW_PITCH_INCHES_PER_REV = .75;
-	static final int LENGTH_OF_SCREW_INCHES = 8;
+	static final int LENGTH_OF_SCREW_INCHES = 11;
 	
 	boolean isHomingPart1, isHomingPart2, isMoving;
 	

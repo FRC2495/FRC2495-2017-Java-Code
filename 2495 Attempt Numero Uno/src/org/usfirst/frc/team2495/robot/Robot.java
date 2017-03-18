@@ -31,6 +31,7 @@ public class Robot extends IterativeRobot {
 	final String GearGrabRight = "Gear Grabber Right"; // Right Gear Placement
 	final String DankDump = "Dank Dumper"; //Dump Case 
 	final String AutonDone = "Auton Done";
+	final String Nothing = "Nothing";
 
 	String autoSelected;
 	SendableChooser chooser;
@@ -77,6 +78,7 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Gear Grabber", GearGrab); // put the gear on the peg
 		chooser.addObject("Gear Grabber Left Side (WIP DO NOT PICK)", GearGrabRight);
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
+		chooser.addObject("Nothing", Nothing);
 
 		RR = new CANTalon(Ports.CAN.RIGHT_REAR); // The CANTalons
 		RF = new CANTalon(Ports.CAN.RIGHT_FRONT);
@@ -87,7 +89,7 @@ public class Robot extends IterativeRobot {
 		basin = new CANTalon(Ports.CAN.BASIN);
 
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); // we want to instantiate before we pass to drivetrain		
-		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro);
+		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro, this);
 		camera = new HMCamera("myContoursReport");
  
 		compressor = new Compressor();
@@ -151,6 +153,7 @@ public class Robot extends IterativeRobot {
 		switch (autoSelected) {
 		case DankDump:
 				// Put custom auto code here
+			autoSelected = Nothing;
 			break;
 		case GearGrab:
 			drivetrain.moveDistance(75);
@@ -160,6 +163,7 @@ public class Robot extends IterativeRobot {
 			drivetrain.moveDistance(-20);
 			drivetrain.waitMoveDistance();
 			take.setGearPosition(Take.gearPosition.Out);
+			autoSelected = Nothing;
 			break;
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(120);
@@ -183,12 +187,16 @@ public class Robot extends IterativeRobot {
 			drivetrain.moveDistance(120);
 			drivetrain.waitMoveDistance();
 			// outtake
+			autoSelected = Nothing;
 			break;
 		case BaseBreak:
-			RF.setPosition(0);
-			LF.setPosition(0);
 			drivetrain.moveDistance(95);
 			drivetrain.waitMoveDistance();
+			autoSelected = Nothing;
+			break;
+		case Nothing:
+			//
+			autoSelected = Nothing;
 			break;
 		}
 		
@@ -286,7 +294,7 @@ public class Robot extends IterativeRobot {
 		}
 
 		// Climber bound to y but can only be actived 2 minutes into the match
-		if (Timer.getMatchTime() >= 120) {
+		
 			double set = .5;
 			if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.Y)) {
 				take.setClimb(set);
@@ -295,7 +303,7 @@ public class Robot extends IterativeRobot {
 			else 
 			{
 				take.setClimb(0);
-			}
+			
 		}
 		// Camera *Sigh*
 		

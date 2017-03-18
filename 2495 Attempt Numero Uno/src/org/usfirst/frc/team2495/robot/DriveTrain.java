@@ -27,14 +27,16 @@ public class DriveTrain implements PIDOutput {
 	static final double REV_THRESH = .125;
 	static final int RADIUS_DRIVEVETRAIN_INCHES = 13;
 	static final double MOVING_VOLTAGE_VOLTS = 4.0;
+	Robot robot;
 	
 	PIDController turnPidController;
 
-	public DriveTrain(CANTalon rr, CANTalon rf, CANTalon lr, CANTalon lf, ADXRS450_Gyro Gyro) {
+	public DriveTrain(CANTalon rr, CANTalon rf, CANTalon lr, CANTalon lf, ADXRS450_Gyro Gyro, Robot robot_in) {
 		RR = rr; // sets the talons from the constructer to the talons used here
 		RF = rf;
 		LR = lr;
 		LF = lf;
+		robot = robot_in;
 
 		// LF.setInverted(true); // inverts left side
 		// LR.setInverted(true);
@@ -48,8 +50,12 @@ public class DriveTrain implements PIDOutput {
 		// using position mode as side effect of using CtreMagEncoder
 		RF.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		LF.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
-		RF.reverseOutput(true);
-		LF.reverseSensor(true);
+		
+		RF.reverseOutput(false); // no need to reverse output
+		LF.reverseOutput(false); // no need to reverse output
+		
+		LF.reverseSensor(true); // lf encoder reversed
+		LF.setInverted(true); // lf motor reversed
 
 		LR.changeControlMode(TalonControlMode.Follower);
 		RR.changeControlMode(TalonControlMode.Follower);
@@ -111,6 +117,8 @@ public class DriveTrain implements PIDOutput {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
+			robot.updateToSmartDash();
 		}		
 		stop();
 	}
@@ -118,6 +126,7 @@ public class DriveTrain implements PIDOutput {
 	// this method needs to be paired with checkMoveDistance()
 	public void moveDistance(double dist) // moves the distance in inch given
 	{
+		toVbs();
 		RF.setPosition(0);
 		LF.setPosition(0);
 		Rtac = (dist / REV_MULTI) + RF.getEncPosition();
@@ -166,6 +175,8 @@ public class DriveTrain implements PIDOutput {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
+			robot.updateToSmartDash();
 		}
 	}
 
@@ -182,7 +193,7 @@ public class DriveTrain implements PIDOutput {
 
 		ldist = dist;
 		rdist = -dist;
-
+		toVbs();
 		RF.setPosition(0);
 		LF.setPosition(0);
 		Rtac = (rdist / REV_MULTI) + RF.getEncPosition();
@@ -264,7 +275,7 @@ public class DriveTrain implements PIDOutput {
 		{
 			toVbs();
 			RF.set(r.getY());
-			LF.set(-l.getY());
+			LF.set(l.getY());
 			// RR.set(r.getY());
 			// LR.set(l.getY());
 		}
@@ -289,8 +300,8 @@ public class DriveTrain implements PIDOutput {
 	@Override
 	public void pidWrite(double output) {
 		toVbs();
-		RF.set(-output); //NOTE: sign might need to be reverted
-		LF.set(output); //NOTE: sign might need to be reverted		
+		RF.set(+output);
+		LF.set(+output);		
 	}
 
 }

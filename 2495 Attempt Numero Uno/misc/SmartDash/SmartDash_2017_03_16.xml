@@ -94,12 +94,6 @@
 		<height>17</height>
 		<property name="Text" value="Operator Controller List:"/>
 	</static-widget>
-	<widget field="Left Enc Value on Antonomous" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="560" y="231"/>
-	</widget>
-	<widget field="Right Enc Value on Autonomous" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="560" y="210"/>
-	</widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.MjpgStreamViewerImpl">
 		<location x="1" y="-57"/>
 		<width>527</width>
@@ -134,4 +128,6 @@
 </dashboard>
 <live-window>
 </live-window>
+	<hidden field="Right Enc Value on Autonomous"/>
+	<hidden field="Left Enc Value on Antonomous"/>
 </xml>
