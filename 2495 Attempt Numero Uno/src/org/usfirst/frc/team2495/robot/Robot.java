@@ -66,6 +66,7 @@ public class Robot extends IterativeRobot {
 	boolean basinFlagUp = true;
 	
 	Basin basinControl;
+	double set;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -108,6 +109,7 @@ public class Robot extends IterativeRobot {
 		gyro.calibrate(); 
 		gyro.reset();
 		basinControl.home();
+		set = .5;
 	}
 
 	/**
@@ -233,8 +235,11 @@ public class Robot extends IterativeRobot {
 		basinControl.checkHome();
 		basinControl.checkMove();
 		
-		// Tankdrive		
-		drivetrain.joystickControl(left, right); //TODO calibrate joysticks
+		// Tankdrive	
+		
+		drivetrain.joystickControl(left, right, (control.getHeld(ControllerBase.Joysticks.LEFT_STICK,ControllerBase.JoystickButtons.BTN1) 
+				                || control.getHeld(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN1))); //TODO calibrate joysticks
+		
 		
 		// set in/outtake to position outdown = a, outup = b inup = x
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
@@ -294,7 +299,7 @@ public class Robot extends IterativeRobot {
 
 		// Climber bound to y but can only be actived 2 minutes into the match
 		
-			double set = .5;
+			
 			if (control.getHeld(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.Y)) { 
 				take.setClimb(set);
 				set += .005;

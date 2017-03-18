@@ -272,9 +272,17 @@ public class DriveTrain implements PIDOutput {
 
 	// [GA] no issue when the joysticks are resting? [SP] yeah its fine when its
 	// resting
-	public void joystickControl(Joystick r, Joystick l) // sets talons to
+	public void joystickControl(Joystick r, Joystick l, boolean held) // sets talons to
 														// joystick control
 	{
+		if(held)
+		{
+			toVbs();
+			RF.set(r.getY() * .75);
+			LF.set(l.getY() * .75);
+		}
+		else
+		{
 		if (!isMoving && !isTurning) // if we are already doing a move or turn we don't take over
 		{
 			toVbs();
@@ -282,6 +290,7 @@ public class DriveTrain implements PIDOutput {
 			LF.set(l.getY());
 			// RR.set(r.getY());
 			// LR.set(l.getY());
+		}
 		}
 	}
 
