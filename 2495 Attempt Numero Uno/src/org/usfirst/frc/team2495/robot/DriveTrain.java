@@ -130,7 +130,7 @@ public class DriveTrain implements PIDOutput {
 		toVbs();
 		RF.setPosition(0);
 		LF.setPosition(0);	
-		resetEncoders();
+		//resetEncoders();
 		toEnc(MOVING_VOLTAGE_VOLTS);
 		Rtac = (dist / REV_MULTI);
 		Ltac = (dist / REV_MULTI);
@@ -198,7 +198,7 @@ public class DriveTrain implements PIDOutput {
 		toVbs();
 		RF.setPosition(0);
 		LF.setPosition(0);	
-		resetEncoders();
+		//resetEncoders();
 
 		Rtac = (rdist / REV_MULTI);
 		Ltac = (ldist / REV_MULTI);
