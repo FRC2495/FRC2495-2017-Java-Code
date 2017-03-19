@@ -29,6 +29,7 @@ public class Robot extends IterativeRobot {
 	final String BaseBreak = "Baseline Breaker"; // Auton selection cases Dead Reckoning requires a start that is not gonna run into the steamship
 	final String GearGrab = "Gear Grabber"; // Center gear placement
 	final String GearGrabRight = "Gear Grabber Right"; // Right Gear Placement
+	final String GearGrabLeft = "Gear Grabber Left";
 	final String DankDump = "Dank Dumper"; //Dump Case 
 	final String AutonDone = "Auton Done";
 	final String Nothing = "Nothing";
@@ -77,7 +78,8 @@ public class Robot extends IterativeRobot {
 		chooser = new SendableChooser();
 		chooser.addDefault("Baseline Breaker", BaseBreak); // move forward
 		chooser.addObject("Gear Grabber", GearGrab); // put the gear on the peg
-		chooser.addObject("Gear Grabber Left Side (WIP DO NOT PICK)", GearGrabRight);
+		chooser.addObject("Gear Grabber Right Side", GearGrabRight);
+		chooser.addObject("Gear Grabber Left Side", GearGrabLeft);
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
 		chooser.addObject("Nothing", Nothing);
 
@@ -110,6 +112,7 @@ public class Robot extends IterativeRobot {
 		gyro.reset();
 		basinControl.home();
 		set = .5;
+		take.setGearPosition(Take.gearPosition.In);
 	}
 
 	/**
@@ -170,6 +173,15 @@ public class Robot extends IterativeRobot {
 			drivetrain.moveDistance(80);
 			drivetrain.waitMoveDistance();
 			drivetrain.moveDistanceAlongArc(155);
+			drivetrain.waitMoveDistance();
+			drivetrain.moveDistance(-24);
+			drivetrain.waitMoveDistance();
+			autoSelected = Nothing;
+			break;
+		case GearGrabLeft:// TODO get measurements and fix this so its like GearGrab
+			drivetrain.moveDistance(80);
+			drivetrain.waitMoveDistance();
+			drivetrain.moveDistanceAlongArc(-155);
 			drivetrain.waitMoveDistance();
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
@@ -310,9 +322,9 @@ public class Robot extends IterativeRobot {
 		updateToSmartDash();
 		
 		// only enable these if debugging 
-		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN9))
+		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN2))
 		{
-			drivetrain.moveDistanceAlongArc(90);
+			drivetrain.angleSpotTurnUsingPidController(90);
 		}
 		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN8))
 		{
@@ -355,7 +367,7 @@ public class Robot extends IterativeRobot {
 	public void disabledPeriodic() {	
 		control.update();
 		
-		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.R3)) {
+		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
 			gyro.calibrate();
 			gyro.reset();
 		}

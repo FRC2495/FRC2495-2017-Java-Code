@@ -38,6 +38,7 @@ public class DriveTrain implements PIDOutput {
 		LF = lf;
 		robot = robot_in;
 		gyro = gyro_in;
+		
 
 		// LF.setInverted(true); // inverts left side
 		// LR.setInverted(true);
@@ -78,6 +79,7 @@ public class DriveTrain implements PIDOutput {
 		toVbs(); // switches to percentage vbus
 		stop(); // resets state
 		
+		gyro.reset(); // resets to zero for now
 		double current = gyro.getAngle();
 		double heading = angle + current; // calculates new heading
 		
@@ -319,8 +321,8 @@ public class DriveTrain implements PIDOutput {
 	@Override
 	public void pidWrite(double output) {
 		toVbs();
-		RF.set(-output);
-		LF.set(+output);		
+		RF.set(+output);
+		LF.set(-output);		
 	}
 	
 	public void resetEncoders() {
