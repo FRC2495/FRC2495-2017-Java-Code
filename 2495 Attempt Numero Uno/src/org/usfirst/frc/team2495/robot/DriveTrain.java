@@ -275,22 +275,20 @@ public class DriveTrain implements PIDOutput {
 	public void joystickControl(Joystick r, Joystick l, boolean held) // sets talons to
 														// joystick control
 	{
-		if(held)
-		{
-			toVbs();
-			RF.set(r.getY() * .75);
-			LF.set(l.getY() * .75);
-		}
-		else
-		{
 		if (!isMoving && !isTurning) // if we are already doing a move or turn we don't take over
 		{
-			toVbs();
-			RF.set(r.getY());
-			LF.set(l.getY());
-			// RR.set(r.getY());
-			// LR.set(l.getY());
-		}
+//			if(!held)
+//			{
+//				toVbs();
+//				RF.set(r.getY() * (5/8));
+//				LF.set(l.getY() * (5/8));
+//			}
+//			else
+//			{
+				toVbs();
+				RF.set(r.getY());
+				LF.set(l.getY());
+			//}
 		}
 	}
 
@@ -321,7 +319,7 @@ public class DriveTrain implements PIDOutput {
 	@Override
 	public void pidWrite(double output) {
 		toVbs();
-		RF.set(+output);
+		RF.set(-output);
 		LF.set(+output);		
 	}
 	

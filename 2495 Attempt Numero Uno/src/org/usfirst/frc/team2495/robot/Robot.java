@@ -167,27 +167,12 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
-			drivetrain.moveDistance(120);
+			drivetrain.moveDistance(80);
 			drivetrain.waitMoveDistance();
-			drivetrain.angleSpotTurn(70);
-			// if (camera.checkForGear()) {
-			// if (camera.getHeight()[0] == 200) {
-			// drivetrain.moveForward();
-			// } else {
-			// drivetrain.stop();
-			// }
-			// }
-			drivetrain.moveDistance(20);
+			drivetrain.moveDistanceAlongArc(155);
 			drivetrain.waitMoveDistance();
-			take.setGearPosition(Take.gearPosition.Out);
-			drivetrain.angleSpotTurn(240);
-			drivetrain.moveDistance(20);
+			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
-			// while intaking
-			drivetrain.angleSpotTurn(90);
-			drivetrain.moveDistance(120);
-			drivetrain.waitMoveDistance();
-			// outtake
 			autoSelected = Nothing;
 			break;
 		case BaseBreak:
@@ -327,7 +312,7 @@ public class Robot extends IterativeRobot {
 		// only enable these if debugging 
 		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN9))
 		{
-			drivetrain.angleSpotTurn(90);
+			drivetrain.moveDistanceAlongArc(90);
 		}
 		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN8))
 		{
