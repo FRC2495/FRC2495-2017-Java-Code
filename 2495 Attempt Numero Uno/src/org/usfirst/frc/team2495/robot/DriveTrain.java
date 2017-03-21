@@ -239,7 +239,7 @@ public class DriveTrain implements PIDOutput {
 		double current = gyro.getAngle();
 		double heading = angle + current;
 		while ((heading > gyro.getAngle() + 2 || heading < gyro.getAngle() - 2)
-				&& DriverStation.getInstance().isAutonomous()) {
+				&& DriverStation.getInstance().isAutonomous()) { // NOTE: in teleop this condition is false, so the routine will exit right away
 			if (heading > gyro.getAngle() + 2) {
 				LF.set(.5);
 				RF.set(-.5);
