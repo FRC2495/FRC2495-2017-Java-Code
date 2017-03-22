@@ -324,7 +324,7 @@ public class Robot extends IterativeRobot {
 		// only enable these if debugging 
 		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN2))
 		{
-			drivetrain.angleSpotTurnUsingPidController(90);
+			drivetrain.angleSpotTurnUsingPidController((int) camera.getAngleToTurnToCenterOfTargets());
 		}
 		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN8))
 		{
@@ -332,7 +332,7 @@ public class Robot extends IterativeRobot {
 		}
 		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN7))
 		{
-			drivetrain.moveDistance(12);
+			drivetrain.moveDistance(camera.getDistanceToCenterOfTargets() - 12);
 		}
 		else
 		{
