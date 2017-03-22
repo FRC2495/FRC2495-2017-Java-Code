@@ -63,19 +63,19 @@
     <grip:Step name="Filter Contours">
       <grip:Input step="4" socket="0"/>
       <grip:Input step="4" socket="1">
-        <value>150.0</value>
+        <value>25.0</value>
       </grip:Input>
       <grip:Input step="4" socket="2">
-        <value>90.0</value>
+        <value>20.0</value>
       </grip:Input>
       <grip:Input step="4" socket="3">
-        <value>16.0</value>
+        <value>5.0</value>
       </grip:Input>
       <grip:Input step="4" socket="4">
         <value>320.0</value>
       </grip:Input>
       <grip:Input step="4" socket="5">
-        <value>12.0</value>
+        <value>5.0</value>
       </grip:Input>
       <grip:Input step="4" socket="6">
         <value>240.0</value>
@@ -87,10 +87,10 @@
         </value>
       </grip:Input>
       <grip:Input step="4" socket="8">
-        <value>0.0</value>
+        <value>1000000.0</value>
       </grip:Input>
       <grip:Input step="4" socket="9">
-        <value>1.0E12</value>
+        <value>0.0</value>
       </grip:Input>
       <grip:Input step="4" socket="10">
         <value>0.0</value>
@@ -133,24 +133,20 @@
   </steps>
   <connections>
     <grip:Connection>
-      <grip:Output source="0" socket="0" previewed="false"/>
-      <grip:Input step="0" socket="0"/>
-    </grip:Connection>
-    <grip:Connection>
       <grip:Output step="1" socket="0" previewed="false"/>
       <grip:Input step="2" socket="0"/>
-    </grip:Connection>
-    <grip:Connection>
-      <grip:Output step="3" socket="0" previewed="true"/>
-      <grip:Input step="4" socket="0"/>
     </grip:Connection>
     <grip:Connection>
       <grip:Output source="0" socket="0" previewed="false"/>
       <grip:Input step="6" socket="0"/>
     </grip:Connection>
     <grip:Connection>
-      <grip:Output step="4" socket="0" previewed="true"/>
-      <grip:Input step="5" socket="0"/>
+      <grip:Output source="0" socket="0" previewed="false"/>
+      <grip:Input step="0" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="3" socket="0" previewed="true"/>
+      <grip:Input step="4" socket="0"/>
     </grip:Connection>
     <grip:Connection>
       <grip:Output step="0" socket="0" previewed="true"/>
@@ -160,10 +156,14 @@
       <grip:Output step="2" socket="0" previewed="false"/>
       <grip:Input step="3" socket="0"/>
     </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="4" socket="0" previewed="true"/>
+      <grip:Input step="5" socket="0"/>
+    </grip:Connection>
   </connections>
   <settings>
-    <teamNumber>1089</teamNumber>
-    <publishAddress>roborio-1089-frc</publishAddress>
+    <teamNumber>2495</teamNumber>
+    <publishAddress>roborio-2495-frc</publishAddress>
     <deployAddress>roborio-1089-frc</deployAddress>
     <deployDir>/home/lvuser</deployDir>
     <deployUser>admin</deployUser>

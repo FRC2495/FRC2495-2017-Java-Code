@@ -93,7 +93,7 @@ public class Robot extends IterativeRobot {
 
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); // we want to instantiate before we pass to drivetrain		
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro, this);
-		camera = new HMCamera("myContoursReport");
+		camera = new HMCamera("GRIP/myContoursReport");
  
 		compressor = new Compressor();
 		compressor.checkCompressor();
@@ -162,7 +162,7 @@ public class Robot extends IterativeRobot {
 		case GearGrab:
 			drivetrain.moveDistance(75);
 			drivetrain.waitMoveDistance();
-			drivetrain.angleSpotTurn(180);
+			drivetrain.angleSpotTurnUsingPidController(180);
 			drivetrain.waitMoveDistance();
 			drivetrain.moveDistance(-20);
 			drivetrain.waitMoveDistance();
@@ -172,7 +172,7 @@ public class Robot extends IterativeRobot {
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(80);
 			drivetrain.waitMoveDistance();
-			drivetrain.moveDistanceAlongArc(155);
+			drivetrain.angleSpotTurnUsingPidController(135);
 			drivetrain.waitMoveDistance();
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
@@ -181,7 +181,7 @@ public class Robot extends IterativeRobot {
 		case GearGrabLeft:// TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(80);
 			drivetrain.waitMoveDistance();
-			drivetrain.moveDistanceAlongArc(-155);
+			drivetrain.angleSpotTurnUsingPidController(-135);
 			drivetrain.waitMoveDistance();
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
@@ -377,6 +377,7 @@ public class Robot extends IterativeRobot {
 	
 	public void updateToSmartDash()
 	{
+		camera.acquireTargets();
 		// Send Gyro val to Dashboard
         SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
         // send the gear status to dashboard

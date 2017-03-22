@@ -279,18 +279,18 @@ public class DriveTrain implements PIDOutput {
 	{
 		if (!isMoving && !isTurning) // if we are already doing a move or turn we don't take over
 		{
-//			if(!held)
-//			{
-//				toVbs();
-//				RF.set(r.getY() * (5.0/8));
-//				LF.set(l.getY() * (5.0/8));
-//			}
-//			else
-//			{
+			if(!held)
+			{
+				toVbs();
+				RF.set(r.getY() * (5.0/8));
+				LF.set(l.getY() * (5.0/8));
+			}
+			else
+			{
 				toVbs();
 				RF.set(r.getY());
 				LF.set(l.getY());
-			//}
+			}
 		}
 	}
 

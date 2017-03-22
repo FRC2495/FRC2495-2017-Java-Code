@@ -3,10 +3,11 @@ package org.usfirst.frc.team2495.robot;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class HMCamera {
-
+	private static final int BAD_INDEX = -1;
+	
 	NetworkTable nt;
 	double[] area, width, height, centerX, centerY;
-	int largeAIndex, largeBIndex = 0;
+	int largeAIndex, largeBIndex = BAD_INDEX;
 
 	private static final int HORIZONTAL_CAMERA_RES_PIXELS = 320;
 	private static final int VERTICAL_CAMERA_RES_PIXELS = 240;
@@ -30,11 +31,12 @@ public class HMCamera {
 	}
 
 	private void updateFromNT() {
+		//System.out.println("Updating");
 		double[] def = {}; // Return an empty array by default.
 		int retry_count = 0;
 		setLocalTables(null, null, null, null, null);
-		largeAIndex = 0;
-		largeBIndex = 0;
+		largeAIndex = BAD_INDEX;
+		largeBIndex = BAD_INDEX;
 
 		// We cannot get arrays atomically but at least we can make sure they
 		// have the same size
@@ -49,9 +51,11 @@ public class HMCamera {
 	}
 
 	private void processInformation() {
+		//System.out.println("Processing");
 		double[] areaSave = area;
 		if (areaSave.length >= 2) {
 			largeAIndex = 0;
+			largeBIndex = 0;
 			for (int i = 1; i < areaSave.length; i++) {
 				if (areaSave[i] > areaSave[largeAIndex]) {
 					largeAIndex = i;
@@ -64,39 +68,32 @@ public class HMCamera {
 				}
 			}
 		}
-
-		// step 1: verify we have at least two targets Done
-
-		// step 2: get the index of the largest two targets Done
-
-		// step 3: calculate the bounding box of the largest two targets (i.e.
-		// the small rectangle that encompasses the largest two targets)
-
-		// step 4: calculate the distance to the virtual target represented by
-		// the bounding box of the largest two targets
-
-		// step 5: calculate the angle delta between the current robot heading
-		// and the center of the virtual target
 	}
 
 	public boolean isCoherent() {
-		return (area != null && width != null && height != null && centerX != null && centerY != null
+		//System.out.println("Checking Coherency");
+		boolean result = (area != null && width != null && height != null && centerX != null && centerY != null
 				&& area.length == width.length && area.length == height.length && area.length == centerX.length
-				&& area.length == centerY.length);
+				&& area.length == centerY.length /*&& area.length > 1*/);
+		//System.out.println(result);
+		return result;
 	}
 
 	public int getNumberOfTargets() {
 		if (isCoherent()) {
-			return area.length; // all tables have the same size so any length
+			int number = area.length;
+			//System.out.println(number);
+			return number; // all tables have the same size so any length
 								// can be used (might be zero)
 		} else {
+			//System.out.println("cannot get number of targets");
 			return 0; // best answer in that case
 		}
 	}
 
 	public boolean acquireTargets() {
 		updateFromNT(); // gets the latest info
-
+		//System.out.println("Acquiring");
 		if (isCoherent() && getNumberOfTargets() > 0) { // if we have targets
 			processInformation();
 			return true;
@@ -110,7 +107,7 @@ public class HMCamera {
 	}
 
 	public double getDistanceToTargetA() {
-		if (isCoherent() && largeAIndex != 0) {
+		if (isCoherent() && largeAIndex != BAD_INDEX) {
 			double diagTargetDistance = TARGET_HEIGHT_INCHES * (VERTICAL_CAMERA_RES_PIXELS / height[largeAIndex]) / 2.0
 					/ Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
 			return diagTargetDistance;
@@ -120,7 +117,7 @@ public class HMCamera {
 	
 	public double getDistanceToTargetAUsingHorizontalFov()
 	{
-		if (isCoherent() && largeAIndex != 0) {
+		if (isCoherent() && largeAIndex != BAD_INDEX) {
 			double diagTargetDistance = TARGET_WIDTH_INCHES * (HORIZONTAL_CAMERA_RES_PIXELS / width[largeAIndex]) / 2.0
 					/ Math.tan(Math.toRadians(HORIZONTAL_FOV_DEGREES / 2));
 			return diagTargetDistance;
@@ -129,7 +126,7 @@ public class HMCamera {
 	}
 
 	public double getDistanceToTargetB() {
-		if (isCoherent() && largeBIndex != 0) {
+		if (isCoherent() && largeBIndex != BAD_INDEX) {
 			double diagTargetDistance = TARGET_HEIGHT_INCHES * (VERTICAL_CAMERA_RES_PIXELS / height[largeBIndex]) / 2.0
 					/ Math.tan(Math.toRadians(VERTICAL_FOV_DEGREES / 2));
 			return diagTargetDistance;
@@ -139,7 +136,7 @@ public class HMCamera {
 	
 	public double getDistanceToTargetBUsingHorizontalFov()
 	{
-		if (isCoherent() && largeBIndex != 0) {
+		if (isCoherent() && largeBIndex != BAD_INDEX) {
 			double diagTargetDistance = TARGET_WIDTH_INCHES * (HORIZONTAL_CAMERA_RES_PIXELS / width[largeBIndex]) / 2.0
 					/ Math.tan(Math.toRadians(HORIZONTAL_FOV_DEGREES / 2));
 			return diagTargetDistance;
@@ -148,7 +145,7 @@ public class HMCamera {
 	}
 
 	public double getAngleToTurnToA() {
-		if (isCoherent() && largeAIndex != 0) {
+		if (isCoherent() && largeAIndex != BAD_INDEX) {
 			double diff = (getCenterX()[largeAIndex] - (HORIZONTAL_CAMERA_RES_PIXELS / 2))
 					/ HORIZONTAL_CAMERA_RES_PIXELS;
 			double angle = diff * HORIZONTAL_FOV_DEGREES;
@@ -158,7 +155,7 @@ public class HMCamera {
 	}
 
 	public double getAngleToTurnToB() {
-		if (isCoherent() && largeBIndex != 0) {
+		if (isCoherent() && largeBIndex != BAD_INDEX) {
 			double diff = (getCenterX()[largeBIndex] - (HORIZONTAL_CAMERA_RES_PIXELS / 2))
 					/ HORIZONTAL_CAMERA_RES_PIXELS;
 			double angle = diff * HORIZONTAL_FOV_DEGREES;
