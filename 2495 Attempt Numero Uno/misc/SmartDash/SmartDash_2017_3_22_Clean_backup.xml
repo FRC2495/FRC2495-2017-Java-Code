@@ -1,0 +1,81 @@
+<xml version="1.0">
+<dashboard>
+	<widget field="Basin IsHoming?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1127" y="270"/>
+	</widget>
+	<widget field="Basin Has Been Homed?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1128" y="251"/>
+	</widget>
+	<widget field="Basin IsMoving?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1128" y="232"/>
+	</widget>
+	<widget field="Basin Limit Switch" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1128" y="213"/>
+	</widget>
+	<widget field="Gear Good?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="665" y="323"/>
+	</widget>
+	<widget field="isCompromised?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="665" y="298"/>
+	</widget>
+	<widget field="isMoving?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="666" y="273"/>
+	</widget>
+	<widget field="isTurning?" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="666" y="248"/>
+	</widget>
+	<static-widget class="edu.wpi.grip.smartdashboard.GRIPExtension">
+		<location x="1" y="1"/>
+		<width>479</width>
+		<height>336</height>
+	</static-widget>
+	<widget field="Left Value" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="634" y="77"/>
+	</widget>
+	<widget field="Right Value" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="630" y="54"/>
+		<height>20</height>
+	</widget>
+	<widget field="Auton selected" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="484" y="129"/>
+	</widget>
+	<widget field="Distance to Target Using Horizontal FOV" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="782" y="218"/>
+	</widget>
+	<widget field="Left Enc Value" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="772" y="79"/>
+		<height>20</height>
+	</widget>
+	<widget field="Gyro Value" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="920" y="166"/>
+	</widget>
+	<widget field="Distance to Target" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="883" y="191"/>
+		<height>22</height>
+	</widget>
+	<widget field="Right Enc Value" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="771" y="53"/>
+	</widget>
+	<widget field="Angle to Target" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="897" y="245"/>
+		<height>20</height>
+	</widget>
+	<widget field="Basin Position" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1146" y="160"/>
+	</widget>
+	<widget field="Auto Selector" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="490" y="154"/>
+	</widget>
+	<widget field="Basin Enc Position" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1126" y="186"/>
+	</widget>
+	<widget field="Basin Target" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1151" y="138"/>
+	</widget>
+	<widget field="Alliterative Autoniomous Appointment" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="478" y="165"/>
+	</widget>
+</dashboard>
+<live-window>
+</live-window>
+</xml>
