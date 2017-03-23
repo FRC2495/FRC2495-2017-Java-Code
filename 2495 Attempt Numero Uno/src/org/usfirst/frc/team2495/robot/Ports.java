@@ -25,8 +25,8 @@ public class Ports {
 		}
 		
 		public static class USB{
-			public static final int LEFT = 0;
-			public static final int RIGHT = 1;
+			public static final int RIGHT = 0;
+			public static final int LEFT = 1;
 			public static final int GAMEPAD = 2;
 		}
 		

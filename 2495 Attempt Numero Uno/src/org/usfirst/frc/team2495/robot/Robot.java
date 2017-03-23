@@ -234,7 +234,7 @@ public class Robot extends IterativeRobot {
 		
 		// Tankdrive	
 		
-		drivetrain.joystickControl(left, right, (control.getHeld(ControllerBase.Joysticks.LEFT_STICK,ControllerBase.JoystickButtons.BTN1) 
+		drivetrain.joystickControl(right, left, (control.getHeld(ControllerBase.Joysticks.LEFT_STICK,ControllerBase.JoystickButtons.BTN1) 
 				                || control.getHeld(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN1))); //TODO calibrate joysticks
 		
 		
