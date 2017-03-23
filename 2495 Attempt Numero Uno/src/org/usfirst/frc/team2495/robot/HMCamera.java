@@ -12,7 +12,7 @@ public class HMCamera {
 
 	private static final int HORIZONTAL_CAMERA_RES_PIXELS = 320;
 	private static final int VERTICAL_CAMERA_RES_PIXELS = 240;
-	private static final double VERTICAL_FOV_DEGREES = 48;
+	private static final double VERTICAL_FOV_DEGREES = 47;
 	private static final double HORIZONTAL_FOV_DEGREES = 56;
 	private static final int TARGET_HEIGHT_INCHES = 5;
 	private static final double TARGET_WIDTH_INCHES = 2;
