@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2495.robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class HMCamera {
@@ -17,6 +18,7 @@ public class HMCamera {
 	private static final double TARGET_WIDTH_INCHES = 2;
 
 	private static final int MAX_NT_RETRY = 5;
+	private static final double CAMERA_CATCHUP_DELAY_SECS = 0.250;
 
 	public HMCamera(String networktable) {
 		nt = NetworkTable.getTable(networktable);
@@ -91,7 +93,11 @@ public class HMCamera {
 		}
 	}
 
-	public boolean acquireTargets() {
+	public boolean acquireTargets(boolean waitForNewInfo) {
+		if (waitForNewInfo) {
+			Timer.delay(CAMERA_CATCHUP_DELAY_SECS);
+		}
+		
 		updateFromNT(); // gets the latest info
 		//System.out.println("Acquiring");
 		if (isCoherent() && getNumberOfTargets() > 0) { // if we have targets

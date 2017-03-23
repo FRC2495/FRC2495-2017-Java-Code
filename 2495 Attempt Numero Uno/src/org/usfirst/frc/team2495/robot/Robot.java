@@ -397,7 +397,7 @@ public class Robot extends IterativeRobot {
 	
 	public void updateToSmartDash()
 	{
-		camera.acquireTargets();
+		camera.acquireTargets(false);
 		// Send Gyro val to Dashboard
         SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
         // send the gear status to dashboard
