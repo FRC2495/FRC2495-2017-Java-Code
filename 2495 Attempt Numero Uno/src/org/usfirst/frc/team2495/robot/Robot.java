@@ -162,8 +162,10 @@ public class Robot extends IterativeRobot {
 		case GearGrab:
 			drivetrain.moveDistance(75);
 			drivetrain.waitMoveDistance();
+			//drivetrain.moveDistanceAlongArc(180); 
+			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only			
 			drivetrain.angleSpotTurnUsingPidController(180);
-			drivetrain.waitMoveDistance();
+			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only 
 			drivetrain.moveDistance(-20);
 			drivetrain.waitMoveDistance();
 			take.setGearPosition(Take.gearPosition.Out);
@@ -172,8 +174,10 @@ public class Robot extends IterativeRobot {
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(80);
 			drivetrain.waitMoveDistance();
+			//drivetrain.moveDistanceAlongArc(135); 
+			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
 			drivetrain.angleSpotTurnUsingPidController(135);
-			drivetrain.waitMoveDistance();
+			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
@@ -181,8 +185,10 @@ public class Robot extends IterativeRobot {
 		case GearGrabLeft:// TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(80);
 			drivetrain.waitMoveDistance();
+			//drivetrain.moveDistanceAlongArc(-135); 
+			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only							
 			drivetrain.angleSpotTurnUsingPidController(-135);
-			drivetrain.waitMoveDistance();
+			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
