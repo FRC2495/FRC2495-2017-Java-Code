@@ -152,6 +152,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		camera.acquireTargets(false);
 		updateToSmartDash();
 		
 		switch (autoSelected) {
@@ -204,6 +205,7 @@ public class Robot extends IterativeRobot {
 			break;
 		}
 		
+		camera.acquireTargets(false);
 		updateToSmartDash();
 	}
 
@@ -232,6 +234,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		control.update();
+		camera.acquireTargets(false);
 		
 		drivetrain.checkMoveDistance(); // checks if we are done moving if we were moving
 		drivetrain.checkAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning
@@ -325,6 +328,7 @@ public class Robot extends IterativeRobot {
 			
 		}
 		
+		camera.acquireTargets(false);
 		updateToSmartDash();
 		
 		// only enable these if debugging 
@@ -372,12 +376,14 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {	
 		control.update();
+		camera.acquireTargets(false);
 		
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
 			gyro.calibrate();
 			gyro.reset();
 		}
 		
+		camera.acquireTargets(false);
 		updateToSmartDash();
 	}
 	
@@ -402,7 +408,6 @@ public class Robot extends IterativeRobot {
 	
 	public void updateToSmartDash()
 	{
-		camera.acquireTargets(false);
 		// Send Gyro val to Dashboard
         SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
         // send the gear status to dashboard
