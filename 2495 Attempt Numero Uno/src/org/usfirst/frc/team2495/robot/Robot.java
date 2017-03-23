@@ -330,7 +330,7 @@ public class Robot extends IterativeRobot {
 		// only enable these if debugging 
 		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN2))
 		{
-			drivetrain.angleSpotTurnUsingPidController((int) camera.getAngleToTurnToCenterOfTargets());
+			turnTowardGearLift();
 		}
 		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN8))
 		{
@@ -338,7 +338,7 @@ public class Robot extends IterativeRobot {
 		}
 		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN7))
 		{
-			drivetrain.moveDistance(camera.getDistanceToCenterOfTargets() - 12);
+			moveTowardGearLift();
 		}
 		else
 		{
@@ -379,6 +379,20 @@ public class Robot extends IterativeRobot {
 		}
 		
 		updateToSmartDash();
+	}
+	
+	private void turnTowardGearLift() {
+		drivetrain.angleSpotTurnUsingPidController((int) camera.getAngleToTurnToCenterOfTargets());
+	}
+	
+	private void moveTowardGearLift() {
+		final int OFFSET_CAMERA_GEARLIFT_INCHES = 12;
+		
+		if (camera.getDistanceToCenterOfTargets() != Double.POSITIVE_INFINITY) {
+			drivetrain.moveDistance(-(camera.getDistanceToCenterOfTargets() - OFFSET_CAMERA_GEARLIFT_INCHES)); // we need to move in reverse
+		} else {
+			System.out.println("Cannot move to infinity and beyond!");
+		}		
 	}
 	
 	public void updateToSmartDash()
