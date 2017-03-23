@@ -330,7 +330,7 @@ public class Robot extends IterativeRobot {
 		// only enable these if debugging 
 		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN2))
 		{
-			turnTowardGearLift();
+			angleSpotTurnUsingPidControllerTowardGearLift();
 		}
 		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN8))
 		{
@@ -338,7 +338,7 @@ public class Robot extends IterativeRobot {
 		}
 		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN7))
 		{
-			moveTowardGearLift();
+			moveDistanceTowardGearLift();
 		}
 		else
 		{
@@ -381,15 +381,20 @@ public class Robot extends IterativeRobot {
 		updateToSmartDash();
 	}
 	
-	private void turnTowardGearLift() {
+	private void angleSpotTurnUsingPidControllerTowardGearLift() {
 		drivetrain.angleSpotTurnUsingPidController((int) camera.getAngleToTurnToCenterOfTargets());
 	}
 	
-	private void moveTowardGearLift() {
+	private void moveDistanceTowardGearLift() {
 		final int OFFSET_CAMERA_GEARLIFT_INCHES = 12;
+		final int MAX_DISTANCE_TO_GEARLIFT_INCHES = 120;
 		
-		if (camera.getDistanceToCenterOfTargets() != Double.POSITIVE_INFINITY) {
-			drivetrain.moveDistance(-(camera.getDistanceToCenterOfTargets() - OFFSET_CAMERA_GEARLIFT_INCHES)); // we need to move in reverse
+		if (camera.getDistanceToCenterOfTargets() <= MAX_DISTANCE_TO_GEARLIFT_INCHES/*!= Double.POSITIVE_INFINITY*/) {
+			if (camera.getDistanceToCenterOfTargets() >= OFFSET_CAMERA_GEARLIFT_INCHES) {
+				drivetrain.moveDistance(-(camera.getDistanceToCenterOfTargets() - OFFSET_CAMERA_GEARLIFT_INCHES)); // we need to move in reverse
+			} else {
+				System.out.println("Already at the gear lift!");
+			}
 		} else {
 			System.out.println("Cannot move to infinity and beyond!");
 		}		
