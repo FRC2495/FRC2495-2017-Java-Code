@@ -388,7 +388,9 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void angleSpotTurnUsingPidControllerTowardGearLift() {
-		drivetrain.angleSpotTurnUsingPidController((int) camera.getAngleToTurnToCenterOfTargets());
+		drivetrain.angleSpotTurnUsingPidController(camera.getAngleToTurnToCenterOfTargets());
+		/*drivetrain.angleSpotTurnUsingPidController(calculateProperTurnAngle(
+				camera.getAngleToTurnToCenterOfTargets(),camera.getDistanceToCenterOfTargets()));*/
 	}
 	
 	private void moveDistanceTowardGearLift() {
@@ -430,5 +432,17 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Basin Target", basinControl.getTarget());
         SmartDashboard.putBoolean("Basin Has Been Homed?", basinControl.hasBeenHomed());
         SmartDashboard.putString("Auton selected", autoSelected!=null?autoSelected:"none");
+	}
+	
+	public double calculateProperTurnAngle(double cameraTurnAngle, double cameraHorizontalDist) {
+		try {
+			final double OFFSET_BETWEEN_CAMERA_AND_ROTATION_CENTER_INCHES = 6; // inches - might need adjustment
+			double dist = cameraHorizontalDist * Math.cos(Math.toRadians(cameraTurnAngle));
+			return Math.toDegrees(Math.atan(Math.tan(Math.toRadians(cameraTurnAngle)) * dist
+					/ (dist + OFFSET_BETWEEN_CAMERA_AND_ROTATION_CENTER_INCHES)));
+		} catch (Exception e) {
+			System.out.println("Exception in proper turn angle calculation" + e.toString());
+			return 0;
+		}
 	}
 }

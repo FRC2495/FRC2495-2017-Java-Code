@@ -75,7 +75,7 @@ public class DriveTrain implements PIDOutput {
 	}
 
 	// this method needs to be paired with checkAngleSpotTurnUsingPidController()
-	public void angleSpotTurnUsingPidController(int angle) {
+	public void angleSpotTurnUsingPidController(double angle) {
 		toVbs(); // switches to percentage vbus
 		stop(); // resets state
 		
