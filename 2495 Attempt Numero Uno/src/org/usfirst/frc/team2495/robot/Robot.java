@@ -13,10 +13,6 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
-import java.util.ResourceBundle.Control;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -395,9 +391,9 @@ public class Robot extends IterativeRobot {
 	
 	private void moveDistanceTowardGearLift() {
 		final int OFFSET_CAMERA_GEARLIFT_INCHES = 12;
-		final int MAX_DISTANCE_TO_GEARLIFT_INCHES = 120;
+		final int MAX_DISTANCE_TO_GEARLIFT_INCHES = 120; // arbitrary very large distance
 		
-		if (camera.getDistanceToCenterOfTargets() <= MAX_DISTANCE_TO_GEARLIFT_INCHES/*!= Double.POSITIVE_INFINITY*/) {
+		if (camera.getDistanceToCenterOfTargets() <= MAX_DISTANCE_TO_GEARLIFT_INCHES) {
 			if (camera.getDistanceToCenterOfTargets() >= OFFSET_CAMERA_GEARLIFT_INCHES) {
 				drivetrain.moveDistance(-(camera.getDistanceToCenterOfTargets() - OFFSET_CAMERA_GEARLIFT_INCHES)); // we need to move in reverse
 			} else {

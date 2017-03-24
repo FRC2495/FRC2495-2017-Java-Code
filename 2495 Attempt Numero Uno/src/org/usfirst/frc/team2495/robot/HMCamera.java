@@ -33,7 +33,6 @@ public class HMCamera {
 	}
 
 	private void updateFromNT() {
-		//System.out.println("Updating");
 		double[] def = {}; // Return an empty array by default.
 		int retry_count = 0;
 		setLocalTables(null, null, null, null, null);
@@ -53,7 +52,6 @@ public class HMCamera {
 	}
 
 	private void processInformation() {
-		//System.out.println("Processing");
 		double[] areaSave = area;
 		if (areaSave.length >= 2) {
 			largeAIndex = 0;
@@ -73,18 +71,15 @@ public class HMCamera {
 	}
 
 	public boolean isCoherent() {
-		//System.out.println("Checking Coherency");
 		boolean result = (area != null && width != null && height != null && centerX != null && centerY != null
 				&& area.length == width.length && area.length == height.length && area.length == centerX.length
-				&& area.length == centerY.length /*&& area.length > 1*/);
-		//System.out.println(result);
+				&& area.length == centerY.length);
 		return result;
 	}
 
 	public int getNumberOfTargets() {
 		if (isCoherent()) {
 			int number = area.length;
-			//System.out.println(number);
 			return number; // all tables have the same size so any length
 								// can be used (might be zero)
 		} else {
@@ -99,7 +94,7 @@ public class HMCamera {
 		}
 		
 		updateFromNT(); // gets the latest info
-		//System.out.println("Acquiring");
+
 		if (isCoherent() && getNumberOfTargets() > 0) { // if we have targets
 			processInformation();
 			return true;
