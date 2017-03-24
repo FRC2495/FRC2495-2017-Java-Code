@@ -302,14 +302,13 @@ public class Robot extends IterativeRobot {
 		// Climber bound to y but can only be actived 2 minutes into the match
 		
 			
-			if (control.getHeld(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.Y)) { 
-				take.setClimb(set);
-				set += .005;
-			}
-			else 
-			{
-				take.setClimb(0);
-			
+		if (control.getHeld(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.Y)) { 
+			take.setClimb(set);
+			set += .005;
+		}
+		else 
+		{
+			take.setClimb(0);		
 		}
 		// Camera *Sigh*
 		
@@ -319,37 +318,36 @@ public class Robot extends IterativeRobot {
 		{
 			drivetrain.stop();
 		}
-		else
-		{
-			
-		}
 		
 		camera.acquireTargets(false);
 		updateToSmartDash();
 		
-		// only enable these if debugging 
-		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN2))
+		// only enable these if debugging (or to have fun) 
+		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN2) ||
+			control.getPressedDown(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN2))
 		{
 			angleSpotTurnUsingPidControllerTowardGearLift();
 		}
-		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN8))
-		{
-			drivetrain.angleSpotTurn(-90);
-		}
-		else if (control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN7))
+		else if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN3) ||
+			control.getPressedDown(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN3))
 		{
 			moveDistanceTowardGearLift();
 		}
-		else
+		else if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN4))
 		{
-			
+			//drivetrain.moveDistanceAlongArc(-90);
+			drivetrain.angleSpotTurnUsingPidController(-90);
 		}
+		else if(control.getPressedDown(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN5))
+		{
+			//drivetrain.moveDistanceAlongArc(+90);
+			drivetrain.angleSpotTurnUsingPidController(+90);
+		}
+		
 		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN6))
 		{
 			basinControl.home();
-		}
-		
-		
+		}			
 	}
 
 	/**
