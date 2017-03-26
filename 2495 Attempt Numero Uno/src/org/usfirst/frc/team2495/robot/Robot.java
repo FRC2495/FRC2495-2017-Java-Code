@@ -64,6 +64,7 @@ public class Robot extends IterativeRobot {
 	
 	Basin basinControl;
 	double set;
+	boolean hasGyroBeenManuallyCalibratedAtLeastOnce = false;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -375,6 +376,7 @@ public class Robot extends IterativeRobot {
 		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
 			gyro.calibrate();
 			gyro.reset();
+			hasGyroBeenManuallyCalibratedAtLeastOnce = true; // we flag that this was done
 		}
 		
 		camera.acquireTargets(false);
@@ -431,6 +433,7 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Basin Target", basinControl.getTarget());
         SmartDashboard.putBoolean("Basin Has Been Homed?", basinControl.hasBeenHomed());
         SmartDashboard.putString("Auton selected", autoSelected!=null?autoSelected:"none");
+        SmartDashboard.putBoolean("Gyro Manually Calibrated?",hasGyroBeenManuallyCalibratedAtLeastOnce);
 	}
 	
 	public double calculateProperTurnAngle(double cameraTurnAngle, double cameraHorizontalDist) {
