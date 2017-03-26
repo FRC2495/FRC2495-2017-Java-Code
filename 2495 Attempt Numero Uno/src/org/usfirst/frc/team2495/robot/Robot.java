@@ -388,7 +388,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void moveDistanceTowardGearLift() {
-		final int OFFSET_CAMERA_GEARLIFT_INCHES = 12;
+		final int OFFSET_CAMERA_GEARLIFT_INCHES = 6;
 		final int MAX_DISTANCE_TO_GEARLIFT_INCHES = 120; // arbitrary very large distance
 		
 		if (camera.getDistanceToCenterOfTargets() <= MAX_DISTANCE_TO_GEARLIFT_INCHES) {
