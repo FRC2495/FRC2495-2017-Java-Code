@@ -388,12 +388,17 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void moveDistanceTowardGearLift() {
-		final int OFFSET_CAMERA_GEARLIFT_INCHES = 6;
+		final int OFFSET_CAMERA_GEARLIFT_INCHES = 6; // we need to leave some space between the camera and the targets
 		final int MAX_DISTANCE_TO_GEARLIFT_INCHES = 120; // arbitrary very large distance
 		
-		if (camera.getDistanceToCenterOfTargets() <= MAX_DISTANCE_TO_GEARLIFT_INCHES) {
-			if (camera.getDistanceToCenterOfTargets() >= OFFSET_CAMERA_GEARLIFT_INCHES) {
-				drivetrain.moveDistance(-(camera.getDistanceToCenterOfTargets() - OFFSET_CAMERA_GEARLIFT_INCHES)); // we need to move in reverse
+		// NOTE: if both targets cannot be seen in full at short distance
+		// then we shall use getDistanceToCenterOfTargetsUsingHorizontalFov() to get the distance
+		//double distanceReportedByCamera = camera.getDistanceToCenterOfTargetsUsingHorizontalFov();
+		double distanceToTargetsReportedByCamera = camera.getDistanceToCenterOfTargets();
+		
+		if (distanceToTargetsReportedByCamera <= MAX_DISTANCE_TO_GEARLIFT_INCHES) {
+			if (distanceToTargetsReportedByCamera >= OFFSET_CAMERA_GEARLIFT_INCHES) {
+				drivetrain.moveDistance(-(distanceToTargetsReportedByCamera - OFFSET_CAMERA_GEARLIFT_INCHES)); // we need to move in reverse
 			} else {
 				System.out.println("Already at the gear lift!");
 			}
