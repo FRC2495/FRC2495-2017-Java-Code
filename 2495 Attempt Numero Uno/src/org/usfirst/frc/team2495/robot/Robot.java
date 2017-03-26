@@ -174,7 +174,7 @@ public class Robot extends IterativeRobot {
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
-			drivetrain.angleSpotTurnUsingPidController(135);
+			drivetrain.angleSpotTurnUsingPidController(135); // note: 120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
@@ -185,7 +185,7 @@ public class Robot extends IterativeRobot {
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only							
-			drivetrain.angleSpotTurnUsingPidController(-135);
+			drivetrain.angleSpotTurnUsingPidController(-135);// note: -120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
