@@ -56,17 +56,36 @@ public class HMCamera {
 		if (areaSave.length >= 2) {
 			largeAIndex = 0;
 			largeBIndex = 0;
-			for (int i = 1; i < areaSave.length; i++) {
-				if (areaSave[i] > areaSave[largeAIndex]) {
-					largeAIndex = i;
-				}
-			}
-
-			for (int i = 0; i < areaSave.length; i++) {
-				if (areaSave[i] > areaSave[largeBIndex] && i != largeAIndex) {
-					largeBIndex = i;
-				}
-			}
+	        
+	        //Checking first two elements of input array
+	        if(areaSave[0] > areaSave[1])
+	        {
+	            //If first element is greater than second element
+	            largeAIndex = 0;
+	            largeBIndex = 1;
+	        }
+	        else
+	        {
+	            //If second element is greater than first element
+	            largeAIndex = 1;
+	            largeBIndex = 0;
+	        }
+	 
+	        //Checking remaining elements of input array
+	        for (int i = 2; i < areaSave.length; i++)
+	        {
+	            if(areaSave[i] > areaSave[largeAIndex])
+	            {
+	                //If element at 'i' is greater than 'firstLargest'
+	                largeBIndex = largeAIndex;
+	                largeAIndex = i;
+	            }
+	            else if (areaSave[i] < areaSave[largeAIndex] && areaSave[i] > areaSave[largeBIndex])
+	            {
+	                //If element at 'i' is smaller than 'firstLargest' and greater than 'secondLargest'
+	                largeBIndex = i;
+	            }
+	        }
 		}
 	}
 
