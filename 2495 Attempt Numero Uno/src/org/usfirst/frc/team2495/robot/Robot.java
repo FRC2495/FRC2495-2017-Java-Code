@@ -29,6 +29,9 @@ public class Robot extends IterativeRobot {
 	final String DankDump = "Dank Dumper"; //Dump Case 
 	final String AutonDone = "Auton Done";
 	final String Nothing = "Nothing";
+	final String GearGrabCamera = "Gear Grabber With Vision";
+	final String GearGrabRightCamera = "Gear Grabber Right With Vision";
+	final String GearGrabLeftCamera = "Gear Grabber Left With Vision";
 
 	String autoSelected;
 	SendableChooser chooser;
@@ -78,6 +81,9 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Gear Grabber Right Side", GearGrabRight);
 		chooser.addObject("Gear Grabber Left Side", GearGrabLeft);
 		chooser.addObject("Dank Dumper", DankDump); // go to the hopper and then
+		chooser.addObject("Gear Grabber With Vision", GearGrabCamera);
+		chooser.addObject("Gear Grabber Right Side With Vision", GearGrabRightCamera);
+		chooser.addObject("Gera Grabber Left Side With Vision", GearGrabLeftCamera);
 		chooser.addObject("Nothing", Nothing);
 
 		RR = new CANTalon(Ports.CAN.RIGHT_REAR); // The CANTalons
@@ -158,15 +164,14 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrab:
-			drivetrain.moveDistance(75);
+			drivetrain.moveDistance(48);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(180); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only			
 			drivetrain.angleSpotTurnUsingPidController(180);
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only 
-			drivetrain.moveDistance(-20);
+			drivetrain.moveDistance(-12);
 			drivetrain.waitMoveDistance();
-			take.setGearPosition(Take.gearPosition.Out);
 			autoSelected = Nothing;
 			break;
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
@@ -174,7 +179,7 @@ public class Robot extends IterativeRobot {
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
-			drivetrain.angleSpotTurnUsingPidController(135); // note: 120 degrees should be enough when using gyro
+			drivetrain.angleSpotTurnUsingPidController(120); // note: 120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
@@ -185,7 +190,7 @@ public class Robot extends IterativeRobot {
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only							
-			drivetrain.angleSpotTurnUsingPidController(-135);// note: -120 degrees should be enough when using gyro
+			drivetrain.angleSpotTurnUsingPidController(-120);// note: -120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
@@ -194,6 +199,34 @@ public class Robot extends IterativeRobot {
 		case BaseBreak:
 			drivetrain.moveDistance(95);
 			drivetrain.waitMoveDistance();
+			autoSelected = Nothing;
+			break;
+		case GearGrabCamera:
+			drivetrain.moveDistance(40);
+			drivetrain.waitMoveDistance();
+			drivetrain.angleSpotTurnUsingPidController(180);
+			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only 
+			visionBasedGearPlacingInAuton();
+			autoSelected = Nothing;
+			break;
+		case GearGrabRightCamera:
+			drivetrain.moveDistance(80);
+			drivetrain.waitMoveDistance();
+			//drivetrain.moveDistanceAlongArc(135); 
+			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
+			drivetrain.angleSpotTurnUsingPidController(120); // note: 120 degrees should be enough when using gyro
+			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
+			visionBasedGearPlacingInAuton();
+			autoSelected = Nothing;
+			break;
+		case GearGrabLeftCamera:
+			drivetrain.moveDistance(80);
+			drivetrain.waitMoveDistance();
+			//drivetrain.moveDistanceAlongArc(-135); 
+			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
+			drivetrain.angleSpotTurnUsingPidController(-120); // note: 120 degrees should be enough when using gyro
+			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
+			visionBasedGearPlacingInAuton();
 			autoSelected = Nothing;
 			break;
 		case Nothing:
@@ -407,6 +440,20 @@ public class Robot extends IterativeRobot {
 		} else {
 			System.out.println("Cannot move to infinity and beyond!");
 		}		
+	}
+	
+	private void visionBasedGearPlacingInAuton()
+	{
+		angleSpotTurnUsingPidControllerTowardGearLift();
+		drivetrain.waitAngleSpotTurnUsingPidController();
+		angleSpotTurnUsingPidControllerTowardGearLift();
+		drivetrain.waitAngleSpotTurnUsingPidController();
+		moveDistanceTowardGearLift();
+		drivetrain.waitMoveDistance();
+		take.setGearPosition(Take.gearPosition.Out);
+		drivetrain.moveDistance(12);
+		drivetrain.waitMoveDistance();
+		take.setGearPosition(Take.gearPosition.In);
 	}
 	
 	public void updateToSmartDash()

@@ -10,19 +10,19 @@
       <grip:Input step="0" socket="1">
         <value>
           <double>69.83050847457628</double>
-          <double>93.36898395721929</double>
+          <double>94.9732620320856</double>
         </value>
       </grip:Input>
       <grip:Input step="0" socket="2">
         <value>
-          <double>200.73446327683612</double>
+          <double>191.12994350282483</double>
           <double>255.0</double>
         </value>
       </grip:Input>
       <grip:Input step="0" socket="3">
         <value>
-          <double>14.40677966101695</double>
-          <double>75.45454545454545</double>
+          <double>31.214689265536723</double>
+          <double>66.36363636363636</double>
         </value>
       </grip:Input>
       <grip:Output step="0" socket="0" previewed="true"/>
@@ -163,7 +163,7 @@
   </connections>
   <settings>
     <teamNumber>2495</teamNumber>
-    <publishAddress>roborio-2495-frc</publishAddress>
+    <publishAddress>roborio2495-frc</publishAddress>
     <deployAddress>roborio-1089-frc</deployAddress>
     <deployDir>/home/lvuser</deployDir>
     <deployUser>admin</deployUser>
