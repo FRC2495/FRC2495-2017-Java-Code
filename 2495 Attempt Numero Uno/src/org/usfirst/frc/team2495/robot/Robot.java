@@ -444,10 +444,13 @@ public class Robot extends IterativeRobot {
 	
 	private void visionBasedGearPlacingInAuton()
 	{
+		camera.acquireTargets(true);
 		angleSpotTurnUsingPidControllerTowardGearLift();
 		drivetrain.waitAngleSpotTurnUsingPidController();
+		camera.acquireTargets(true);
 		angleSpotTurnUsingPidControllerTowardGearLift();
 		drivetrain.waitAngleSpotTurnUsingPidController();
+		camera.acquireTargets(true);
 		moveDistanceTowardGearLift();
 		drivetrain.waitMoveDistance();
 		take.setGearPosition(Take.gearPosition.Out);

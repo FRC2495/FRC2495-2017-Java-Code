@@ -21,7 +21,7 @@
       </grip:Input>
       <grip:Input step="0" socket="3">
         <value>
-          <double>52.824858757062145</double>
+          <double>48.0225988700565</double>
           <double>255.0</double>
         </value>
       </grip:Input>
