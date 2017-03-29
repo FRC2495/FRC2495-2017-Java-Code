@@ -17,6 +17,7 @@ public class DriveTrain implements PIDOutput {
 
 	double Ltac, Rtac;
 	boolean isMoving, isTurning;
+	boolean wasOnTarget;
 	CANTalon RR, RF, LR, LF; // [GA] avoid using all uppercase variable names -
 								// reserve that for constants
 	ADXRS450_Gyro gyro;
@@ -86,6 +87,7 @@ public class DriveTrain implements PIDOutput {
 		turnPidController.enable(); // begins running
 		
 		isTurning = true;
+		wasOnTarget = false; // resets the flag
 	}
 	
 	public boolean checkAngleSpotTurnUsingPidController() {
@@ -102,11 +104,37 @@ public class DriveTrain implements PIDOutput {
 		return isTurning;
 	}
 	
+	public boolean doublecheckAngleSpotTurnUsingPidController() {
+		if (isTurning) {
+			boolean isOnTarget = turnPidController.onTarget();
+			
+			if (isOnTarget) { // if we are on target in this iteration 
+				if (wasOnTarget) { // and if we were already on target in the last iteration
+					isTurning = false; // we consider that we really reached the target and we stop turning
+				} else {					
+					wasOnTarget = true; // we note that we are on target but we don't stop yet
+					System.out.println("You might have reached the target (turning). Please check again.");
+				}
+			} else { // if we are not on target in this iteration
+				wasOnTarget = false; // we discard the fact that we could have felt we were on target during the last iteration 
+			}
+			
+			if (!isTurning) {
+				System.out.println("You have reached the target (turning).");
+				stop();
+				toVbs();
+			}
+
+		}
+		return isTurning;
+	}
+	
 	// do not use in teleop - for auton only
 	public void waitAngleSpotTurnUsingPidController() {
 		long start = Calendar.getInstance().getTimeInMillis();
 		
-		while (checkAngleSpotTurnUsingPidController()) {
+		//while (doublecheckAngleSpotTurnUsingPidController()) {
+		while (checkAngleSpotTurnUsingPidController()) { // NOTE: consider double-checking instead
 			if (!DriverStation.getInstance().isAutonomous()
 					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
 				System.out.println("You went over the time limit (turning)");
