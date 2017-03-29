@@ -79,8 +79,8 @@ public class DriveTrain implements PIDOutput {
 		stop(); // resets state
 		
 		gyro.reset(); // resets to zero for now
-		double current = gyro.getAngle();
-		double heading = angle + current; // calculates new heading
+		//double current = gyro.getAngle();
+		double heading = angle; //+ current; // calculates new heading
 		
 		turnPidController.setSetpoint(heading); // sets the heading
 		turnPidController.enable(); // begins running
