@@ -72,7 +72,8 @@ public class DriveTrain implements PIDOutput {
     	
     	//NOTE: setToleranceBuffer should be set to 1 if trying doublecheckAngleSpotTurnUsingPidController()
     	// as doublecheckAngleSpotTurnUsingPidController() already takes two measurements.
-    	// Using a tolerance buffer of 3 could also be an option, but that would add another 50 ms to the turn
+    	// Using a tolerance buffer of 3 with single checkAngleSpotTurnUsingPidController() could
+    	// also be an option, but that would add another 50 ms to the turn
     	// (or whatever period is set if a non-default period is used)
     	turnPidController.setToleranceBuffer(2); // indicates that we want two measurements before accepting that we are on target    	
     	turnPidController.setInputRange(-180, 180); // valid input range 
