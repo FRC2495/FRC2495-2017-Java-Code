@@ -17,7 +17,6 @@ public class DriveTrain implements PIDOutput {
 
 	double Ltac, Rtac;
 	boolean isMoving, isTurning;
-	boolean wasOnTarget;
 	CANTalon RR, RF, LR, LF; // [GA] avoid using all uppercase variable names -
 								// reserve that for constants
 	ADXRS450_Gyro gyro;
@@ -27,6 +26,7 @@ public class DriveTrain implements PIDOutput {
 	static final double REV_THRESH = .125;
 	static final int RADIUS_DRIVEVETRAIN_INCHES = 13;
 	static final double MOVING_VOLTAGE_VOLTS = 4.0;
+	static final double TURN_PID_CONTROLLER_PERIOD_SECONDS = PIDController.kDefaultPeriod ; // 0.05 sec = 50 ms 
 	Robot robot;
 	
 	PIDController turnPidController;
@@ -37,11 +37,7 @@ public class DriveTrain implements PIDOutput {
 		LR = lr;
 		LF = lf;
 		robot = robot_in;
-		gyro = gyro_in;
-		
-
-		// LF.setInverted(true); // inverts left side
-		// LR.setInverted(true);
+		gyro = gyro_in;	
 
 		RF.enableBrakeMode(true);// sets the talons on brake mode
 		RR.enableBrakeMode(true);
@@ -67,9 +63,10 @@ public class DriveTrain implements PIDOutput {
 		// LF.setEncPosition(0);
 		
     	//creates a PID controller
-		turnPidController = new PIDController(0.17, 0.0002, 0.0, gyro, this);
+		turnPidController = new PIDController(0.17, 0.0002, 0.0, gyro, this, TURN_PID_CONTROLLER_PERIOD_SECONDS);
     	turnPidController.setContinuous(true); // because -180 degrees is the same as 180 degrees
     	turnPidController.setAbsoluteTolerance(1); // 1 degree error tolerated
+    	turnPidController.setToleranceBuffer(2); // indicates that we want two measurements before accepting that we are on target    	
     	turnPidController.setInputRange(-180, 180); // valid input range 
     	turnPidController.setOutputRange(-.5, .5); // output range NOTE: might need to change signs
 	}
@@ -87,7 +84,6 @@ public class DriveTrain implements PIDOutput {
 		turnPidController.enable(); // begins running
 		
 		isTurning = true;
-		wasOnTarget = false; // resets the flag
 	}
 	
 	public boolean checkAngleSpotTurnUsingPidController() {
@@ -102,38 +98,12 @@ public class DriveTrain implements PIDOutput {
 
 		}
 		return isTurning;
-	}
-	
-	public boolean doublecheckAngleSpotTurnUsingPidController() {
-		if (isTurning) {
-			boolean isOnTarget = turnPidController.onTarget();
-			
-			if (isOnTarget) { // if we are on target in this iteration 
-				if (wasOnTarget) { // and if we were already on target in the last iteration
-					isTurning = false; // we consider that we really reached the target and we stop turning
-				} else {					
-					wasOnTarget = true; // we note that we are on target but we don't stop yet
-					System.out.println("You might have reached the target (turning). Please check again.");
-				}
-			} else { // if we are not on target in this iteration
-				wasOnTarget = false; // we discard the fact that we could have felt we were on target during the last iteration 
-			}
-			
-			if (!isTurning) {
-				System.out.println("You have reached the target (turning).");
-				stop();
-				toVbs();
-			}
-
-		}
-		return isTurning;
-	}
+	}	
 	
 	// do not use in teleop - for auton only
 	public void waitAngleSpotTurnUsingPidController() {
 		long start = Calendar.getInstance().getTimeInMillis();
 		
-		//while (doublecheckAngleSpotTurnUsingPidController()) {
 		while (checkAngleSpotTurnUsingPidController()) { // NOTE: consider double-checking instead
 			if (!DriverStation.getInstance().isAutonomous()
 					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
