@@ -27,9 +27,12 @@ public class DriveTrain implements PIDOutput {
 	static final double REV_THRESH = .125;
 	static final int RADIUS_DRIVEVETRAIN_INCHES = 13;
 	static final double MOVING_VOLTAGE_VOLTS = 4.0;
+	static final double MIN_ROTATE_PCT_VBUS = 0.3;
+	static final int DEGREE_THRESHOLD = 1;
+	
 	
 	// NOTE: it might make sense to decrease the PID controller period to 0.02 sec (which is the period used by the main loop)
-	static final double TURN_PID_CONTROLLER_PERIOD_SECONDS = PIDController.kDefaultPeriod ; // 0.05 sec = 50 ms 
+	static final double TURN_PID_CONTROLLER_PERIOD_SECONDS = .02; // 0.05 sec = 50 ms 
 	Robot robot;
 	
 	PIDController turnPidController;
@@ -66,16 +69,16 @@ public class DriveTrain implements PIDOutput {
 		// LF.setEncPosition(0);
 		
     	//creates a PID controller
-		turnPidController = new PIDController(0.17, 0.0002, 0.0, gyro, this, TURN_PID_CONTROLLER_PERIOD_SECONDS);
+		turnPidController = new PIDController(0.04, 0.0, 0.0, gyro, this, TURN_PID_CONTROLLER_PERIOD_SECONDS);
     	turnPidController.setContinuous(true); // because -180 degrees is the same as 180 degrees
-    	turnPidController.setAbsoluteTolerance(1); // 1 degree error tolerated
+    	turnPidController.setAbsoluteTolerance(DEGREE_THRESHOLD); // 1 degree error tolerated
     	
     	//NOTE: setToleranceBuffer should be set to 1 if trying doublecheckAngleSpotTurnUsingPidController()
     	// as doublecheckAngleSpotTurnUsingPidController() already takes two measurements.
     	// Using a tolerance buffer of 3 with single checkAngleSpotTurnUsingPidController() could
     	// also be an option, but that would add another 50 ms to the turn
     	// (or whatever period is set if a non-default period is used)
-    	turnPidController.setToleranceBuffer(2); // indicates that we want two measurements before accepting that we are on target    	
+    	turnPidController.setToleranceBuffer(100); // indicates that we want two measurements before accepting that we are on target    	
     	turnPidController.setInputRange(-180, 180); // valid input range 
     	turnPidController.setOutputRange(-.5, .5); // output range NOTE: might need to change signs
 	}
@@ -373,6 +376,15 @@ public class DriveTrain implements PIDOutput {
 	@Override
 	public void pidWrite(double output) {
 		toVbs();
+		if(Math.abs(turnPidController.getError()) < DEGREE_THRESHOLD)
+		{
+			output = 0;
+		}
+		if(output != 0 && Math.abs(output) < MIN_ROTATE_PCT_VBUS)
+		{
+			double sign = output > 0 ? 1.0 : -1.0;
+			output = MIN_ROTATE_PCT_VBUS * sign;
+		}
 		RF.set(+output);
 		LF.set(-output);		
 	}

@@ -485,6 +485,9 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putBoolean("Basin Has Been Homed?", basinControl.hasBeenHomed());
         SmartDashboard.putString("Auton selected", autoSelected!=null?autoSelected:"none");
         SmartDashboard.putBoolean("Gyro Manually Calibrated?",hasGyroBeenManuallyCalibratedAtLeastOnce);
+        SmartDashboard.putNumber("PID Error", drivetrain.turnPidController.getError());
+        SmartDashboard.putNumber("PID Motor Value", drivetrain.turnPidController.get());
+        SmartDashboard.putBoolean("PID On Target", drivetrain.turnPidController.onTarget());
 	}
 	
 	public double calculateProperTurnAngle(double cameraTurnAngle, double cameraHorizontalDist) {
