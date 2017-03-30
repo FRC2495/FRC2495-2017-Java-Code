@@ -27,6 +27,8 @@ public class DriveTrain implements PIDOutput {
 	static final double REV_THRESH = .125;
 	static final int RADIUS_DRIVEVETRAIN_INCHES = 13;
 	static final double MOVING_VOLTAGE_VOLTS = 4.0;
+	
+	// NOTE: it might make sense to decrease the PID controller period to 0.02 sec (which is the period used by the main loop)
 	static final double TURN_PID_CONTROLLER_PERIOD_SECONDS = PIDController.kDefaultPeriod ; // 0.05 sec = 50 ms 
 	Robot robot;
 	
@@ -67,6 +69,11 @@ public class DriveTrain implements PIDOutput {
 		turnPidController = new PIDController(0.17, 0.0002, 0.0, gyro, this, TURN_PID_CONTROLLER_PERIOD_SECONDS);
     	turnPidController.setContinuous(true); // because -180 degrees is the same as 180 degrees
     	turnPidController.setAbsoluteTolerance(1); // 1 degree error tolerated
+    	
+    	//NOTE: setToleranceBuffer should be set to 1 if trying doublecheckAngleSpotTurnUsingPidController()
+    	// as doublecheckAngleSpotTurnUsingPidController() already takes two measurements.
+    	// Using a tolerance buffer of 3 could also be an option, but that would add another 50 ms to the turn
+    	// (or whatever period is set if a non-default period is used)
     	turnPidController.setToleranceBuffer(2); // indicates that we want two measurements before accepting that we are on target    	
     	turnPidController.setInputRange(-180, 180); // valid input range 
     	turnPidController.setOutputRange(-.5, .5); // output range NOTE: might need to change signs
@@ -102,7 +109,13 @@ public class DriveTrain implements PIDOutput {
 		return isTurning;
 	}	
 	
-	// NOTICE: this experimental method should only be tried with a tolerance buffer of one  
+	// NOTICE: this experimental method should only be tried with a tolerance buffer of one 
+	// The difference between doublecheckAngleSpotTurnUsingPidController and using a tolerance buffer of two
+	// is that this method checks that we were on target twice in a row rather than that the average was on target
+	// twice in a row. The average could conceivably be be on target even if we were never on target, 
+	// so while this method is somewhat ugly it might still work better than using a tolerance buffer of two.
+	// Using a tolerance buffer of three with single checkAngleSpotTurnUsingPidController() is also an option.
+	// Also it might be worth reducing TURN_PID_CONTROLLER_PERIOD_SECONDS to 0.02 sec to tighten the control loop.
 	public boolean doublecheckAngleSpotTurnUsingPidController() {
 		if (isTurning) {
 			boolean isOnTarget = turnPidController.onTarget();
@@ -123,7 +136,12 @@ public class DriveTrain implements PIDOutput {
 					}
 				}
 			} else { // if we are not on target in this iteration
-				wasOnTarget = false; // we discard the fact that we could have felt we were on target during the last iteration 
+				if (wasOnTarget) { // even though we were on target in the last iteration
+					wasOnTarget = false; // we discard the fact that we could have felt we were on target during the last iteration
+					System.out.println("Double-check failed.");
+				} else {
+					// we are definitely turning
+				}
 			}
 			
 			if (!isTurning) {
