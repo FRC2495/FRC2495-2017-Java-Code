@@ -80,7 +80,7 @@ public class HMCamera {
 	                largeBIndex = largeAIndex;
 	                largeAIndex = i;
 	            }
-	            else if (areaSave[i] < areaSave[largeAIndex] && areaSave[i] > areaSave[largeBIndex])
+	            else if (/*areaSave[i] < areaSave[largeAIndex] &&*/ areaSave[i] > areaSave[largeBIndex])
 	            {
 	                //If element at 'i' is smaller than 'firstLargest' and greater than 'secondLargest'
 	                largeBIndex = i;
