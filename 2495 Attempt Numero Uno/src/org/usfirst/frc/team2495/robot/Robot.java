@@ -56,16 +56,16 @@ public class Robot extends IterativeRobot {
 	Timer time = new Timer(); // generic timer
 
 	Take take;
-	CANTalon spin, climb,basin;
+	CANTalon spin, climb;
 	
 	ControllerBase control;
 	
 	Compressor compressor; // the compressor's lifecycle needs to be the same as the robot
 	
 	boolean gearFlag;
-	boolean basinFlagUp = true;
+	//boolean basinFlagUp = true;
 	
-	Basin basinControl;
+	//Basin basinControl;
 	double set;
 	boolean hasGyroBeenManuallyCalibratedAtLeastOnce = false;
 
@@ -92,7 +92,7 @@ public class Robot extends IterativeRobot {
 		LF = new CANTalon(Ports.CAN.LEFT_FRONT);
 		spin = new CANTalon(Ports.CAN.SPIN);//intake spin motor
 		climb = new CANTalon(Ports.CAN.CLIMB); // climber motor 
-		basin = new CANTalon(Ports.CAN.BASIN);
+		//basin = new CANTalon(Ports.CAN.BASIN);
 
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); // we want to instantiate before we pass to drivetrain		
 		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro, this);
@@ -109,11 +109,11 @@ public class Robot extends IterativeRobot {
 
 		control = new ControllerBase(operator, left, right);
 		
-		basinControl = new Basin(basin);
+		//basinControl = new Basin(basin);
 		
 		gyro.calibrate(); 
 		gyro.reset();
-		basinControl.home();
+		//basinControl.home();
 		set = .5;
 		take.setGearPosition(Take.gearPosition.In);
 	}
@@ -267,8 +267,8 @@ public class Robot extends IterativeRobot {
 		drivetrain.checkMoveDistance(); // checks if we are done moving if we were moving
 		//drivetrain.doublecheckAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning 	
 		drivetrain.checkAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning // NOTE: consider double-checking instead
-		basinControl.checkHome();
-		basinControl.checkMove();
+		//basinControl.checkHome();
+		//basinControl.checkMove();
 		
 		// Tankdrive	
 		
@@ -277,28 +277,28 @@ public class Robot extends IterativeRobot {
 		
 		
 		// set in/outtake to position outdown = a, outup = b inup = x
-		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
-			take.setPosition(Take.Position.OUT_DOWN);
-		} else if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.B)) {
-			take.setPosition(Take.Position.OUT_UP);
-		} else if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.X)) {
-			take.setPosition(Take.Position.IN_UP);
-		}
+//		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.A)) {
+//			take.setPosition(Take.Position.OUT_DOWN);
+//		} else if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.B)) {
+//			take.setPosition(Take.Position.OUT_UP);
+//		} else if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.X)) {
+//			take.setPosition(Take.Position.IN_UP);
+//		}
 
 		// intake motor mapped to LB and RB
-		if(operator.getRawButton(ControllerBase.GamepadButtons.LB))
-		{
-			take.setSpin(1);
-		}
-		else if(operator.getRawButton(ControllerBase.GamepadButtons.RB))
-		{
-			take.setSpin(-1);
-		}
-		else
-		{
-			take.setSpin(0);
-		}
-		
+//		if(operator.getRawButton(ControllerBase.GamepadButtons.LB))
+//		{
+//			take.setSpin(1);
+//		}
+//		else if(operator.getRawButton(ControllerBase.GamepadButtons.RB))
+//		{
+//			take.setSpin(-1);
+//		}
+//		else
+//		{
+//			take.setSpin(0);
+//		}
+//		
 		//gear bound to back
 		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.BACK))
 		{
@@ -316,22 +316,18 @@ public class Robot extends IterativeRobot {
 		}
 		
 		//basin bound to start
-		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD,ControllerBase.GamepadButtons.START))
-		{
-			System.out.println("Button Pushed");
-			if(basinFlagUp)
-			{
-				basinControl.moveUp();
-				System.out.println("Should be Moving");
-				basinFlagUp = false;
-			}
-			else
-			{
-				basinControl.moveDown();
-				System.out.println("Should be Moving");
-				basinFlagUp = true;
-			}
-		}
+//		if (control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.START)) {
+//			System.out.println("Button Pushed");
+//			if (basinFlagUp) {
+//				basinControl.moveUp();
+//				System.out.println("Should be Moving");
+//				basinFlagUp = false;
+//			} else {
+//				basinControl.moveDown();
+//				System.out.println("Should be Moving");
+//				basinFlagUp = true;
+//			}
+//		}
 
 		// Climber bound to y but can only be actived 2 minutes into the match
 		
@@ -378,10 +374,10 @@ public class Robot extends IterativeRobot {
 			drivetrain.angleSpotTurnUsingPidController(+90);
 		}
 		
-		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN6))
-		{
-			basinControl.home();
-		}			
+//		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN6))
+//		{
+//			basinControl.home();
+//		}			
 	}
 
 	/**
@@ -475,13 +471,13 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Distance to Target", camera.getDistanceToCenterOfTargets());
         SmartDashboard.putNumber("Angle to Target", camera.getAngleToTurnToCenterOfTargets());
         SmartDashboard.putNumber("Distance to Target Using Horizontal FOV", camera.getDistanceToCenterOfTargetsUsingHorizontalFov());
-        SmartDashboard.putBoolean("Basin Limit Switch", basinControl.getLimitSwitchState());
-        SmartDashboard.putNumber("Basin Position", basinControl.getPosition());
-        SmartDashboard.putNumber("Basin Enc Position", basinControl.getEncPosition());
-        SmartDashboard.putBoolean("Basin IsHoming?", basinControl.isHoming());
-        SmartDashboard.putBoolean("Basin IsMoving?", basinControl.isMoving());
-        SmartDashboard.putNumber("Basin Target", basinControl.getTarget());
-        SmartDashboard.putBoolean("Basin Has Been Homed?", basinControl.hasBeenHomed());
+//        SmartDashboard.putBoolean("Basin Limit Switch", basinControl.getLimitSwitchState());
+//        SmartDashboard.putNumber("Basin Position", basinControl.getPosition());
+//        SmartDashboard.putNumber("Basin Enc Position", basinControl.getEncPosition());
+//        SmartDashboard.putBoolean("Basin IsHoming?", basinControl.isHoming());
+//        SmartDashboard.putBoolean("Basin IsMoving?", basinControl.isMoving());
+//        SmartDashboard.putNumber("Basin Target", basinControl.getTarget());
+//        SmartDashboard.putBoolean("Basin Has Been Homed?", basinControl.hasBeenHomed());
         SmartDashboard.putString("Auton selected", autoSelected!=null?autoSelected:"none");
         SmartDashboard.putBoolean("Gyro Manually Calibrated?",hasGyroBeenManuallyCalibratedAtLeastOnce);
         SmartDashboard.putNumber("PID Error", drivetrain.turnPidController.getError());
