@@ -106,6 +106,7 @@ public class Robot extends IterativeRobot {
 		left = new Joystick(Ports.USB.LEFT);
 		right = new Joystick(Ports.USB.RIGHT);
 		operator = new Joystick(Ports.USB.GAMEPAD);
+		
 
 		control = new ControllerBase(operator, left, right);
 		
