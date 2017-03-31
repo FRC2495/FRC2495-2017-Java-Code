@@ -141,7 +141,7 @@ public class Robot extends IterativeRobot {
 		autoSelected = (String) chooser.getSelected();
 		System.out.println("Auto selected: " + autoSelected);
 		time.reset();
-		take.setPosition(Take.Position.IN_UP);
+		//take.setPosition(Take.Position.IN_UP);
 		//drivetrain.resetEncoders();
 	}
 
@@ -202,29 +202,27 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrabCamera:
-			drivetrain.moveDistance(40);
+			drivetrain.moveDistance(-40);
 			drivetrain.waitMoveDistance();
-			drivetrain.angleSpotTurnUsingPidController(180);
-			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only 
 			visionBasedGearPlacingInAuton();
 			autoSelected = Nothing;
 			break;
 		case GearGrabRightCamera:
-			drivetrain.moveDistance(80);
+			drivetrain.moveDistance(-65);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
-			drivetrain.angleSpotTurnUsingPidController(120); // note: 120 degrees should be enough when using gyro
+			drivetrain.angleSpotTurnUsingPidController(-60); // note: 120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			visionBasedGearPlacingInAuton();
 			autoSelected = Nothing;
 			break;
 		case GearGrabLeftCamera:
-			drivetrain.moveDistance(80);
+			drivetrain.moveDistance(-65);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
-			drivetrain.angleSpotTurnUsingPidController(-120); // note: 120 degrees should be enough when using gyro
+			drivetrain.angleSpotTurnUsingPidController(60); // note: 120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			visionBasedGearPlacingInAuton();
 			autoSelected = Nothing;
@@ -304,6 +302,7 @@ public class Robot extends IterativeRobot {
 		//gear bound to back
 		if(control.getPressedDown(ControllerBase.Joysticks.GAMEPAD, ControllerBase.GamepadButtons.BACK))
 		{
+			
 			if(gearFlag)
 			{
 				take.setGearPosition(Take.gearPosition.Out);

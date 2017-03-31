@@ -35,8 +35,8 @@ public class Ports {
 			public static final int INTAKE_OUT = 1;
 			public static final int INTAKE_DOWN = 2;
 			public static final int INTAKE_UP = 3;
-			public static final int GEAR_IN = 4;
-			public static final int GEAR_OUT = 5;
+			public static final int GEAR_IN = 5;
+			public static final int GEAR_OUT = 4;
 			public static final int BASIN_DOWN = 6;
 			public static final int BASIN_UP = 7;
 		

@@ -186,7 +186,7 @@ public class HMCamera {
 	
 	public double getDistanceToCenterOfTargets()
 	{
-		return (getDistanceToTargetA() + getDistanceToTargetB()) / 2;
+		return ((getDistanceToTargetA() + getDistanceToTargetB()) / 2) - 2;
 	}
 	
 	public double getDistanceToCenterOfTargetsUsingHorizontalFov()
