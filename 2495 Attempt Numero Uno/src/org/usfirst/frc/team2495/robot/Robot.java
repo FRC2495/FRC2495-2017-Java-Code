@@ -164,33 +164,27 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrab:
-			drivetrain.moveDistance(48);
-			drivetrain.waitMoveDistance();
-			//drivetrain.moveDistanceAlongArc(180); 
-			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only			
-			drivetrain.angleSpotTurnUsingPidController(180);
-			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only 
-			drivetrain.moveDistance(-12);
+			drivetrain.moveDistance(-60);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
-			drivetrain.moveDistance(80);
+			drivetrain.moveDistance(-65);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
-			drivetrain.angleSpotTurnUsingPidController(120); // note: 120 degrees should be enough when using gyro
+			drivetrain.angleSpotTurnUsingPidController(-60); // note: 120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
 		case GearGrabLeft:// TODO get measurements and fix this so its like GearGrab
-			drivetrain.moveDistance(80);
+			drivetrain.moveDistance(-65);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only							
-			drivetrain.angleSpotTurnUsingPidController(-120);// note: -120 degrees should be enough when using gyro
+			drivetrain.angleSpotTurnUsingPidController(60);// note: -120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-24);
 			drivetrain.waitMoveDistance();
