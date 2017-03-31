@@ -165,29 +165,29 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrab:
-			drivetrain.moveDistance(-60);
+			drivetrain.moveDistance(-75);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
-			drivetrain.moveDistance(-65);
+			drivetrain.moveDistance(-87);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
 			drivetrain.angleSpotTurnUsingPidController(-60); // note: 120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
-			drivetrain.moveDistance(-24);
+			drivetrain.moveDistance(-50);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
 		case GearGrabLeft:// TODO get measurements and fix this so its like GearGrab
-			drivetrain.moveDistance(-65);
+			drivetrain.moveDistance(-87);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only							
 			drivetrain.angleSpotTurnUsingPidController(60);// note: -120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
-			drivetrain.moveDistance(-24);
+			drivetrain.moveDistance(-40);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
@@ -197,13 +197,13 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrabCamera:
-			drivetrain.moveDistance(-40);
+			drivetrain.moveDistance(-75);
 			drivetrain.waitMoveDistance();
 			visionBasedGearPlacingInAuton();
 			autoSelected = Nothing;
 			break;
 		case GearGrabRightCamera:
-			drivetrain.moveDistance(-65);
+			drivetrain.moveDistance(-87);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
@@ -213,7 +213,7 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrabLeftCamera:
-			drivetrain.moveDistance(-65);
+			drivetrain.moveDistance(-87);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
