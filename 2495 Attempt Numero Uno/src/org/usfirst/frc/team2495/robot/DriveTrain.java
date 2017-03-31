@@ -25,7 +25,7 @@ public class DriveTrain implements PIDOutput {
 	static final double REV_MULTI = 4 * Math.PI;
 	static final int TIMEOUT_MS = 15000;
 	static final double REV_THRESH = .125;
-	static final int RADIUS_DRIVEVETRAIN_INCHES = 13;
+	static final double RADIUS_DRIVEVETRAIN_INCHES = 12.5;
 	static final double MOVING_VOLTAGE_VOLTS = 4.0;
 	static final double MIN_ROTATE_PCT_VBUS = 0.3;
 	static final int DEGREE_THRESHOLD = 1;
