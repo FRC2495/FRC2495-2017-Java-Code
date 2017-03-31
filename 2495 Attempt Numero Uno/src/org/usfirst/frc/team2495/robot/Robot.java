@@ -176,7 +176,7 @@ public class Robot extends IterativeRobot {
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
 			drivetrain.angleSpotTurnUsingPidController(-60); // note: 120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
-			drivetrain.moveDistance(-50);
+			drivetrain.moveDistance(-40);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
@@ -192,7 +192,7 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case BaseBreak:
-			drivetrain.moveDistance(95);
+			drivetrain.moveDistance(-95);
 			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;

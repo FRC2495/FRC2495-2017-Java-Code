@@ -337,14 +337,14 @@ public class DriveTrain implements PIDOutput {
 			if(!held)
 			{
 				toVbs();
-				RF.set(-r.getY() * (5.0/8));
-				LF.set(-l.getY() * (5.0/8));
+				RF.set(-l.getY() * (5.0/8));
+				LF.set(-r.getY() * (5.0/8));
 			}
 			else
 			{
 				toVbs();
-				RF.set(-r.getY());
-				LF.set(-l.getY());
+				RF.set(-l.getY());
+				LF.set(-r.getY());
 			}
 		}
 	}
