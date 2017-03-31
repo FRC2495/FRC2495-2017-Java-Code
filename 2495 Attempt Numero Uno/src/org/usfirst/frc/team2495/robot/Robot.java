@@ -170,7 +170,7 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
-			drivetrain.moveDistance(-87);
+			drivetrain.moveDistance(-85);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
@@ -181,7 +181,7 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrabLeft:// TODO get measurements and fix this so its like GearGrab
-			drivetrain.moveDistance(-87);
+			drivetrain.moveDistance(-85);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only							
@@ -203,7 +203,7 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrabRightCamera:
-			drivetrain.moveDistance(-87);
+			drivetrain.moveDistance(-85);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
@@ -213,7 +213,7 @@ public class Robot extends IterativeRobot {
 			autoSelected = Nothing;
 			break;
 		case GearGrabLeftCamera:
-			drivetrain.moveDistance(-87);
+			drivetrain.moveDistance(-85);
 			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
