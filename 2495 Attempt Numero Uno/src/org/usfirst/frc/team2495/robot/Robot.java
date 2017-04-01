@@ -414,7 +414,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private void moveDistanceTowardGearLift() {
-		final int OFFSET_CAMERA_GEARLIFT_INCHES = 9; // we need to leave some space between the camera and the targets
+		final int OFFSET_CAMERA_GEARLIFT_INCHES = 10; // we need to leave some space between the camera and the targets
 		final int MAX_DISTANCE_TO_GEARLIFT_INCHES = 120; // arbitrary very large distance
 		
 		// NOTE: if both targets cannot be seen in full at short distance
