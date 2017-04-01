@@ -10,7 +10,7 @@
       <grip:Input step="0" socket="1">
         <value>
           <double>66.4406779661017</double>
-          <double>94.9732620320856</double>
+          <double>86.95187165775404</double>
         </value>
       </grip:Input>
       <grip:Input step="0" socket="2">
@@ -137,16 +137,20 @@
       <grip:Input step="3" socket="0"/>
     </grip:Connection>
     <grip:Connection>
-      <grip:Output step="3" socket="0" previewed="true"/>
-      <grip:Input step="4" socket="0"/>
-    </grip:Connection>
-    <grip:Connection>
       <grip:Output step="1" socket="0" previewed="false"/>
       <grip:Input step="2" socket="0"/>
     </grip:Connection>
     <grip:Connection>
       <grip:Output source="0" socket="0" previewed="false"/>
       <grip:Input step="0" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="3" socket="0" previewed="true"/>
+      <grip:Input step="4" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output source="0" socket="0" previewed="false"/>
+      <grip:Input step="6" socket="0"/>
     </grip:Connection>
     <grip:Connection>
       <grip:Output step="0" socket="0" previewed="true"/>
@@ -156,15 +160,11 @@
       <grip:Output step="4" socket="0" previewed="true"/>
       <grip:Input step="5" socket="0"/>
     </grip:Connection>
-    <grip:Connection>
-      <grip:Output source="0" socket="0" previewed="false"/>
-      <grip:Input step="6" socket="0"/>
-    </grip:Connection>
   </connections>
   <settings>
     <teamNumber>2495</teamNumber>
-    <publishAddress>roborio2495-frc</publishAddress>
-    <deployAddress>roborio-1089-frc</deployAddress>
+    <publishAddress>10.24.95.2</publishAddress>
+    <deployAddress>10.24.95.2</deployAddress>
     <deployDir>/home/lvuser</deployDir>
     <deployUser>admin</deployUser>
     <deployJavaHome>/usr/local/frc/JRE/</deployJavaHome>
