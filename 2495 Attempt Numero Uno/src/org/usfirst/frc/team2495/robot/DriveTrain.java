@@ -30,6 +30,8 @@ public class DriveTrain implements PIDOutput {
 	static final double MIN_ROTATE_PCT_VBUS = 0.3;
 	static final int DEGREE_THRESHOLD = 1;
 	
+	private int onTargetCount; // counter indicating how many times/iterations we were on target
+    private final static int ON_TARGET_MINIMUM_COUNT = 25; // number of times/iterations we need to be on target to really be on target
 	
 	// NOTE: it might make sense to decrease the PID controller period to 0.02 sec (which is the period used by the main loop)
 	static final double TURN_PID_CONTROLLER_PERIOD_SECONDS = .02; // 0.05 sec = 50 ms 
@@ -96,7 +98,8 @@ public class DriveTrain implements PIDOutput {
 		turnPidController.enable(); // begins running
 		
 		isTurning = true;
-		wasOnTarget = false; // resets the flag 
+		wasOnTarget = false; // resets the flag
+		onTargetCount = 0;
 	}
 	
 	public boolean checkAngleSpotTurnUsingPidController() {
@@ -147,6 +150,39 @@ public class DriveTrain implements PIDOutput {
 					// we are definitely turning
 				}
 			}
+			
+			if (!isTurning) {
+				System.out.println("You have reached the target (turning).");
+				stop();
+				toVbs();
+			}
+		}
+		return isTurning;
+	}
+	
+	// NOTICE: this method should only be tried with a tolerance buffer of one.
+	// It extends the concept of doublecheckAngleSpotTurnUsingPidController()
+	// by checking up to ON_TARGET_MINIMUM_COUNT times instead of just two.
+	// It relies on its own counter rather than hacking the tolerance buffer 
+	// as checkAngleSpotTurnUsingPidController() does when using a large tolerance buffer.
+	public boolean triplecheckAngleSpotTurnUsingPidController() {	
+		if (isTurning) {
+			boolean isOnTarget = turnPidController.onTarget();
+			
+			if (isOnTarget) { // if we are on target in this iteration 
+				onTargetCount++; // we increase the counter
+			} else { // if we are not on target in this iteration
+				if (onTargetCount > 0) { // even though we were on target at least once during a previous iteration
+					onTargetCount = 0; // we reset the counter as we are not on target anymore
+					System.out.println("Triple-check failed.");
+				} else {
+					// we are definitely turning
+				}
+			}
+			
+	        if (onTargetCount > ON_TARGET_MINIMUM_COUNT) { // if we have met the minimum
+	        	isTurning = false;
+	        }
 			
 			if (!isTurning) {
 				System.out.println("You have reached the target (turning).");
