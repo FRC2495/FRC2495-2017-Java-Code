@@ -1,5 +1,14 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="PID Error" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="581" y="73"/>
+	</widget>
+	<widget field="PID On Target" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="591" y="54"/>
+	</widget>
+	<widget field="PID Motor Value" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="592" y="31"/>
+	</widget>
 	<static-widget class="edu.wpi.grip.smartdashboard.GRIPExtension">
 		<location x="0" y="1"/>
 		<width>580</width>
@@ -35,7 +44,7 @@
 		<location x="582" y="350"/>
 	</widget>
 	<widget field="Alliterative Autoniomous Appointment" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
-		<location x="571" y="35"/>
+		<location x="1075" y="192"/>
 	</widget>
 	<widget field="Angle to Target" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="963" y="11"/>
