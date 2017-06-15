@@ -27,7 +27,7 @@ public class DriveTrain implements PIDOutput {
 	static final double REV_THRESH = .125;
 	static final double RADIUS_DRIVEVETRAIN_INCHES = 12.5;
 	static final double MOVING_VOLTAGE_VOLTS = 4.0;
-	static final double MIN_ROTATE_PCT_VBUS = 0.3;
+	static final double MIN_ROTATE_PCT_VBUS = 0.25;
 	static final int DEGREE_THRESHOLD = 1;
 	
 	private int onTargetCount; // counter indicating how many times/iterations we were on target
@@ -80,7 +80,8 @@ public class DriveTrain implements PIDOutput {
     	// Using a tolerance buffer of 3 with single checkAngleSpotTurnUsingPidController() could
     	// also be an option, but that would add another 50 ms to the turn
     	// (or whatever period is set if a non-default period is used)
-    	turnPidController.setToleranceBuffer(100); // indicates that we want two measurements before accepting that we are on target    	
+    	//turnPidController.setToleranceBuffer(100); // indicates that we want two measurements before accepting that we are on target    	
+    	turnPidController.setToleranceBuffer(1);
     	turnPidController.setInputRange(-180, 180); // valid input range 
     	turnPidController.setOutputRange(-.5, .5); // output range NOTE: might need to change signs
 	}
@@ -197,8 +198,8 @@ public class DriveTrain implements PIDOutput {
 	public void waitAngleSpotTurnUsingPidController() {
 		long start = Calendar.getInstance().getTimeInMillis();
 
-		//while (doublecheckAngleSpotTurnUsingPidController()) { 		
-		while (checkAngleSpotTurnUsingPidController()) { // NOTE: consider double-checking instead
+		while (triplecheckAngleSpotTurnUsingPidController()) { 		
+		//while (checkAngleSpotTurnUsingPidController()) { // NOTE: consider double-checking instead
 			if (!DriverStation.getInstance().isAutonomous()
 					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
 				System.out.println("You went over the time limit (turning)");

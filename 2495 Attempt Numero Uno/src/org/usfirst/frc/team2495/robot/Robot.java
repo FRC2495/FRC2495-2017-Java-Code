@@ -260,8 +260,8 @@ public class Robot extends IterativeRobot {
 		camera.acquireTargets(false);
 		
 		drivetrain.checkMoveDistance(); // checks if we are done moving if we were moving
-		//drivetrain.doublecheckAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning 	
-		drivetrain.checkAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning // NOTE: consider double-checking instead
+		drivetrain.triplecheckAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning 	
+		//drivetrain.checkAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning // NOTE: consider double-checking instead
 		//basinControl.checkHome();
 		//basinControl.checkMove();
 		
