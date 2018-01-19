@@ -31,6 +31,7 @@ public class DriveTrain implements PIDOutput {
 	static final int PRIMARY_PID_LOOP = 0;
 	static final int SLOT_0 = 0;
 	static final int TALON_TIMEOUT_MS = 10;
+	static final int TICKS_PER_REVOLUTION = 4096;
 	
 	private int onTargetCount; // counter indicating how many times/iterations we were on target
     private final static int ON_TARGET_MINIMUM_COUNT = 25; // number of times/iterations we need to be on target to really be on target
