@@ -2,10 +2,9 @@ package org.usfirst.frc.team2495.robot;
 
 import java.util.Calendar;
 
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
-import com.ctre.CANTalon.TalonControlMode;
-
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -18,7 +17,7 @@ public class DriveTrain implements PIDOutput {
 	double Ltac, Rtac;
 	boolean isMoving, isTurning;
 	boolean wasOnTarget;
-	CANTalon RR, RF, LR, LF; // [GA] avoid using all uppercase variable names -
+	TalonSRX RR, RF, LR, LF; // [GA] avoid using all uppercase variable names -
 								// reserve that for constants
 	ADXRS450_Gyro gyro;
 	
@@ -39,7 +38,7 @@ public class DriveTrain implements PIDOutput {
 	
 	PIDController turnPidController;
 
-	public DriveTrain(CANTalon rr, CANTalon rf, CANTalon lr, CANTalon lf, ADXRS450_Gyro gyro_in, Robot robot_in) {
+	public DriveTrain(TalonSRX rr, TalonSRX rf, TalonSRX lr, TalonSRX lf, ADXRS450_Gyro gyro_in, Robot robot_in) {
 		RR = rr; // sets the talons from the constructer to the talons used here
 		RF = rf;
 		LR = lr;
@@ -47,26 +46,23 @@ public class DriveTrain implements PIDOutput {
 		robot = robot_in;
 		gyro = gyro_in;	
 
-		RF.enableBrakeMode(true);// sets the talons on brake mode
-		RR.enableBrakeMode(true);
-		LR.enableBrakeMode(true);
-		LF.enableBrakeMode(true);
+//		RF.setNeutralMode(null);// sets the talons on brake mode
+//		RR.setNeutralMode(null);
+//		LR.setNeutralMode(null);
+//		LF.setNeutralMode(null);
 
 		// [GA] simply noting that unit of distance will be revolutions when
 		// using position mode as side effect of using CtreMagEncoder
-		RF.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
-		LF.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		RF.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+		LF.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		
-		RF.reverseOutput(true); // we need to reverse output
-		LF.reverseOutput(false); // no need to reverse output
 		
-		LF.reverseSensor(true); // lf encoder reversed
-		LF.setInverted(true); // lf motor reversed
+		LF.setSensorPhase(true); // lf encoder reversed
+		LF.setInverted(true); 
+		LR.setInverted(true);// lf motor reversed
 
-		LR.changeControlMode(TalonControlMode.Follower);
-		RR.changeControlMode(TalonControlMode.Follower);
-		LR.set(LF.getDeviceID());
-		RR.set(RF.getDeviceID());
+		LR.follow(LF);
+		RR.follow(RF);
 		// RF.setEncPosition(0);
 		// LF.setEncPosition(0);
 		
@@ -88,7 +84,7 @@ public class DriveTrain implements PIDOutput {
 
 	// this method needs to be paired with checkAngleSpotTurnUsingPidController()
 	public void angleSpotTurnUsingPidController(double angle) {
-		toVbs(); // switches to percentage vbus
+		  // switches to percentage vbus
 		stop(); // resets state
 		
 		gyro.reset(); // resets to zero for now
@@ -110,7 +106,7 @@ public class DriveTrain implements PIDOutput {
 			if (!isTurning) {
 				System.out.println("You have reached the target (turning).");
 				stop();
-				toVbs();
+				 
 			}
 
 		}
@@ -155,7 +151,7 @@ public class DriveTrain implements PIDOutput {
 			if (!isTurning) {
 				System.out.println("You have reached the target (turning).");
 				stop();
-				toVbs();
+				 
 			}
 		}
 		return isTurning;
@@ -188,7 +184,7 @@ public class DriveTrain implements PIDOutput {
 			if (!isTurning) {
 				System.out.println("You have reached the target (turning).");
 				stop();
-				toVbs();
+				 
 			}
 		}
 		return isTurning;
@@ -221,148 +217,144 @@ public class DriveTrain implements PIDOutput {
 	// this method needs to be paired with checkMoveDistance()
 	public void moveDistance(double dist) // moves the distance in inch given
 	{
-		toVbs();
-		RF.setPosition(0);
-		LF.setPosition(0);	
+		 	
 		//resetEncoders();
-		toEnc(MOVING_VOLTAGE_VOLTS);
+		//toEnc(MOVING_VOLTAGE_VOLTS);
 		Rtac = (dist / REV_MULTI);
 		Ltac = (dist / REV_MULTI);
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
-		RF.enableControl();
-		LF.enableControl();
-		RF.set(Rtac);
-		LF.set(Ltac);
+		RF.set(ControlMode.Position, Rtac);
+		LF.set(ControlMode.Position, Ltac);
 
 		isMoving = true;
 	}
 
-	public boolean checkMoveDistance() {
-		if (isMoving) {
-			double Renc = RF.getPosition(); 
-			double Lenc = LF.getPosition(); 
-			// System.out.println("Renc,Lenc" + Renc + " " + Lenc);
-			isMoving = !(Renc > Rtac - REV_THRESH && Renc < Rtac + REV_THRESH && Lenc > Ltac - REV_THRESH
-					&& Lenc < Ltac + REV_THRESH);
+//	public boolean checkMoveDistance() {
+//		if (isMoving) {
+//			double Renc = RF.getSelectedSensorPosition();
+//			double Lenc = LF.getPosition(); 
+//			// System.out.println("Renc,Lenc" + Renc + " " + Lenc);
+//			isMoving = !(Renc > Rtac - REV_THRESH && Renc < Rtac + REV_THRESH && Lenc > Ltac - REV_THRESH
+//					&& Lenc < Ltac + REV_THRESH);
+//
+//			if (!isMoving) {
+//				System.out.println("You have reached the target (moving).");
+//				stop();
+//				 
+//			}
+//		}
+//		return isMoving;
+//	}
+//
+//	// do not use in teleop - for auton only
+//	public void waitMoveDistance() {
+//		long start = Calendar.getInstance().getTimeInMillis();
+//		
+//		while (checkMoveDistance()) {
+//			if (!DriverStation.getInstance().isAutonomous()
+//					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
+//				System.out.println("You went over the time limit (moving)");
+//				stop();
+//				break;
+//			}
+//			
+//			try {
+//				Thread.sleep(20); // sleeps a little
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//			
+//			robot.updateToSmartDash();
+//		}
+//	}
 
-			if (!isMoving) {
-				System.out.println("You have reached the target (moving).");
-				stop();
-				toVbs();
-			}
-		}
-		return isMoving;
-	}
-
-	// do not use in teleop - for auton only
-	public void waitMoveDistance() {
-		long start = Calendar.getInstance().getTimeInMillis();
-		
-		while (checkMoveDistance()) {
-			if (!DriverStation.getInstance().isAutonomous()
-					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
-				System.out.println("You went over the time limit (moving)");
-				stop();
-				break;
-			}
-			
-			try {
-				Thread.sleep(20); // sleeps a little
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			robot.updateToSmartDash();
-		}
-	}
-
-	private double arclength(int angle) // returns the inches needed to be moved
-										// to turn the specified angle
-	{
-		return Math.toRadians(angle) * RADIUS_DRIVEVETRAIN_INCHES;
-	}
+//	private double arclength(int angle) // returns the inches needed to be moved
+//										// to turn the specified angle
+//	{
+//		return Math.toRadians(angle) * RADIUS_DRIVEVETRAIN_INCHES;
+//	}
 
 	// this method needs to be paired with checkMoveDistance()
-	public void moveDistanceAlongArc(int angle) {
-		double dist = arclength(angle);
-		double ldist, rdist;
-
-		ldist = dist;
-		rdist = -dist;
-		toVbs();
-		RF.setPosition(0);
-		LF.setPosition(0);	
-		//resetEncoders();
-
-		Rtac = (rdist / REV_MULTI);
-		Ltac = (ldist / REV_MULTI);
-		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
-		toEnc(MOVING_VOLTAGE_VOLTS);
-		RF.enableControl();
-		LF.enableControl();
-		RF.set(Rtac);
-		LF.set(Ltac);
-
-		isMoving = true;
-	}
+//	public void moveDistanceAlongArc(int angle) {
+//		double dist = arclength(angle);
+//		double ldist, rdist;
+//
+//		ldist = dist;
+//		rdist = -dist;
+//		 
+//		RF.setPosition(0);
+//		LF.setPosition(0);	
+//		//resetEncoders();
+//
+//		Rtac = (rdist / REV_MULTI);
+//		Ltac = (ldist / REV_MULTI);
+//		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
+//		toEnc(MOVING_VOLTAGE_VOLTS);
+//		RF.enableControl();
+//		LF.enableControl();
+//		RF.set(Rtac);
+//		LF.set(Ltac);
+//
+//		isMoving = true;
+//	}
 
 	public void moveForward() {
-		toVbs();
-		RF.set(.5);
-		LF.set(.5);
+		 
+		RF.set(ControlMode.PercentOutput, .5);
+		LF.set(ControlMode.PercentOutput, .5);
 	}
 
 	public void stop() {
 		turnPidController.disable(); // exits PID loop
-		toVbs();
-		RF.set(0);
-		LF.set(0);
+		 
+		RF.set(ControlMode.PercentOutput, 0);
+		LF.set(ControlMode.PercentOutput, 0);
 		isMoving = false;
 		isTurning = false;
 	}
 
 	// this method is blocking (will only return once the turn is completed if ever) - do not use in teleop
-	public void angleSpotTurn(int angle) // turns on the spot to the specified
-											// angle clockwise is positive
-											// movement
-	{
-		toVbs();
-		stop();
-		double current = gyro.getAngle();
-		double heading = angle + current;
-		while ((heading > gyro.getAngle() + 2 || heading < gyro.getAngle() - 2)
-				&& DriverStation.getInstance().isAutonomous()) { // NOTE: in teleop this condition is false, so the routine will exit right away
-			if (heading > gyro.getAngle() + 2) {
-				LF.set(.5);
-				RF.set(-.5);
-
-			} else if (heading < gyro.getAngle() - 2) {
-				LF.set(-.5);
-				RF.set(.5);
-			}
-		}
-		stop();
-	}
+//	public void angleSpotTurn(int angle) // turns on the spot to the specified
+//											// angle clockwise is positive
+//											// movement
+//	{
+//		 
+//		stop();
+//		double current = gyro.getAngle();
+//		double heading = angle + current;
+//		while ((heading > gyro.getAngle() + 2 || heading < gyro.getAngle() - 2)
+//				&& DriverStation.getInstance().isAutonomous()) { // NOTE: in teleop this condition is false, so the routine will exit right away
+//			if (heading > gyro.getAngle() + 2) {
+//				LF.set(.5);
+//				RF.set(-.5);
+//
+//			} else if (heading < gyro.getAngle() - 2) {
+//				LF.set(-.5);
+//				RF.set(.5);
+//			}
+//		}
+//		stop();
+//	}
 
 	// [GA] it would be better to call this method toEncPos() as encoders can
 	// also be used for other modes (e.g. speed)
-	public void toEnc(double forward) // sets the talons to encoder control
-	{
-		RF.setPID(0.4, 0, 0);
-		LF.setPID(0.4, 0, 0);
-		RF.changeControlMode(CANTalon.TalonControlMode.Position);
-		LF.changeControlMode(CANTalon.TalonControlMode.Position);
-		RF.configPeakOutputVoltage(forward, -forward);
-		LF.configPeakOutputVoltage(forward, -forward);
-		RF.configNominalOutputVoltage(0, 0);
-		LF.configNominalOutputVoltage(0, 0);
-	}
+//	public void toEnc(double forward) // sets the talons to encoder control
+//	{
+//		RF.setPID(0.4, 0, 0);
+//		LF.setPID(0.4, 0, 0);
+//		RF.changeControlMode(TalonSRX.TalonControlMode.Position);
+//		LF.changeControlMode(TalonSRX.TalonControlMode.Position);
+//		RF.configPeakOutputVoltage(forward, -forward);
+//		LF.configPeakOutputVoltage(forward, -forward);
+//		RF.configNominalOutputVoltage(0, 0);
+//		LF.configNominalOutputVoltage(0, 0);
+//	}
 
-	public void toVbs() // sets talons to voltage control
-	{
-		RF.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-		LF.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-	}
+//	public void toVbs() // sets talons to voltage control
+//	{
+//		RF.changeControlMode(TalonSRX.TalonControlMode.PercentVbus);
+//		LF.changeControlMode(TalonSRX.TalonControlMode.PercentVbus);
+//	}
 
 	// [GA] no issue when the joysticks are resting? [SP] yeah its fine when its
 	// resting
@@ -373,35 +365,35 @@ public class DriveTrain implements PIDOutput {
 		{
 			if(!held)
 			{
-				toVbs();
-				RF.set(-l.getY() * .75);
-				LF.set(-r.getY() * .75);
+				
+				RF.set(ControlMode.PercentOutput, -l.getY() * .75);
+				LF.set(ControlMode.PercentOutput, -r.getY() * .75);
 			}
 			else
 			{
-				toVbs();
-				RF.set(-l.getY());
-				LF.set(-r.getY());
+				
+				RF.set(ControlMode.PercentOutput, -l.getY());
+				LF.set(ControlMode.PercentOutput, -r.getY());
 			}
 		}
 	}
 
-	public int getREncVal() {
-		return (int) (RF.getEncPosition());
-	}
-
-	public int getLEncVal() {
-		return (int) (LF.getEncPosition());
-	}
-
-	public int getRVal() {
-		return (int) (RF.getPosition());
-	}
-
-	public int getLVal() {
-		return (int) (LF.getPosition());
-	}
-	
+//	public int getREncVal() {
+//		return (int) (RF.getEncPosition());
+//	}
+//
+//	public int getLEncVal() {
+//		return (int) (LF.getEncPosition());
+//	}
+//
+//	public int getRVal() {
+//		return (int) (RF.getPosition());
+//	}
+//
+//	public int getLVal() {
+//		return (int) (LF.getPosition());
+//	}
+//	
 	public boolean isMoving() {
 		return isMoving;
 	}
@@ -412,7 +404,7 @@ public class DriveTrain implements PIDOutput {
 
 	@Override
 	public void pidWrite(double output) {
-		toVbs();
+		
 		if(Math.abs(turnPidController.getError()) < DEGREE_THRESHOLD)
 		{
 			output = 0;
@@ -422,13 +414,13 @@ public class DriveTrain implements PIDOutput {
 			double sign = output > 0 ? 1.0 : -1.0;
 			output = MIN_ROTATE_PCT_VBUS * sign;
 		}
-		RF.set(+output);
-		LF.set(-output);		
+		RF.set(ControlMode.PercentOutput, +output);
+		LF.set(ControlMode.PercentOutput, -output);		
 	}
 	
-	public void resetEncoders() {
-		toVbs();
-		RF.setEncPosition(0);
-		LF.setEncPosition(0);
-	}
+//	public void resetEncoders() {
+//		 
+//		RF.setEncPosition(0);
+//		LF.setEncPosition(0);
+//	}
 }

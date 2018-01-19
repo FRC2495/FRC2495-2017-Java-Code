@@ -3,12 +3,13 @@ package org.usfirst.frc.team2495.robot;
 import java.util.Timer;
 import java.util.TimerTask;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 
 public class Take {
 	Timer timer;
-	CANTalon spin, climb;
+	TalonSRX spin, climb;
 	DoubleSolenoid outin, downup, gear;
 
 	public enum Position {
@@ -20,17 +21,17 @@ public class Take {
 		In,Out;
 	}
 
-	public Take(CANTalon spin_in, CANTalon climb_in) {
+	public Take(TalonSRX spin_in, TalonSRX climb_in) {
 		outin = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.INTAKE_OUT, Ports.PCM.INTAKE_IN);
 		downup = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.INTAKE_DOWN, Ports.PCM.INTAKE_UP);
 		gear = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.GEAR_IN, Ports.PCM.GEAR_OUT);
 		timer = new Timer();
 		spin = spin_in;
-		spin.enableBrakeMode(true);
-		spin.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+		//spin.enableNeutralMod(true);
+	
 		climb = climb_in;
-		climb.enableBrakeMode(true);
-		climb.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+		//climb.enableBrakeMode(true);
+		
 	}
 	
 	private TimerTask schedule(final Runnable r, long delay)
@@ -69,12 +70,12 @@ public class Take {
 	
 	public void setSpin(double speed)
 	{
-		spin.set(speed);
+		spin.set(ControlMode.PercentOutput, speed);
 	}
 	
 	public void setClimb(double speed)
 	{
-		climb.set(speed);
+		climb.set(ControlMode.PercentOutput, speed);
 	}
 	
 	public void setGearPosition(gearPosition pos)
