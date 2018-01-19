@@ -457,8 +457,8 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
       //  SmartDashboard.putNumber("Right Value", drivetrain.getRVal());
         //SmartDashboard.putNumber("Left Value", drivetrain.getLVal());
-      //  SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
-        //SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
+        SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
+        SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
         SmartDashboard.putBoolean("isMoving?", drivetrain.isMoving());
         SmartDashboard.putBoolean("isTurning?", drivetrain.isTurning());
         SmartDashboard.putBoolean("isCompromised?", DriverStation.getInstance().isDisabled());

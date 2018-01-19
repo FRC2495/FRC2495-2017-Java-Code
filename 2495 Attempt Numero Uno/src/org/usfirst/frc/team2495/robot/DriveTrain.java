@@ -28,6 +28,9 @@ public class DriveTrain implements PIDOutput {
 	static final double MOVING_VOLTAGE_VOLTS = 4.0;
 	static final double MIN_ROTATE_PCT_VBUS = 0.25;
 	static final int DEGREE_THRESHOLD = 1;
+	static final int PRIMARY_PID_LOOP = 0;
+	static final int SLOT_0 = 0;
+	static final int TALON_TIMEOUT_MS = 10;
 	
 	private int onTargetCount; // counter indicating how many times/iterations we were on target
     private final static int ON_TARGET_MINIMUM_COUNT = 25; // number of times/iterations we need to be on target to really be on target
@@ -53,11 +56,14 @@ public class DriveTrain implements PIDOutput {
 
 		// [GA] simply noting that unit of distance will be revolutions when
 		// using position mode as side effect of using CtreMagEncoder
-		RF.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		LF.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+		RF.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
+				PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
+		LF.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
+				PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
 		
 		
 		LF.setSensorPhase(true); // lf encoder reversed
+		RF.setSensorPhase(true);
 		LF.setInverted(true); 
 		LR.setInverted(true);// lf motor reversed
 
@@ -378,13 +384,13 @@ public class DriveTrain implements PIDOutput {
 		}
 	}
 
-//	public int getREncVal() {
-//		return (int) (RF.getEncPosition());
-//	}
+	public int getREncVal() {
+		return (int) (RF.getSelectedSensorPosition(PRIMARY_PID_LOOP));
+	}
 //
-//	public int getLEncVal() {
-//		return (int) (LF.getEncPosition());
-//	}
+	public int getLEncVal() {
+		return (int) (LF.getSelectedSensorPosition(PRIMARY_PID_LOOP));
+	}
 //
 //	public int getRVal() {
 //		return (int) (RF.getPosition());
