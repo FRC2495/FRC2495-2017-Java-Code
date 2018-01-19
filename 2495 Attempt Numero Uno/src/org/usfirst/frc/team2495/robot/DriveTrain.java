@@ -63,8 +63,8 @@ public class DriveTrain implements PIDOutput {
 				PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
 		
 		
-		LF.setSensorPhase(true); // lf encoder reversed
-		RF.setSensorPhase(true);
+		LF.setSensorPhase(false); // lf encoder reversed
+		RF.setSensorPhase(false);
 		LF.setInverted(true); 
 		LR.setInverted(true);// lf motor reversed
 
@@ -225,10 +225,10 @@ public class DriveTrain implements PIDOutput {
 	public void moveDistance(double dist) // moves the distance in inch given
 	{
 		 	
-		//resetEncoders();
+		resetEncoders();
 		//toEnc(MOVING_VOLTAGE_VOLTS);
-		Rtac = (dist / REV_MULTI);
-		Ltac = (dist / REV_MULTI);
+		Rtac = ((dist / REV_MULTI)*TICKS_PER_REVOLUTION);
+		Ltac = ((dist / REV_MULTI)*TICKS_PER_REVOLUTION);
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
 		RF.set(ControlMode.Position, Rtac);
 		LF.set(ControlMode.Position, Ltac);
@@ -236,22 +236,22 @@ public class DriveTrain implements PIDOutput {
 		isMoving = true;
 	}
 
-//	public boolean checkMoveDistance() {
-//		if (isMoving) {
-//			double Renc = RF.getSelectedSensorPosition();
-//			double Lenc = LF.getPosition(); 
-//			// System.out.println("Renc,Lenc" + Renc + " " + Lenc);
-//			isMoving = !(Renc > Rtac - REV_THRESH && Renc < Rtac + REV_THRESH && Lenc > Ltac - REV_THRESH
-//					&& Lenc < Ltac + REV_THRESH);
-//
-//			if (!isMoving) {
-//				System.out.println("You have reached the target (moving).");
-//				stop();
-//				 
-//			}
-//		}
-//		return isMoving;
-//	}
+	public boolean checkMoveDistance() {
+		if (isMoving) {
+			double Renc = RF.getSelectedSensorPosition(PRIMARY_PID_LOOP);
+			double Lenc = LF.getSelectedSensorPosition(PRIMARY_PID_LOOP); 
+			// System.out.println("Renc,Lenc" + Renc + " " + Lenc);
+			isMoving = !(Renc > Rtac - REV_THRESH && Renc < Rtac + REV_THRESH && Lenc > Ltac - REV_THRESH
+					&& Lenc < Ltac + REV_THRESH);
+
+			if (!isMoving) {
+				System.out.println("You have reached the target (moving).");
+				stop();
+				 
+			}
+		}
+		return isMoving;
+	}
 //
 //	// do not use in teleop - for auton only
 //	public void waitMoveDistance() {
@@ -373,14 +373,14 @@ public class DriveTrain implements PIDOutput {
 			if(!held)
 			{
 				
-				RF.set(ControlMode.PercentOutput, -l.getY() * .75);
-				LF.set(ControlMode.PercentOutput, -r.getY() * .75);
+				RF.set(ControlMode.PercentOutput, r.getY() * .75);
+				LF.set(ControlMode.PercentOutput, l.getY() * .75);
 			}
 			else
 			{
 				
-				RF.set(ControlMode.PercentOutput, -l.getY());
-				LF.set(ControlMode.PercentOutput, -r.getY());
+				RF.set(ControlMode.PercentOutput, r.getY());
+				LF.set(ControlMode.PercentOutput, l.getY());
 			}
 		}
 	}
@@ -392,15 +392,15 @@ public class DriveTrain implements PIDOutput {
 	public int getLEncVal() {
 		return (int) (LF.getSelectedSensorPosition(PRIMARY_PID_LOOP));
 	}
-//
-//	public int getRVal() {
-//		return (int) (RF.getPosition());
-//	}
-//
-//	public int getLVal() {
-//		return (int) (LF.getPosition());
-//	}
-//	
+
+	public int getRVal() {
+		return (int) ((RF.getSelectedSensorPosition(PRIMARY_PID_LOOP)*REV_MULTI)/TICKS_PER_REVOLUTION);
+	}
+
+	public int getLVal() {
+		return (int) ((LF.getSelectedSensorPosition(PRIMARY_PID_LOOP)*REV_MULTI)/TICKS_PER_REVOLUTION);
+	}
+	
 	public boolean isMoving() {
 		return isMoving;
 	}
@@ -425,9 +425,9 @@ public class DriveTrain implements PIDOutput {
 		LF.set(ControlMode.PercentOutput, -output);		
 	}
 	
-//	public void resetEncoders() {
-//		 
-//		RF.setEncPosition(0);
-//		LF.setEncPosition(0);
-//	}
+	public void resetEncoders() {
+		 
+		RF.setSelectedSensorPosition(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
+		LF.setSelectedSensorPosition(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
+	}
 }

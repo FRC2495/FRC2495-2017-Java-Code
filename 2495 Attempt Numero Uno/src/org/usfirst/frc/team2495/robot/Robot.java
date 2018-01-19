@@ -455,8 +455,8 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
         // send the gear status to dashboard
         SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
-      //  SmartDashboard.putNumber("Right Value", drivetrain.getRVal());
-        //SmartDashboard.putNumber("Left Value", drivetrain.getLVal());
+      SmartDashboard.putNumber("Right Value", drivetrain.getRVal());
+        SmartDashboard.putNumber("Left Value", drivetrain.getLVal());
         SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
         SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
         SmartDashboard.putBoolean("isMoving?", drivetrain.isMoving());

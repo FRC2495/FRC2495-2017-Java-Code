@@ -13,10 +13,10 @@ public class Ports {
 		}
 		
 		public static class CAN{
-			public static final int RIGHT_REAR = 1;
-			public static final int RIGHT_FRONT = 2;
-			public static final int LEFT_REAR = 3;
-			public static final int LEFT_FRONT = 4;
+			public static final int RIGHT_REAR = 3;
+			public static final int RIGHT_FRONT = 4;
+			public static final int LEFT_REAR = 1;
+			public static final int LEFT_FRONT = 2;
 			public static final int SPIN = 5;
 			public static final int CLIMB = 6;
 			public static final int BASIN = 7;
