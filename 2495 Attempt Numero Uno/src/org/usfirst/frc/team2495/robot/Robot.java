@@ -368,7 +368,7 @@ public class Robot extends IterativeRobot {
 		}
 		else if(control.getPressedDown(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN6))
 		{
-			drivetrain.moveDistance(5);
+			drivetrain.moveDistance(50);
 		}
 		
 //		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN6))

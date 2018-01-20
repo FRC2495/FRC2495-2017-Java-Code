@@ -23,7 +23,7 @@ public class DriveTrain implements PIDOutput {
 	
 	static final double REV_MULTI = 4 * Math.PI;
 	static final int TIMEOUT_MS = 15000;
-	static final double TICK_THRESH = 512;
+	static final double TICK_THRESH = /*512*/4096;
 	static final double RADIUS_DRIVEVETRAIN_INCHES = 12.5;
 	static final double MOVING_POWER = 0.3;
 	static final double MIN_ROTATE_PCT_VBUS = 0.25;
@@ -60,13 +60,17 @@ public class DriveTrain implements PIDOutput {
 		RF.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
 				PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
 		LF.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
-				PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
+				PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);		
 		
-		
-		LF.setSensorPhase(false); // lf encoder reversed
-		RF.setSensorPhase(false);
+		// how motors are wired
 		LF.setInverted(true); 
 		LR.setInverted(true);// lf motor reversed
+		
+		// encoder polarity
+		//LF.setSensorPhase(/*false*/true); // lf encoder reversed
+		//RF.setSensorPhase(/*false*/true);
+		LF.setSensorPhase(false); // lf encoder reversed
+		RF.setSensorPhase(false);
 
 		LR.follow(LF);
 		RR.follow(RF);
@@ -243,6 +247,11 @@ public class DriveTrain implements PIDOutput {
 			System.out.println("Rtac,Ltac" + Rtac + " " + Ltac);
 			System.out.println("Renc,Lenc" + Renc + " " + Lenc);
 			
+			double Rerror = RF.getClosedLoopError(PRIMARY_PID_LOOP);
+			double Lerror = LF.getClosedLoopError(PRIMARY_PID_LOOP);
+			
+			System.out.println("Rerror,Lerror" + Rerror + " " + Lerror);
+			
 			isMoving = !(Renc > Rtac - TICK_THRESH && Renc < Rtac + TICK_THRESH && Lenc > Ltac - TICK_THRESH
 					&& Lenc < Ltac + TICK_THRESH);
 
@@ -349,12 +358,15 @@ public class DriveTrain implements PIDOutput {
 	// also be used for other modes (e.g. speed)
 	public void setPIDParameters(double forward) // sets the talons to encoder control
 	{
-		RF.config_kP(PRIMARY_PID_LOOP, 0.4, TALON_TIMEOUT_MS);
-		RF.config_kI(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
-		RF.config_kD(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
-		LF.config_kP(PRIMARY_PID_LOOP, 0.4, TALON_TIMEOUT_MS);
-		LF.config_kI(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
-		LF.config_kD(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
+		RF.configAllowableClosedloopError(SLOT_0, 512, TALON_TIMEOUT_MS);
+		LF.configAllowableClosedloopError(SLOT_0, 512, TALON_TIMEOUT_MS);
+		
+		RF.config_kP(SLOT_0, 0.01, TALON_TIMEOUT_MS);
+		RF.config_kI(SLOT_0, 0, TALON_TIMEOUT_MS);
+		RF.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);
+		LF.config_kP(SLOT_0, 0.01, TALON_TIMEOUT_MS);
+		LF.config_kI(SLOT_0, 0, TALON_TIMEOUT_MS);
+		LF.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);
 		LF.configPeakOutputForward(forward, TALON_TIMEOUT_MS);
 		LF.configPeakOutputReverse(-forward, TALON_TIMEOUT_MS);
 		RF.configPeakOutputForward(forward, TALON_TIMEOUT_MS);
@@ -435,7 +447,7 @@ public class DriveTrain implements PIDOutput {
 	
 	public void resetEncoders() {
 		 
-		RF.setSelectedSensorPosition(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
-		LF.setSelectedSensorPosition(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
+		RF.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
+		LF.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
 	}
 }
