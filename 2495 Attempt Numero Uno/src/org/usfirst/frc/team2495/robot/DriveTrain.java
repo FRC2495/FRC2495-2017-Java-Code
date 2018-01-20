@@ -23,9 +23,9 @@ public class DriveTrain implements PIDOutput {
 	
 	static final double REV_MULTI = 4 * Math.PI;
 	static final int TIMEOUT_MS = 15000;
-	static final double REV_THRESH = .125;
+	static final double TICK_THRESH = 512;
 	static final double RADIUS_DRIVEVETRAIN_INCHES = 12.5;
-	static final double MOVING_VOLTAGE_VOLTS = 4.0;
+	static final double MOVING_POWER = 0.3;
 	static final double MIN_ROTATE_PCT_VBUS = 0.25;
 	static final int DEGREE_THRESHOLD = 1;
 	static final int PRIMARY_PID_LOOP = 0;
@@ -224,14 +224,13 @@ public class DriveTrain implements PIDOutput {
 	// this method needs to be paired with checkMoveDistance()
 	public void moveDistance(double dist) // moves the distance in inch given
 	{
-		 	
 		resetEncoders();
-		//toEnc(MOVING_VOLTAGE_VOLTS);
+		setPIDParameters(MOVING_POWER);
 		Rtac = ((dist / REV_MULTI)*TICKS_PER_REVOLUTION);
 		Ltac = ((dist / REV_MULTI)*TICKS_PER_REVOLUTION);
 		System.out.println("Rtac,Ltac " + Rtac + " " + Ltac);
-		RF.set(ControlMode.Position, Rtac);
-		LF.set(ControlMode.Position, Ltac);
+		RF.set(ControlMode.Position, -Rtac);
+		LF.set(ControlMode.Position, -Ltac);
 
 		isMoving = true;
 	}
@@ -240,9 +239,12 @@ public class DriveTrain implements PIDOutput {
 		if (isMoving) {
 			double Renc = RF.getSelectedSensorPosition(PRIMARY_PID_LOOP);
 			double Lenc = LF.getSelectedSensorPosition(PRIMARY_PID_LOOP); 
-			// System.out.println("Renc,Lenc" + Renc + " " + Lenc);
-			isMoving = !(Renc > Rtac - REV_THRESH && Renc < Rtac + REV_THRESH && Lenc > Ltac - REV_THRESH
-					&& Lenc < Ltac + REV_THRESH);
+			
+			System.out.println("Rtac,Ltac" + Rtac + " " + Ltac);
+			System.out.println("Renc,Lenc" + Renc + " " + Lenc);
+			
+			isMoving = !(Renc > Rtac - TICK_THRESH && Renc < Rtac + TICK_THRESH && Lenc > Ltac - TICK_THRESH
+					&& Lenc < Ltac + TICK_THRESH);
 
 			if (!isMoving) {
 				System.out.println("You have reached the target (moving).");
@@ -345,17 +347,23 @@ public class DriveTrain implements PIDOutput {
 
 	// [GA] it would be better to call this method toEncPos() as encoders can
 	// also be used for other modes (e.g. speed)
-//	public void toEnc(double forward) // sets the talons to encoder control
-//	{
-//		RF.setPID(0.4, 0, 0);
-//		LF.setPID(0.4, 0, 0);
-//		RF.changeControlMode(TalonSRX.TalonControlMode.Position);
-//		LF.changeControlMode(TalonSRX.TalonControlMode.Position);
-//		RF.configPeakOutputVoltage(forward, -forward);
-//		LF.configPeakOutputVoltage(forward, -forward);
-//		RF.configNominalOutputVoltage(0, 0);
-//		LF.configNominalOutputVoltage(0, 0);
-//	}
+	public void setPIDParameters(double forward) // sets the talons to encoder control
+	{
+		RF.config_kP(PRIMARY_PID_LOOP, 0.4, TALON_TIMEOUT_MS);
+		RF.config_kI(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
+		RF.config_kD(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
+		LF.config_kP(PRIMARY_PID_LOOP, 0.4, TALON_TIMEOUT_MS);
+		LF.config_kI(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
+		LF.config_kD(PRIMARY_PID_LOOP, 0, TALON_TIMEOUT_MS);
+		LF.configPeakOutputForward(forward, TALON_TIMEOUT_MS);
+		LF.configPeakOutputReverse(-forward, TALON_TIMEOUT_MS);
+		RF.configPeakOutputForward(forward, TALON_TIMEOUT_MS);
+		RF.configPeakOutputReverse(-forward, TALON_TIMEOUT_MS);
+		RF.configNominalOutputForward(0, 0);
+		LF.configNominalOutputForward(0, 0);
+		RF.configNominalOutputReverse(0, 0);
+		LF.configNominalOutputReverse(0, 0);	
+	}
 
 //	public void toVbs() // sets talons to voltage control
 //	{

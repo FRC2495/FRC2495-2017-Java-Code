@@ -258,7 +258,7 @@ public class Robot extends IterativeRobot {
 		control.update();
 		camera.acquireTargets(false);
 		
-		//drivetrain.checkMoveDistance(); // checks if we are done moving if we were moving
+		drivetrain.checkMoveDistance(); // checks if we are done moving if we were moving
 		drivetrain.triplecheckAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning 	
 		//drivetrain.checkAngleSpotTurnUsingPidController(); // checks if we are done turning if we were turning // NOTE: consider double-checking instead
 		//basinControl.checkHome();
@@ -334,7 +334,6 @@ public class Robot extends IterativeRobot {
 		{
 			take.setClimb(0);		
 		}
-		// Camera *Sigh*
 		
 		//Stops the robot moving if pressed
 		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN3) || 
@@ -366,6 +365,10 @@ public class Robot extends IterativeRobot {
 		{
 			//drivetrain.moveDistanceAlongArc(+90);
 			drivetrain.angleSpotTurnUsingPidController(+90);
+		}
+		else if(control.getPressedDown(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN6))
+		{
+			drivetrain.moveDistance(5);
 		}
 		
 //		if(control.getPressedDown(ControllerBase.Joysticks.LEFT_STICK, ControllerBase.JoystickButtons.BTN6))
