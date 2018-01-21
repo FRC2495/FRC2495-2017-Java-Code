@@ -1,7 +1,9 @@
 package org.usfirst.frc.team2495.robot;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
+//import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class HMCamera {
 	private static final int BAD_INDEX = -1;
@@ -21,7 +23,8 @@ public class HMCamera {
 	private static final double CAMERA_CATCHUP_DELAY_SECS = 0.250;
 
 	public HMCamera(String networktable) {
-		nt = NetworkTable.getTable(networktable);
+		// nt = NetworkTable.getTable(networktable);
+		nt = NetworkTableInstance.getDefault().getTable(networktable);
 	}
 
 	private void setLocalTables(double[] area, double[] width, double[] height, double[] centerX, double[] centerY) {
@@ -43,9 +46,12 @@ public class HMCamera {
 		// have the same size
 		do {
 			// Get data from NetworkTable
-			setLocalTables(nt.getNumberArray("area", def), nt.getNumberArray("width", def),
-					nt.getNumberArray("height", def), nt.getNumberArray("centerX", def),
-					nt.getNumberArray("centerY", def));
+			//setLocalTables(nt.getNumberArray("area", def), nt.getNumberArray("width", def),
+			//		nt.getNumberArray("height", def), nt.getNumberArray("centerX", def),
+			//		nt.getNumberArray("centerY", def));			
+			setLocalTables(nt.getEntry("area").getDoubleArray(def), nt.getEntry("width").getDoubleArray(def),
+					nt.getEntry("height").getDoubleArray(def), nt.getEntry("centerX").getDoubleArray(def),
+					nt.getEntry("centerY").getDoubleArray(def));
 
 			retry_count++;
 		} while (!isCoherent() && retry_count < MAX_NT_RETRY);
