@@ -144,7 +144,7 @@ public class DriveTrain implements PIDOutput {
 			} else { // if we are not on target in this iteration
 				if (onTargetCount > 0) { // even though we were on target at least once during a previous iteration
 					onTargetCount = 0; // we reset the counter as we are not on target anymore
-					System.out.println("Triple-check failed.");
+					System.out.println("Triple-check failed (turning).");
 				} else {
 					// we are definitely turning
 				}
@@ -199,6 +199,8 @@ public class DriveTrain implements PIDOutput {
 		lf.set(ControlMode.Position, -ltac);
 
 		isMoving = true;
+		wasOnTarget = false; // resets the flag
+		onTargetCount = 0;
 	}
 
 	public boolean checkMoveDistance() {
@@ -226,10 +228,42 @@ public class DriveTrain implements PIDOutput {
 		return isMoving;
 	}
 
+	public boolean tripleCheckMoveDistance() {
+		if (isMoving) {
+			
+			double rerror = rf.getClosedLoopError(PRIMARY_PID_LOOP);
+			double lerror = lf.getClosedLoopError(PRIMARY_PID_LOOP);
+			
+			boolean isOnTarget = (Math.abs(rerror) < TICK_THRESH && Math.abs(lerror) < TICK_THRESH);
+			
+			if (isOnTarget) { // if we are on target in this iteration 
+				onTargetCount++; // we increase the counter
+			} else { // if we are not on target in this iteration
+				if (onTargetCount > 0) { // even though we were on target at least once during a previous iteration
+					onTargetCount = 0; // we reset the counter as we are not on target anymore
+					System.out.println("Triple-check failed (moving).");
+				} else {
+					// we are definitely moving
+				}
+			}
+			
+	        if (onTargetCount > ON_TARGET_MINIMUM_COUNT) { // if we have met the minimum
+	        	isMoving = false;
+	        }
+			
+			if (!isMoving) {
+				System.out.println("You have reached the target (moving).");
+				stop();				 
+			}
+		}
+		return isMoving;
+	}	
+	
 	// do not use in teleop - for auton only
 	public void waitMoveDistance() {
 		long start = Calendar.getInstance().getTimeInMillis();
 		
+		//while (triplecheckMoveDistance()) {
 		while (checkMoveDistance()) {
 			if (!DriverStation.getInstance().isAutonomous()
 					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
