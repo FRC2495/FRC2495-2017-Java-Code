@@ -16,7 +16,7 @@ public class Basin {
 	
 	boolean isHomingPart1, isHomingPart2, isMoving;
 	
-	static final double REV_THRESH = .125;
+	static final double TICK_THRESH = 512;
 	static final double OFFSET_INCHES = 1;
 	static final double GEAR_RATIO = 187.0 / 2;
 	static final double HOMING_POWER = 0.1;
@@ -103,7 +103,7 @@ public class Basin {
 		} else if (isHomingPart2) {
 			double enc = basin.getSelectedSensorPosition(PRIMARY_PID_LOOP);
 
-			isHomingPart2 = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
+			isHomingPart2 = !(enc > tac - TICK_THRESH && enc < tac + TICK_THRESH);
 
 			if (!isHomingPart2) {
 				System.out.println("You have reached the virtual zero.");
@@ -128,7 +128,7 @@ public class Basin {
 		if (isMoving) {
 			double enc = basin.getSelectedSensorPosition(PRIMARY_PID_LOOP);
 
-			isMoving = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
+			isMoving = !(enc > tac - TICK_THRESH && enc < tac + TICK_THRESH);
 
 			if (!isMoving) {
 				System.out.println("You have reached the target (basin moving).");
