@@ -4,12 +4,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 
 public class Take {
 	Timer timer;
-	TalonSRX spin, climb;
+	WPI_TalonSRX spin, climb;
 	DoubleSolenoid outin, downup, gear;
 
 	public enum Position {
@@ -21,16 +23,18 @@ public class Take {
 		In,Out;
 	}
 
-	public Take(TalonSRX spin_in, TalonSRX climb_in) {
+	public Take(WPI_TalonSRX spin_in, WPI_TalonSRX climb_in) {
 		outin = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.INTAKE_OUT, Ports.PCM.INTAKE_IN);
 		downup = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.INTAKE_DOWN, Ports.PCM.INTAKE_UP);
 		gear = new DoubleSolenoid(Ports.CAN.PCM, Ports.PCM.GEAR_IN, Ports.PCM.GEAR_OUT);
 		timer = new Timer();
 		spin = spin_in;
-		//spin.enableNeutralMod(true);
+		//spin.enableBrakeMode(true);
+		spin.setNeutralMode(NeutralMode.Brake);
 	
 		climb = climb_in;
 		//climb.enableBrakeMode(true);
+		climb.setNeutralMode(NeutralMode.Brake);
 		
 	}
 	

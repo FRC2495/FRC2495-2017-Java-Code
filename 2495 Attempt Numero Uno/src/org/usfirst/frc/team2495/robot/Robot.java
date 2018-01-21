@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -38,10 +40,10 @@ public class Robot extends IterativeRobot {
 
 	HMCamera camera;
 
-	TalonSRX RR;
-	TalonSRX RF;
-	TalonSRX LR;
-	TalonSRX LF;
+	WPI_TalonSRX rr;
+	WPI_TalonSRX rf;
+	WPI_TalonSRX lr;
+	WPI_TalonSRX lf;
 
 	Joystick right; // The Joysticks
 	Joystick left;
@@ -56,7 +58,7 @@ public class Robot extends IterativeRobot {
 	Timer time = new Timer(); // generic timer
 
 	Take take;
-	TalonSRX spin, climb;
+	WPI_TalonSRX spin, climb;
 	
 	ControllerBase control;
 	
@@ -86,16 +88,16 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Gera Grabber Left Side With Vision", GearGrabLeftCamera);
 		chooser.addObject("Nothing", Nothing);
 
-		RR = new TalonSRX(Ports.CAN.RIGHT_REAR); // The CANTalons
-		RF = new TalonSRX(Ports.CAN.RIGHT_FRONT);
-		LR = new TalonSRX(Ports.CAN.LEFT_REAR);
-		LF = new TalonSRX(Ports.CAN.LEFT_FRONT);
-		spin = new TalonSRX(Ports.CAN.SPIN);//intake spin motor
-		climb = new TalonSRX(Ports.CAN.CLIMB); // climber motor 
-		//basin = new TalonSRX(Ports.CAN.BASIN);
+		rr = new WPI_TalonSRX(Ports.CAN.RIGHT_REAR); // The CANTalons
+		rf = new WPI_TalonSRX(Ports.CAN.RIGHT_FRONT);
+		lr = new WPI_TalonSRX(Ports.CAN.LEFT_REAR);
+		lf = new WPI_TalonSRX(Ports.CAN.LEFT_FRONT);
+		spin = new WPI_TalonSRX(Ports.CAN.SPIN);//intake spin motor
+		climb = new WPI_TalonSRX(Ports.CAN.CLIMB); // climber motor 
+		//basin = new WPI_TalonSRX(Ports.CAN.BASIN);
 
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); // we want to instantiate before we pass to drivetrain		
-		drivetrain = new DriveTrain(RR, RF, LR, LF, gyro, this);
+		drivetrain = new DriveTrain(rr, rf, lr, lf, gyro, this);
 		camera = new HMCamera("GRIP/myContoursReport");
  
 		compressor = new Compressor();
@@ -165,45 +167,45 @@ public class Robot extends IterativeRobot {
 			break;
 		case GearGrab:
 			drivetrain.moveDistance(-75);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
 		case GearGrabRight:// TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(-85);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
 			drivetrain.angleSpotTurnUsingPidController(-60); // note: 120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-40);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
 		case GearGrabLeft:// TODO get measurements and fix this so its like GearGrab
 			drivetrain.moveDistance(-85);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only							
 			drivetrain.angleSpotTurnUsingPidController(60);// note: -120 degrees should be enough when using gyro
 			drivetrain.waitAngleSpotTurnUsingPidController(); // for angleSpotTurnUsingPidController() only
 			drivetrain.moveDistance(-40);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
 		case BaseBreak:
 			drivetrain.moveDistance(-95);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			autoSelected = Nothing;
 			break;
 		case GearGrabCamera:
 			drivetrain.moveDistance(-45);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			visionBasedGearPlacingInAuton();
 			autoSelected = Nothing;
 			break;
 		case GearGrabRightCamera:
 			drivetrain.moveDistance(-85);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
 			drivetrain.angleSpotTurnUsingPidController(-60); // note: 120 degrees should be enough when using gyro
@@ -213,7 +215,7 @@ public class Robot extends IterativeRobot {
 			break;
 		case GearGrabLeftCamera:
 			drivetrain.moveDistance(-85);
-			//drivetrain.waitMoveDistance();
+			drivetrain.waitMoveDistance();
 			//drivetrain.moveDistanceAlongArc(-135); 
 			//drivetrain.waitMoveDistance(); // for moveDistanceAlongArc() only					
 			drivetrain.angleSpotTurnUsingPidController(60); // note: 120 degrees should be enough when using gyro
@@ -445,10 +447,10 @@ public class Robot extends IterativeRobot {
 		drivetrain.waitAngleSpotTurnUsingPidController();
 		camera.acquireTargets(true);
 		moveDistanceTowardGearLift();
-		//drivetrain.waitMoveDistance();
+		drivetrain.waitMoveDistance();
 		take.setGearPosition(Take.gearPosition.Out);
 		drivetrain.moveDistance(12);
-		//drivetrain.waitMoveDistance();
+		drivetrain.waitMoveDistance();
 		take.setGearPosition(Take.gearPosition.In);
 	}
 	
@@ -458,7 +460,7 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
         // send the gear status to dashboard
         SmartDashboard.putBoolean("Gear Good?", camera.checkForGearLift());
-      SmartDashboard.putNumber("Right Value", drivetrain.getRVal());
+        SmartDashboard.putNumber("Right Value", drivetrain.getRVal());
         SmartDashboard.putNumber("Left Value", drivetrain.getLVal());
         SmartDashboard.putNumber("Right Enc Value", drivetrain.getREncVal());
         SmartDashboard.putNumber("Left Enc Value", drivetrain.getLEncVal());
