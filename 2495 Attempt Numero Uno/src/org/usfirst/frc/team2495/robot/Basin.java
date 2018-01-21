@@ -1,11 +1,15 @@
-/*
 package org.usfirst.frc.team2495.robot;
 
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class Basin {
-	CANTalon basin;
+	WPI_TalonSRX basin;
 	
 	static final double SCREW_PITCH_INCHES_PER_REV = .75;
 	static final int LENGTH_OF_SCREW_INCHES = 11;
@@ -15,19 +19,32 @@ public class Basin {
 	static final double REV_THRESH = .125;
 	static final double OFFSET_INCHES = 1;
 	static final double GEAR_RATIO = 187.0 / 2;
-	static final double HOMING_VOLTAGE = 0.1;
-	static final double MOVING_VOLTAGE_VOLTS = 4.0;
+	static final double HOMING_POWER = 0.1;
+	static final double MOVING_POWER = 0.3;
+	
+	static final int PRIMARY_PID_LOOP = 0;
+	static final int SLOT_0 = 0;
+	static final int TALON_TIMEOUT_MS = 10;
+	static final int TICKS_PER_REVOLUTION = 4096;
 	
 	double tac;
 	boolean hasBeenHomed = false;
 
-	public Basin(CANTalon basin_in) {
+	public Basin(WPI_TalonSRX basin_in) {
 		basin = basin_in;
-		basin.enableBrakeMode(true); // enables break mode
-		basin.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-		basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
+		basin.setNeutralMode(NeutralMode.Brake);
+		
+		//basin.setSensorPhase(false);
+
+		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
+		basin.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, TALON_TIMEOUT_MS);
+		basin.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, TALON_TIMEOUT_MS);
+		basin.overrideLimitSwitchesEnable(true); // Phoenix framework does not give control on which limit switch is enabled, so enabling both
+				
 		basin.setInverted(false);
-		basin.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative); // specifies encoder used
+		
+		basin.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,	PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
+		
 		isHomingPart1 = false;
 		isHomingPart2 = false;
 		isMoving = false;
@@ -35,34 +52,36 @@ public class Basin {
 
 	// returns the state of the limit switch
 	public boolean getLimitSwitchState() {
-		return basin.isRevLimitSwitchClosed();
+		return basin.getSensorCollection().isRevLimitSwitchClosed();
 	}
 
 	private void homePart1() {
 		// assumes toVbs() already called
-		basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
-		basin.set(HOMING_VOLTAGE); // we start moving down
+		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
+		basin.overrideLimitSwitchesEnable(true); // Phoenix framework does not give control on which limit switch is enabled, so enabling both
+		basin.set(ControlMode.PercentOutput,HOMING_POWER); // we start moving down
 		isHomingPart1 = true;
 	}
 	
 	private void homePart2() {
-		basin.set(0); // we stop
-		basin.setPosition(0); // we set the current position to zero	
-		toEncPosition(MOVING_VOLTAGE_VOLTS); // we switch to position mode
-		basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
-		basin.enableControl(); // we enable control
-		tac = -convertInchesToRev(OFFSET_INCHES);
-		basin.set(tac); // we move to virtual zero
+		basin.set(ControlMode.PercentOutput,0); // we stop
+		basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we set the current position to zero	
+		setPIDParameters(MOVING_POWER); // we switch to position mode
+		//basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
+		basin.overrideLimitSwitchesEnable(false); // Phoenix framework does not give control on which limit switch is enabled, so disabling both
+		////basin.enableControl(); // we enable control
+		tac = -convertInchesToRev(OFFSET_INCHES) * TICKS_PER_REVOLUTION;
+		basin.set(ControlMode.Position,tac); // we move to virtual zero
 		isHomingPart2 = true;
 	}
 	
 	// homes the basin
 	public void home() {
 		hasBeenHomed = false; // flags that it has not been homed
-		toVbs(); // switches to vbs
+		//toVbs(); // switches to vbs
 		
 		if (!getLimitSwitchState()) { // if we are not already at the switch
-			//isHomingPart1 = tru	e; // we need to go down to find limit switch					
+			//isHomingPart1 = true; // we need to go down to find limit switch					
 			homePart1();
 			isHomingPart2 = true; // then we need to go to virtual zero later
 		} else {
@@ -82,7 +101,7 @@ public class Basin {
 				homePart2(); // we move on to part 2
 			}
 		} else if (isHomingPart2) {
-			double enc = basin.getPosition();
+			double enc = basin.getSelectedSensorPosition(PRIMARY_PID_LOOP);
 
 			isHomingPart2 = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
 
@@ -94,9 +113,10 @@ public class Basin {
 					System.out.println("HOW?!?!?!??!");
 					e.printStackTrace();
 				}
-				toVbs(); // we switch back to vbus
-				basin.setPosition(0); // we mark the virtual zero
-				basin.enableLimitSwitch(false, true); // just in case
+				//toVbs(); // we switch back to vbus
+				basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we mark the virtual zero
+				//basin.enableLimitSwitch(false, true); // just in case
+				basin.overrideLimitSwitchesEnable(true); // Phoenix framework does not give control on which limit switch is enabled, so enabling both
 				hasBeenHomed = true;
 			}
 		}
@@ -106,14 +126,14 @@ public class Basin {
 
 	public boolean checkMove() {
 		if (isMoving) {
-			double enc = basin.getPosition();
+			double enc = basin.getSelectedSensorPosition(PRIMARY_PID_LOOP);
 
 			isMoving = !(enc > tac - REV_THRESH && enc < tac + REV_THRESH);
 
 			if (!isMoving) {
 				System.out.println("You have reached the target (basin moving).");
-				toVbs();
-				basin.set(0);
+				//toVbs();
+				basin.set(ControlMode.PercentOutput,0);
 			}
 		}
 		return isMoving;
@@ -121,11 +141,11 @@ public class Basin {
 
 	public void moveUp() {
 		if (hasBeenHomed) {
-			toEncPosition(MOVING_VOLTAGE_VOLTS);
+			setPIDParameters(MOVING_POWER);
 			System.out.println("Moving Up");
-			basin.enableControl();
-			tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES);
-			basin.set(tac);
+			//basin.enableControl();
+			tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES) * TICKS_PER_REVOLUTION;
+			basin.set(ControlMode.Position,tac);
 			isMoving = true;
 		} else {
 			System.out.println("You have not been home, your mother must be worried sick");
@@ -134,11 +154,11 @@ public class Basin {
 
 	public void moveDown() {
 		if (hasBeenHomed) {
-			toEncPosition(MOVING_VOLTAGE_VOLTS);
+			setPIDParameters(MOVING_POWER);
 			System.out.println("Moving Down");
-			basin.enableControl();
-			tac = -convertInchesToRev(0);
-			basin.set(tac);
+			//basin.enableControl();
+			tac = -convertInchesToRev(0)* TICKS_PER_REVOLUTION;
+			basin.set(ControlMode.Position,tac);
 			isMoving = true;
 		} else {
 			System.out.println("You have not been home, your mother must be worried sick");
@@ -146,11 +166,11 @@ public class Basin {
 	}
 
 	public double getPosition() {
-		return basin.getPosition();
+		return basin.getSelectedSensorPosition(PRIMARY_PID_LOOP) / TICKS_PER_REVOLUTION;
 	}
 
 	public double getEncPosition() {
-		return basin.getEncPosition();
+		return basin.getSelectedSensorPosition(PRIMARY_PID_LOOP);
 	}
 
 	public boolean isHoming() {
@@ -169,16 +189,37 @@ public class Basin {
 		return rev * SCREW_PITCH_INCHES_PER_REV / GEAR_RATIO;
 	}
 
-	private void toVbs() {
-		basin.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-	}
-
-	private void toEncPosition(double forward) {
-		basin.setPID(0.4, 0, 0);
-		basin.changeControlMode(CANTalon.TalonControlMode.Position);
-		basin.configPeakOutputVoltage(forward, -forward);
-		basin.configNominalOutputVoltage(0, 0);
-		basin.configNominalOutputVoltage(0, 0);
+	private void setPIDParameters(double forward) {		
+		basin.configAllowableClosedloopError(SLOT_0, 0, TALON_TIMEOUT_MS);
+		
+		// P is the proportional gain. It modifies the closed-loop output by a proportion (the gain value)
+		// of the closed-loop error.
+		// P gain is specified in output unit per error unit.
+		// When tuning P, it's useful to estimate your starting value.
+		// If you want your mechanism to drive 50% output when the error is 4096 (one rotation when using CTRE Mag Encoder),
+		// then the calculated Proportional Gain would be (0.50 X 1023) / 4096 = ~0.125.
+		
+		// I is the integral gain. It modifies the closed-loop output according to the integral error
+		// (summation of the closed-loop error each iteration).
+		// I gain is specified in output units per integrated error.
+		// If your mechanism never quite reaches your target and using integral gain is viable,
+		// start with 1/100th of the Proportional Gain.
+		
+		// D is the derivative gain. It modifies the closed-loop output according to the derivative error
+		// (change in closed-loop error each iteration).
+		// D gain is specified in output units per derivative error.
+		// If your mechanism accelerates too abruptly, Derivative Gain can be used to smooth the motion.
+		// Typically start with 10x to 100x of your current Proportional Gain.
+		
+		basin.config_kP(SLOT_0, 0.4, TALON_TIMEOUT_MS);
+		basin.config_kI(SLOT_0, 0, TALON_TIMEOUT_MS);
+		basin.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);
+		
+		basin.configPeakOutputForward(forward, TALON_TIMEOUT_MS);
+		basin.configPeakOutputReverse(-forward, TALON_TIMEOUT_MS);
+		
+		basin.configNominalOutputForward(0, TALON_TIMEOUT_MS);
+		basin.configNominalOutputReverse(0, TALON_TIMEOUT_MS);		
 	}
 
 	public double getTarget() {
@@ -191,4 +232,3 @@ public class Basin {
 	}
 
 }
-*/
