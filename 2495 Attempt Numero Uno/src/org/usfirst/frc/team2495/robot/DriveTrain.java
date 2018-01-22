@@ -195,9 +195,13 @@ public class DriveTrain implements PIDOutput {
 		
 		rtac = dist / PERIMETER_WHEEL_INCHES * TICKS_PER_REVOLUTION;
 		ltac = dist / PERIMETER_WHEEL_INCHES * TICKS_PER_REVOLUTION;
+		
+		rtac = - rtac; // account for fact that front of robot is back from sensor's point of view
+		ltac = - ltac;
+		
 		System.out.println("rtac, ltac: " + rtac + ", " + ltac);
-		rf.set(ControlMode.Position, -rtac);
-		lf.set(ControlMode.Position, -ltac);
+		rf.set(ControlMode.Position, rtac);
+		lf.set(ControlMode.Position, ltac);
 
 		isMoving = true;
 		wasOnTarget = false; // resets the flag
@@ -209,13 +213,13 @@ public class DriveTrain implements PIDOutput {
 			double renc = rf.getSelectedSensorPosition(PRIMARY_PID_LOOP);
 			double lenc = lf.getSelectedSensorPosition(PRIMARY_PID_LOOP); 
 			
-			System.out.println("rtac, ltac: " + rtac + ", " + ltac);
-			System.out.println("renc, lenc: " + renc + ", " + lenc);
+			//System.out.println("rtac, ltac: " + rtac + ", " + ltac);
+			//System.out.println("renc, lenc: " + renc + ", " + lenc);
 			
 			double rerror = rf.getClosedLoopError(PRIMARY_PID_LOOP);
 			double lerror = lf.getClosedLoopError(PRIMARY_PID_LOOP);
 			
-			System.out.println("rerror, lerror: " + rerror + ", " + lerror);
+			//System.out.println("rerror, lerror: " + rerror + ", " + lerror);
 			
 			isMoving = !(renc > rtac - TICK_THRESH && renc < rtac + TICK_THRESH && lenc > ltac - TICK_THRESH
 					&& lenc < ltac + TICK_THRESH);
@@ -326,8 +330,8 @@ public class DriveTrain implements PIDOutput {
 
 	public void setPIDParameters(double forward) // sets the talons to encoder control
 	{
-		rf.configAllowableClosedloopError(SLOT_0, 512, TALON_TIMEOUT_MS);
-		lf.configAllowableClosedloopError(SLOT_0, 512, TALON_TIMEOUT_MS);
+		rf.configAllowableClosedloopError(SLOT_0, 128, TALON_TIMEOUT_MS);
+		lf.configAllowableClosedloopError(SLOT_0, 128, TALON_TIMEOUT_MS);
 		
 		// P is the proportional gain. It modifies the closed-loop output by a proportion (the gain value)
 		// of the closed-loop error.
@@ -348,11 +352,11 @@ public class DriveTrain implements PIDOutput {
 		// If your mechanism accelerates too abruptly, Derivative Gain can be used to smooth the motion.
 		// Typically start with 10x to 100x of your current Proportional Gain.
 		
-		rf.config_kP(SLOT_0, 0.01, TALON_TIMEOUT_MS);
+		rf.config_kP(SLOT_0, 0.4, TALON_TIMEOUT_MS);
 		rf.config_kI(SLOT_0, 0, TALON_TIMEOUT_MS);
 		rf.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);
 		
-		lf.config_kP(SLOT_0, 0.01, TALON_TIMEOUT_MS);
+		lf.config_kP(SLOT_0, 0.4, TALON_TIMEOUT_MS);
 		lf.config_kI(SLOT_0, 0, TALON_TIMEOUT_MS);
 		lf.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);
 		
@@ -374,7 +378,7 @@ public class DriveTrain implements PIDOutput {
 		{
 			if(!held)
 			{
-				
+
 				rf.set(ControlMode.PercentOutput, r.getY() * .75);
 				lf.set(ControlMode.PercentOutput, l.getY() * .75);
 			}
