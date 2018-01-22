@@ -71,7 +71,7 @@ public class DriveTrain implements PIDOutput {
 				PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);	
 
 		// Sensor phase is the term used to explain sensor direction.
-		// In order for limit switches and closed-loop features to function properly the sensor and motor has to be “in-phase.”
+		// In order for limit switches and closed-loop features to function properly the sensor and motor has to be in-phase.
 		// This means that the sensor position must move in a positive direction as the motor controller drives positive output.  
 		lf.setSensorPhase(true);
 		rf.setSensorPhase(true);	
@@ -97,11 +97,12 @@ public class DriveTrain implements PIDOutput {
 		
     	//creates a PID controller
 		turnPidController = new PIDController(0.04, 0.0, 0.0, gyro, this, TURN_PID_CONTROLLER_PERIOD_SECONDS);
-    	turnPidController.setContinuous(true); // because -180 degrees is the same as 180 degrees
-    	turnPidController.setAbsoluteTolerance(DEGREE_THRESHOLD); // 1 degree error tolerated
     	
     	turnPidController.setInputRange(-180, 180); // valid input range 
     	turnPidController.setOutputRange(-.5, .5); // output range NOTE: might need to change signs
+    	
+    	turnPidController.setContinuous(true); // because -180 degrees is the same as 180 degrees (needs input range to be defined first)
+    	turnPidController.setAbsoluteTolerance(DEGREE_THRESHOLD); // 1 degree error tolerated
 	}
 
 	// this method needs to be paired with checkAngleSpotTurnUsingPidController()
