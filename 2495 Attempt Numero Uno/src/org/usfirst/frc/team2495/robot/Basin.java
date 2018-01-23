@@ -39,7 +39,7 @@ public class Basin {
 		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
 		basin.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, TALON_TIMEOUT_MS);
 		basin.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, TALON_TIMEOUT_MS);
-		basin.overrideLimitSwitchesEnable(true); // Phoenix framework does not give control on which limit switch is enabled, so enabling both
+		basin.overrideLimitSwitchesEnable(true);
 				
 		basin.setInverted(false);
 		
@@ -64,7 +64,7 @@ public class Basin {
 	private void homePart1() {
 		// assumes toVbs() already called
 		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
-		basin.overrideLimitSwitchesEnable(true); // Phoenix framework does not give control on which limit switch is enabled, so enabling both
+		basin.configReverseSoftLimitEnable(true, TALON_TIMEOUT_MS);
 		basin.set(ControlMode.PercentOutput,HOMING_POWER); // we start moving down
 		isHomingPart1 = true;
 	}
@@ -74,7 +74,7 @@ public class Basin {
 		basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we set the current position to zero	
 		setPIDParameters(); // we switch to position mode
 		//basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
-		basin.overrideLimitSwitchesEnable(false); // Phoenix framework does not give control on which limit switch is enabled, so disabling both
+		basin.configReverseSoftLimitEnable(false, TALON_TIMEOUT_MS);
 		////basin.enableControl(); // we enable control
 		tac = -convertInchesToRev(OFFSET_INCHES) * TICKS_PER_REVOLUTION;
 		basin.set(ControlMode.Position,tac); // we move to virtual zero
@@ -122,7 +122,7 @@ public class Basin {
 				//toVbs(); // we switch back to vbus
 				basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we mark the virtual zero
 				//basin.enableLimitSwitch(false, true); // just in case
-				basin.overrideLimitSwitchesEnable(true); // Phoenix framework does not give control on which limit switch is enabled, so enabling both
+				basin.configReverseSoftLimitEnable(true, TALON_TIMEOUT_MS);
 				hasBeenHomed = true;
 			}
 		}
@@ -181,6 +181,14 @@ public class Basin {
 
 	public boolean isHoming() {
 		return isHomingPart1 || isHomingPart2;
+	}
+	
+	public boolean isHomingPart1() {
+		return isHomingPart1;
+	}
+	
+	public boolean isHomingPart2() {
+		return isHomingPart2;
 	}
 
 	public boolean isMoving() {
