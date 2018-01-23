@@ -41,7 +41,7 @@ public class Basin {
 		basin.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, TALON_TIMEOUT_MS);
 		basin.overrideLimitSwitchesEnable(true);
 				
-		basin.setInverted(false);
+		basin.setInverted(false); // invert if required
 		
 		basin.configPeakOutputForward(MOVING_POWER, TALON_TIMEOUT_MS);
 		basin.configPeakOutputReverse(-MOVING_POWER, TALON_TIMEOUT_MS);
@@ -64,7 +64,7 @@ public class Basin {
 	private void homePart1() {
 		// assumes toVbs() already called
 		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
-		basin.configReverseSoftLimitEnable(true, TALON_TIMEOUT_MS);
+		basin.overrideLimitSwitchesEnable(true);
 		basin.set(ControlMode.PercentOutput,-HOMING_POWER); // we start moving down
 		isHomingPart1 = true;
 	}
@@ -74,9 +74,9 @@ public class Basin {
 		basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we set the current position to zero	
 		setPIDParameters(); // we switch to position mode
 		//basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
-		basin.configReverseSoftLimitEnable(false, TALON_TIMEOUT_MS);
+		basin.overrideLimitSwitchesEnable(false);
 		////basin.enableControl(); // we enable control
-		tac = -convertInchesToRev(OFFSET_INCHES) * TICKS_PER_REVOLUTION;
+		tac = +convertInchesToRev(OFFSET_INCHES) * TICKS_PER_REVOLUTION;
 		basin.set(ControlMode.Position,tac); // we move to virtual zero
 		isHomingPart2 = true;
 	}
@@ -122,7 +122,7 @@ public class Basin {
 				//toVbs(); // we switch back to vbus
 				basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we mark the virtual zero
 				//basin.enableLimitSwitch(false, true); // just in case
-				basin.configReverseSoftLimitEnable(true, TALON_TIMEOUT_MS);
+				basin.overrideLimitSwitchesEnable(true);
 				hasBeenHomed = true;
 			}
 		}
@@ -150,7 +150,7 @@ public class Basin {
 			setPIDParameters();
 			System.out.println("Moving Up");
 			//basin.enableControl();
-			tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES) * TICKS_PER_REVOLUTION;
+			tac = +convertInchesToRev(LENGTH_OF_SCREW_INCHES) * TICKS_PER_REVOLUTION;
 			basin.set(ControlMode.Position,tac);
 			isMoving = true;
 		} else {
