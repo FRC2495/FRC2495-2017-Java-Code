@@ -26,7 +26,7 @@ public class DriveTrain implements PIDOutput {
 	static final int TIMEOUT_MS = 15000;
 	static final double TICK_THRESH = 512;
 	static final double RADIUS_DRIVEVETRAIN_INCHES = 12.5;
-	static final double MOVING_POWER = 1.0;
+	static final double PEAK_OUTPUT = 1.0;
 	static final double MIN_ROTATE_PCT_VBUS = 0.25;
 	static final int DEGREE_THRESHOLD = 1;
 	static final int PRIMARY_PID_LOOP = 0;
@@ -92,10 +92,10 @@ public class DriveTrain implements PIDOutput {
 		lr.follow(lf);
 		rr.follow(rf);
 		
-		lf.configPeakOutputForward(MOVING_POWER, TALON_TIMEOUT_MS);
-		lf.configPeakOutputReverse(-MOVING_POWER, TALON_TIMEOUT_MS);
-		rf.configPeakOutputForward(MOVING_POWER, TALON_TIMEOUT_MS);
-		rf.configPeakOutputReverse(-MOVING_POWER, TALON_TIMEOUT_MS);
+		lf.configPeakOutputForward(PEAK_OUTPUT, TALON_TIMEOUT_MS);
+		lf.configPeakOutputReverse(-PEAK_OUTPUT, TALON_TIMEOUT_MS);
+		rf.configPeakOutputForward(PEAK_OUTPUT, TALON_TIMEOUT_MS);
+		rf.configPeakOutputReverse(-PEAK_OUTPUT, TALON_TIMEOUT_MS);
 		
 		rf.configNominalOutputForward(0, TALON_TIMEOUT_MS);
 		lf.configNominalOutputForward(0, TALON_TIMEOUT_MS);

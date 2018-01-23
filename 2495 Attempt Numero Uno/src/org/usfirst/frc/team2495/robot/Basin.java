@@ -19,8 +19,8 @@ public class Basin {
 	static final double TICK_THRESH = 512;
 	static final double OFFSET_INCHES = 1;
 	static final double GEAR_RATIO = 187.0 / 2;
-	static final double HOMING_POWER = 0.1;
-	static final double MOVING_POWER = 0.3;
+	static final double HOMING_OUTPUT = 0.1;
+	static final double PEAK_OUTPUT = 0.3;
 	
 	static final int PRIMARY_PID_LOOP = 0;
 	static final int SLOT_0 = 0;
@@ -43,8 +43,8 @@ public class Basin {
 				
 		basin.setInverted(false); // invert if required
 		
-		basin.configPeakOutputForward(MOVING_POWER, TALON_TIMEOUT_MS);
-		basin.configPeakOutputReverse(-MOVING_POWER, TALON_TIMEOUT_MS);
+		basin.configPeakOutputForward(PEAK_OUTPUT, TALON_TIMEOUT_MS);
+		basin.configPeakOutputReverse(-PEAK_OUTPUT, TALON_TIMEOUT_MS);
 		
 		basin.configNominalOutputForward(0, TALON_TIMEOUT_MS);
 		basin.configNominalOutputReverse(0, TALON_TIMEOUT_MS);	
@@ -65,7 +65,7 @@ public class Basin {
 		// assumes toVbs() already called
 		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
 		basin.overrideLimitSwitchesEnable(true);
-		basin.set(ControlMode.PercentOutput,-HOMING_POWER); // we start moving down
+		basin.set(ControlMode.PercentOutput,-HOMING_OUTPUT); // we start moving down
 		isHomingPart1 = true;
 	}
 	
