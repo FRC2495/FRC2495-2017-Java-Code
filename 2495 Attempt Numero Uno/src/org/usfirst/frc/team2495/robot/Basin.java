@@ -34,7 +34,7 @@ public class Basin {
 		basin = basin_in;
 		basin.setNeutralMode(NeutralMode.Brake);
 		
-		//basin.setSensorPhase(false);
+		basin.setSensorPhase(false);
 
 		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
 		basin.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, TALON_TIMEOUT_MS);
@@ -65,7 +65,7 @@ public class Basin {
 		// assumes toVbs() already called
 		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
 		basin.configReverseSoftLimitEnable(true, TALON_TIMEOUT_MS);
-		basin.set(ControlMode.PercentOutput,HOMING_POWER); // we start moving down
+		basin.set(ControlMode.PercentOutput,-HOMING_POWER); // we start moving down
 		isHomingPart1 = true;
 	}
 	
