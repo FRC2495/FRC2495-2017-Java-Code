@@ -43,6 +43,12 @@ public class Basin {
 				
 		basin.setInverted(false);
 		
+		basin.configPeakOutputForward(MOVING_POWER, TALON_TIMEOUT_MS);
+		basin.configPeakOutputReverse(-MOVING_POWER, TALON_TIMEOUT_MS);
+		
+		basin.configNominalOutputForward(0, TALON_TIMEOUT_MS);
+		basin.configNominalOutputReverse(0, TALON_TIMEOUT_MS);	
+		
 		basin.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,	PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
 		
 		isHomingPart1 = false;
@@ -66,7 +72,7 @@ public class Basin {
 	private void homePart2() {
 		basin.set(ControlMode.PercentOutput,0); // we stop
 		basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we set the current position to zero	
-		setPIDParameters(MOVING_POWER); // we switch to position mode
+		setPIDParameters(); // we switch to position mode
 		//basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
 		basin.overrideLimitSwitchesEnable(false); // Phoenix framework does not give control on which limit switch is enabled, so disabling both
 		////basin.enableControl(); // we enable control
@@ -141,7 +147,7 @@ public class Basin {
 
 	public void moveUp() {
 		if (hasBeenHomed) {
-			setPIDParameters(MOVING_POWER);
+			setPIDParameters();
 			System.out.println("Moving Up");
 			//basin.enableControl();
 			tac = -convertInchesToRev(LENGTH_OF_SCREW_INCHES) * TICKS_PER_REVOLUTION;
@@ -154,7 +160,7 @@ public class Basin {
 
 	public void moveDown() {
 		if (hasBeenHomed) {
-			setPIDParameters(MOVING_POWER);
+			setPIDParameters();
 			System.out.println("Moving Down");
 			//basin.enableControl();
 			tac = -convertInchesToRev(0)* TICKS_PER_REVOLUTION;
@@ -189,7 +195,7 @@ public class Basin {
 		return rev * SCREW_PITCH_INCHES_PER_REV / GEAR_RATIO;
 	}
 
-	private void setPIDParameters(double forward) {		
+	private void setPIDParameters() {		
 		basin.configAllowableClosedloopError(SLOT_0, 0, TALON_TIMEOUT_MS);
 		
 		// P is the proportional gain. It modifies the closed-loop output by a proportion (the gain value)
@@ -213,13 +219,7 @@ public class Basin {
 		
 		basin.config_kP(SLOT_0, 0.4, TALON_TIMEOUT_MS);
 		basin.config_kI(SLOT_0, 0, TALON_TIMEOUT_MS);
-		basin.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);
-		
-		basin.configPeakOutputForward(forward, TALON_TIMEOUT_MS);
-		basin.configPeakOutputReverse(-forward, TALON_TIMEOUT_MS);
-		
-		basin.configNominalOutputForward(0, TALON_TIMEOUT_MS);
-		basin.configNominalOutputReverse(0, TALON_TIMEOUT_MS);		
+		basin.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);		
 	}
 
 	public double getTarget() {
