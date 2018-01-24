@@ -26,8 +26,8 @@ public class DriveTrain implements PIDOutput {
 	static final int TIMEOUT_MS = 15000;
 	static final double TICK_THRESH = 512;
 	static final double RADIUS_DRIVEVETRAIN_INCHES = 12.5;
-	static final double PEAK_OUTPUT = 1.0;
-	static final double MIN_ROTATE_PCT_VBUS = 0.25;
+	static final double MAX_PCT_OUTPUT = 1.0;
+	static final double MIN_ROTATE_PCT_OUTPUT = 0.25;
 	static final int DEGREE_THRESHOLD = 1;
 	static final int PRIMARY_PID_LOOP = 0;
 	static final int SLOT_0 = 0;
@@ -39,6 +39,7 @@ public class DriveTrain implements PIDOutput {
 	
 	// NOTE: it might make sense to decrease the PID controller period to 0.02 sec (which is the period used by the main loop)
 	static final double TURN_PID_CONTROLLER_PERIOD_SECONDS = .02; // 0.05 sec = 50 ms 
+	
 	Robot robot;
 	
 	PIDController turnPidController;
@@ -92,16 +93,8 @@ public class DriveTrain implements PIDOutput {
 		lr.follow(lf);
 		rr.follow(rf);
 		
-		lf.configPeakOutputForward(PEAK_OUTPUT, TALON_TIMEOUT_MS);
-		lf.configPeakOutputReverse(-PEAK_OUTPUT, TALON_TIMEOUT_MS);
-		rf.configPeakOutputForward(PEAK_OUTPUT, TALON_TIMEOUT_MS);
-		rf.configPeakOutputReverse(-PEAK_OUTPUT, TALON_TIMEOUT_MS);
-		
-		rf.configNominalOutputForward(0, TALON_TIMEOUT_MS);
-		lf.configNominalOutputForward(0, TALON_TIMEOUT_MS);
-		rf.configNominalOutputReverse(0, TALON_TIMEOUT_MS);
-		lf.configNominalOutputReverse(0, TALON_TIMEOUT_MS);	
-		
+		setNominalAndPeakOutputs(MAX_PCT_OUTPUT);
+				
 		// rf.setEncPosition(0);
 		// lf.setEncPosition(0);
 		
@@ -278,8 +271,8 @@ public class DriveTrain implements PIDOutput {
 	public void waitMoveDistance() {
 		long start = Calendar.getInstance().getTimeInMillis();
 		
-		//while (triplecheckMoveDistance()) {
-		while (checkMoveDistance()) {
+		while (tripleCheckMoveDistance()) {
+		//while (checkMoveDistance()) {
 			if (!DriverStation.getInstance().isAutonomous()
 					|| Calendar.getInstance().getTimeInMillis() - start >= TIMEOUT_MS) {
 				System.out.println("You went over the time limit (moving)");
@@ -338,7 +331,7 @@ public class DriveTrain implements PIDOutput {
 		isTurning = false;
 	}
 
-	public void setPIDParameters() // sets the talons to encoder control
+	public void setPIDParameters()
 	{
 		rf.configAllowableClosedloopError(SLOT_0, 128, TALON_TIMEOUT_MS);
 		lf.configAllowableClosedloopError(SLOT_0, 128, TALON_TIMEOUT_MS);
@@ -369,6 +362,19 @@ public class DriveTrain implements PIDOutput {
 		lf.config_kP(SLOT_0, 0.4, TALON_TIMEOUT_MS);
 		lf.config_kI(SLOT_0, 0, TALON_TIMEOUT_MS);
 		lf.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);		
+	}
+	
+	public void setNominalAndPeakOutputs(double peakOutput)
+	{
+		lf.configPeakOutputForward(peakOutput, TALON_TIMEOUT_MS);
+		lf.configPeakOutputReverse(-peakOutput, TALON_TIMEOUT_MS);
+		rf.configPeakOutputForward(peakOutput, TALON_TIMEOUT_MS);
+		rf.configPeakOutputReverse(-peakOutput, TALON_TIMEOUT_MS);
+		
+		rf.configNominalOutputForward(0, TALON_TIMEOUT_MS);
+		lf.configNominalOutputForward(0, TALON_TIMEOUT_MS);
+		rf.configNominalOutputReverse(0, TALON_TIMEOUT_MS);
+		lf.configNominalOutputReverse(0, TALON_TIMEOUT_MS);
 	}
 
 	public void joystickControl(Joystick r, Joystick l, boolean held) // sets talons to
@@ -422,10 +428,10 @@ public class DriveTrain implements PIDOutput {
 		{
 			output = 0;
 		}
-		if(output != 0 && Math.abs(output) < MIN_ROTATE_PCT_VBUS)
+		if(output != 0 && Math.abs(output) < MIN_ROTATE_PCT_OUTPUT)
 		{
 			double sign = output > 0 ? 1.0 : -1.0;
-			output = MIN_ROTATE_PCT_VBUS * sign;
+			output = MIN_ROTATE_PCT_OUTPUT * sign;
 		}
 		rf.set(ControlMode.PercentOutput, +output);
 		lf.set(ControlMode.PercentOutput, -output);		

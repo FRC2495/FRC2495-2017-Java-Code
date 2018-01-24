@@ -19,8 +19,8 @@ public class Basin {
 	static final double TICK_THRESH = 512;
 	static final double OFFSET_INCHES = 1;
 	static final double GEAR_RATIO = 187.0 / 2;
-	static final double HOMING_OUTPUT = 0.1;
-	static final double PEAK_OUTPUT = 0.3;
+	static final double HOMING_PCT_OUTPUT = 0.1;
+	static final double MAX_PCT_OUTPUT = 0.3;
 	
 	static final int PRIMARY_PID_LOOP = 0;
 	static final int SLOT_0 = 0;
@@ -32,23 +32,35 @@ public class Basin {
 
 	public Basin(WPI_TalonSRX basin_in) {
 		basin = basin_in;
+		
+		// Mode of operation during Neutral output may be set by using the setNeutralMode() function.
+		// As of right now, there are two options when setting the neutral mode of a motor controller,
+		// brake and coast.	
 		basin.setNeutralMode(NeutralMode.Brake);
 		
+		// Sensor phase is the term used to explain sensor direction.
+		// In order for limit switches and closed-loop features to function properly the sensor and motor has to be in-phase.
+		// This means that the sensor position must move in a positive direction as the motor controller drives positive output.
 		basin.setSensorPhase(false);
 
 		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
 		basin.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, TALON_TIMEOUT_MS);
 		basin.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, TALON_TIMEOUT_MS);
 		basin.overrideLimitSwitchesEnable(true);
-				
+
+		// Motor controller output direction can be set by calling the setInverted() function as seen below.
+		// Note: Regardless of invert value, the LEDs will blink green when positive output is requested (by robot code or firmware closed loop).
+		// Only the motor leads are inverted. This feature ensures that sensor phase and limit switches will properly match the LED pattern
+		// (when LEDs are green => forward limit switch and soft limits are being checked). 	
 		basin.setInverted(false); // invert if required
 		
-		basin.configPeakOutputForward(PEAK_OUTPUT, TALON_TIMEOUT_MS);
-		basin.configPeakOutputReverse(-PEAK_OUTPUT, TALON_TIMEOUT_MS);
-		
-		basin.configNominalOutputForward(0, TALON_TIMEOUT_MS);
-		basin.configNominalOutputReverse(0, TALON_TIMEOUT_MS);	
-		
+		setNominalAndPeakOutputs(MAX_PCT_OUTPUT);
+
+		// Sensors for motor controllers provide feedback about the position, velocity, and acceleration
+		// of the system using that motor controller.
+		// Note: With Phoenix framework, position units are in the natural units of the sensor.
+		// This ensures the best resolution possible when performing closed-loops in firmware.
+		// CTRE Magnetic Encoder (relative/quadrature) =  4096 units per rotation		
 		basin.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,	PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
 		
 		isHomingPart1 = false;
@@ -64,8 +76,8 @@ public class Basin {
 	private void homePart1() {
 		// assumes toVbs() already called
 		//basin.enableLimitSwitch(false, true); // enables limit switch only on reverse (i.e. bottom)
-		basin.overrideLimitSwitchesEnable(true);
-		basin.set(ControlMode.PercentOutput,-HOMING_OUTPUT); // we start moving down
+		//basin.overrideLimitSwitchesEnable(true);
+		basin.set(ControlMode.PercentOutput,-HOMING_PCT_OUTPUT); // we start moving down
 		isHomingPart1 = true;
 	}
 	
@@ -74,7 +86,7 @@ public class Basin {
 		basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we set the current position to zero	
 		setPIDParameters(); // we switch to position mode
 		//basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
-		basin.overrideLimitSwitchesEnable(false);
+		//basin.overrideLimitSwitchesEnable(false);
 		////basin.enableControl(); // we enable control
 		tac = +convertInchesToRev(OFFSET_INCHES) * TICKS_PER_REVOLUTION;
 		basin.set(ControlMode.Position,tac); // we move to virtual zero
@@ -122,7 +134,7 @@ public class Basin {
 				//toVbs(); // we switch back to vbus
 				basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we mark the virtual zero
 				//basin.enableLimitSwitch(false, true); // just in case
-				basin.overrideLimitSwitchesEnable(true);
+				//basin.overrideLimitSwitchesEnable(true);
 				hasBeenHomed = true;
 			}
 		}
@@ -230,6 +242,15 @@ public class Basin {
 		basin.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);		
 	}
 
+	public void setNominalAndPeakOutputs(double peakOutput)
+	{
+		basin.configPeakOutputForward(peakOutput, TALON_TIMEOUT_MS);
+		basin.configPeakOutputReverse(-peakOutput, TALON_TIMEOUT_MS);
+		
+		basin.configNominalOutputForward(0, TALON_TIMEOUT_MS);
+		basin.configNominalOutputForward(0, TALON_TIMEOUT_MS);
+	}
+	
 	public double getTarget() {
 		return tac;
 	}
