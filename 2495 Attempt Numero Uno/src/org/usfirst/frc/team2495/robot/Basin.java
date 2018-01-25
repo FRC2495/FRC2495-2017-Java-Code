@@ -82,7 +82,7 @@ public class Basin {
 	}
 	
 	private void homePart2() {
-		basin.set(ControlMode.PercentOutput,0); // we stop
+		basin.set(ControlMode.PercentOutput,0); // we stop AND MAKE SURE WE DO NOT MOVE WHEN SETTING POSITION
 		basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we set the current position to zero	
 		setPIDParameters(); // we switch to position mode
 		//basin.enableLimitSwitch(false, false); // we disable stop on switch so we can move out
@@ -115,6 +115,7 @@ public class Basin {
 
 			if (!isHomingPart1) {
 				System.out.println("You have reached the home.");
+				basin.set(ControlMode.PercentOutput,0); // turn power off
 				
 				homePart2(); // we move on to part 2
 			}
@@ -132,6 +133,7 @@ public class Basin {
 					e.printStackTrace();
 				}
 				//toVbs(); // we switch back to vbus
+				basin.set(ControlMode.PercentOutput,0); // we stop AND MAKE SURE WE DO NOT MOVE WHEN SETTING POSITION
 				basin.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS); // we mark the virtual zero
 				//basin.enableLimitSwitch(false, true); // just in case
 				//basin.overrideLimitSwitchesEnable(true);
