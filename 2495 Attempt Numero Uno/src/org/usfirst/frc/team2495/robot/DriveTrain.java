@@ -18,7 +18,6 @@ public class DriveTrain implements PIDOutput {
 
 	double ltac, rtac;
 	boolean isMoving, isTurning;
-	boolean wasOnTarget;
 	WPI_TalonSRX rr, rf, lr, lf;
 	ADXRS450_Gyro gyro;
 	
@@ -27,6 +26,7 @@ public class DriveTrain implements PIDOutput {
 	static final double TICK_THRESH = 512;
 	static final double RADIUS_DRIVEVETRAIN_INCHES = 12.5;
 	static final double MAX_PCT_OUTPUT = 1.0;
+	static final double REDUCED_PCT_OUTPUT = 0.5;
 	static final double MIN_ROTATE_PCT_OUTPUT = 0.25;
 	static final int DEGREE_THRESHOLD = 1;
 	static final int PRIMARY_PID_LOOP = 0;
@@ -121,7 +121,6 @@ public class DriveTrain implements PIDOutput {
 		turnPidController.enable(); // begins running
 		
 		isTurning = true;
-		wasOnTarget = false; // resets the flag
 		onTargetCount = 0;
 	}
 	
@@ -195,6 +194,7 @@ public class DriveTrain implements PIDOutput {
 	{
 		resetEncoders();
 		setPIDParameters();
+		setNominalAndPeakOutputs(REDUCED_PCT_OUTPUT); //this has a global impact, so we reset in stop()
 		
 		rtac = dist / PERIMETER_WHEEL_INCHES * TICKS_PER_REVOLUTION;
 		ltac = dist / PERIMETER_WHEEL_INCHES * TICKS_PER_REVOLUTION;
@@ -207,7 +207,6 @@ public class DriveTrain implements PIDOutput {
 		lf.set(ControlMode.Position, ltac);
 
 		isMoving = true;
-		wasOnTarget = false; // resets the flag
 		onTargetCount = 0;
 	}
 
@@ -219,8 +218,8 @@ public class DriveTrain implements PIDOutput {
 			//System.out.println("rtac, ltac: " + rtac + ", " + ltac);
 			//System.out.println("renc, lenc: " + renc + ", " + lenc);
 			
-			double rerror = rf.getClosedLoopError(PRIMARY_PID_LOOP);
-			double lerror = lf.getClosedLoopError(PRIMARY_PID_LOOP);
+			//double rerror = rf.getClosedLoopError(PRIMARY_PID_LOOP);
+			//double lerror = lf.getClosedLoopError(PRIMARY_PID_LOOP);
 			
 			//System.out.println("rerror, lerror: " + rerror + ", " + lerror);
 			
@@ -329,6 +328,8 @@ public class DriveTrain implements PIDOutput {
 		
 		isMoving = false;
 		isTurning = false;
+		
+		setNominalAndPeakOutputs(MAX_PCT_OUTPUT); // we undo what me might have changed
 	}
 
 	public void setPIDParameters()
@@ -364,6 +365,7 @@ public class DriveTrain implements PIDOutput {
 		lf.config_kD(SLOT_0, 0, TALON_TIMEOUT_MS);		
 	}
 	
+	// NOTE THAT THIS METHOD WILL IMPACT BOTH OPEN AND CLOSED LOOP MODES
 	public void setNominalAndPeakOutputs(double peakOutput)
 	{
 		lf.configPeakOutputForward(peakOutput, TALON_TIMEOUT_MS);
@@ -437,6 +439,8 @@ public class DriveTrain implements PIDOutput {
 		lf.set(ControlMode.PercentOutput, -output);		
 	}
 	
+	// MAKE SURE THAT YOU ARE NOT IN A CLOSED LOOP CONTROL MODE BEFORE CALLING THIS METHOD.
+	// OTHERWISE THIS IS EQUIVALENT TO MOVING TO THE DISTANCE TO THE CURRENT ZERO IN REVERSE! 
 	public void resetEncoders() {
 		 
 		rf.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
