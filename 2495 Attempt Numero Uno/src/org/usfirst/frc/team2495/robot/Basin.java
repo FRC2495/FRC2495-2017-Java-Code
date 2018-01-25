@@ -29,6 +29,9 @@ public class Basin {
 	
 	double tac;
 	boolean hasBeenHomed = false;
+	
+	private int onTargetCount; // counter indicating how many times/iterations we were on target
+    private final static int ON_TARGET_MINIMUM_COUNT = 25; // number of times/iterations we need to be on target to really be on target
 
 	public Basin(WPI_TalonSRX basin_in) {
 		basin = basin_in;
@@ -91,6 +94,7 @@ public class Basin {
 		tac = +convertInchesToRev(OFFSET_INCHES) * TICKS_PER_REVOLUTION;
 		basin.set(ControlMode.Position,tac); // we move to virtual zero
 		isHomingPart2 = true;
+		onTargetCount = 0;
 	}
 	
 	// homes the basin
@@ -122,7 +126,8 @@ public class Basin {
 		} else if (isHomingPart2) {
 			double enc = basin.getSelectedSensorPosition(PRIMARY_PID_LOOP);
 
-			isHomingPart2 = !(enc > tac - TICK_THRESH && enc < tac + TICK_THRESH);
+			//isHomingPart2 = !(enc > tac - TICK_THRESH && enc < tac + TICK_THRESH);
+			isHomingPart2 = isReallyHomingPart2();
 
 			if (!isHomingPart2) {
 				System.out.println("You have reached the virtual zero.");
@@ -144,6 +149,29 @@ public class Basin {
 		return isHoming();
 	}
 
+	private boolean isReallyHomingPart2() {
+		double error = basin.getClosedLoopError(PRIMARY_PID_LOOP);
+		
+		boolean isOnTarget = (Math.abs(error) < TICK_THRESH);
+		
+		if (isOnTarget) { // if we are on target in this iteration 
+			onTargetCount++; // we increase the counter
+		} else { // if we are not on target in this iteration
+			if (onTargetCount > 0) { // even though we were on target at least once during a previous iteration
+				onTargetCount = 0; // we reset the counter as we are not on target anymore
+				System.out.println("Triple-check failed (basin homing part 2).");
+			} else {
+				// we are definitely homing
+			}
+		}
+		
+        if (onTargetCount > ON_TARGET_MINIMUM_COUNT) { // if we have met the minimum
+        	return false;
+        }
+	        
+		return true;
+	}
+	
 	public boolean checkMove() {
 		if (isMoving) {
 			double enc = basin.getSelectedSensorPosition(PRIMARY_PID_LOOP);
@@ -158,6 +186,36 @@ public class Basin {
 		}
 		return isMoving;
 	}
+	
+	public boolean tripleCheckMove() {
+		if (isMoving) {
+			
+			double error = basin.getClosedLoopError(PRIMARY_PID_LOOP);
+			
+			boolean isOnTarget = (Math.abs(error) < TICK_THRESH);
+			
+			if (isOnTarget) { // if we are on target in this iteration 
+				onTargetCount++; // we increase the counter
+			} else { // if we are not on target in this iteration
+				if (onTargetCount > 0) { // even though we were on target at least once during a previous iteration
+					onTargetCount = 0; // we reset the counter as we are not on target anymore
+					System.out.println("Triple-check failed (basin moving).");
+				} else {
+					// we are definitely moving
+				}
+			}
+			
+	        if (onTargetCount > ON_TARGET_MINIMUM_COUNT) { // if we have met the minimum
+	        	isMoving = false;
+	        }
+			
+			if (!isMoving) {
+				System.out.println("You have reached the target (basin moving).");
+				basin.set(ControlMode.PercentOutput,0);				 
+			}
+		}
+		return isMoving;
+	}
 
 	public void moveUp() {
 		if (hasBeenHomed) {
@@ -167,6 +225,7 @@ public class Basin {
 			tac = +convertInchesToRev(LENGTH_OF_SCREW_INCHES) * TICKS_PER_REVOLUTION;
 			basin.set(ControlMode.Position,tac);
 			isMoving = true;
+			onTargetCount = 0;
 		} else {
 			System.out.println("You have not been home, your mother must be worried sick");
 		}
@@ -180,6 +239,7 @@ public class Basin {
 			tac = -convertInchesToRev(0)* TICKS_PER_REVOLUTION;
 			basin.set(ControlMode.Position,tac);
 			isMoving = true;
+			onTargetCount = 0;
 		} else {
 			System.out.println("You have not been home, your mother must be worried sick");
 		}
