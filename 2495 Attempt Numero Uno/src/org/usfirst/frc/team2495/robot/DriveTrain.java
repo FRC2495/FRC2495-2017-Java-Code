@@ -442,7 +442,9 @@ public class DriveTrain implements PIDOutput {
 	// MAKE SURE THAT YOU ARE NOT IN A CLOSED LOOP CONTROL MODE BEFORE CALLING THIS METHOD.
 	// OTHERWISE THIS IS EQUIVALENT TO MOVING TO THE DISTANCE TO THE CURRENT ZERO IN REVERSE! 
 	public void resetEncoders() {
-		 
+		rf.set(ControlMode.PercentOutput, 0); // we switch to open loop to be safe.
+		lf.set(ControlMode.PercentOutput, 0);			
+		
 		rf.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
 		lf.setSelectedSensorPosition(0, PRIMARY_PID_LOOP, TALON_TIMEOUT_MS);
 	}
