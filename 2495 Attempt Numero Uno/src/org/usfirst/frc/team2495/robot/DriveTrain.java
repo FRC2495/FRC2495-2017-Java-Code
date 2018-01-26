@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 // [GA] please add java doc explaining what the purpose of this class is [SP] no idea how to do javadoc
 public class DriveTrain implements PIDOutput {
@@ -20,6 +21,7 @@ public class DriveTrain implements PIDOutput {
 	boolean isMoving, isTurning;
 	WPI_TalonSRX rr, rf, lr, lf;
 	ADXRS450_Gyro gyro;
+	DifferentialDrive differentialDrive;
 	
 	static final double PERIMETER_WHEEL_INCHES = 4 * Math.PI;
 	static final int TIMEOUT_MS = 15000;
@@ -106,6 +108,8 @@ public class DriveTrain implements PIDOutput {
     	
     	turnPidController.setContinuous(true); // because -180 degrees is the same as 180 degrees (needs input range to be defined first)
     	turnPidController.setAbsoluteTolerance(DEGREE_THRESHOLD); // 1 degree error tolerated
+    	
+    	differentialDrive = new DifferentialDrive(lf,rf);
 	}
 
 	// this method needs to be paired with checkAngleSpotTurnUsingPidController()
@@ -387,14 +391,16 @@ public class DriveTrain implements PIDOutput {
 			if(!held)
 			{
 
-				rf.set(ControlMode.PercentOutput, r.getY() * .75);
-				lf.set(ControlMode.PercentOutput, l.getY() * .75);
+				//rf.set(ControlMode.PercentOutput, r.getY() * .75);
+				//lf.set(ControlMode.PercentOutput, l.getY() * .75);
+				differentialDrive.tankDrive(l.getY() * .75, -r.getY() * .75); // right needs to be reversed
 			}
 			else
 			{
 				
-				rf.set(ControlMode.PercentOutput, r.getY());
-				lf.set(ControlMode.PercentOutput, l.getY());
+				//rf.set(ControlMode.PercentOutput, r.getY());
+				//lf.set(ControlMode.PercentOutput, l.getY());
+				differentialDrive.tankDrive(l.getY(), -r.getY()); // right needs to be reversed
 			}
 		}
 	}
