@@ -393,14 +393,20 @@ public class DriveTrain implements PIDOutput {
 
 				//rf.set(ControlMode.PercentOutput, r.getY() * .75);
 				//lf.set(ControlMode.PercentOutput, l.getY() * .75);
-				differentialDrive.tankDrive(l.getY() * .75, -r.getY() * .75); // right needs to be reversed
+				
+				//differentialDrive.tankDrive(l.getY() * .75, -r.getY() * .75); // right needs to be reversed
+				
+				differentialDrive.arcadeDrive(-r.getX() * .75, l.getY() * .75); // right needs to be reversed
 			}
 			else
 			{
 				
 				//rf.set(ControlMode.PercentOutput, r.getY());
 				//lf.set(ControlMode.PercentOutput, l.getY());
-				differentialDrive.tankDrive(l.getY(), -r.getY()); // right needs to be reversed
+				
+				//differentialDrive.tankDrive(l.getY(), -r.getY()); // right needs to be reversed
+				
+				differentialDrive.arcadeDrive(-r.getX(), l.getY()); // right needs to be reversed
 			}
 		}
 	}
