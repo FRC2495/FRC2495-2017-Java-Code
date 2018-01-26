@@ -110,6 +110,7 @@ public class DriveTrain implements PIDOutput {
     	turnPidController.setAbsoluteTolerance(DEGREE_THRESHOLD); // 1 degree error tolerated
     	
     	differentialDrive = new DifferentialDrive(lf,rf);
+    	differentialDrive.setSafetyEnabled(false); // disables the stupid timeout error when we run in closed loop
 	}
 
 	// this method needs to be paired with checkAngleSpotTurnUsingPidController()
