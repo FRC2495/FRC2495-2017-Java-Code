@@ -412,19 +412,19 @@ public class Drivetrain implements PIDOutput {
 		}
 	}
 
-	public int getREncVal() {
+	public int getRightEncoderValue() {
 		return (int) (frontRight.getSelectedSensorPosition(PRIMARY_PID_LOOP));
 	}
 //
-	public int getLEncVal() {
+	public int getLeftEncoderValue() {
 		return (int) (frontLeft.getSelectedSensorPosition(PRIMARY_PID_LOOP));
 	}
 
-	public int getRVal() {
+	public int getRightValue() {
 		return (int) (frontRight.getSelectedSensorPosition(PRIMARY_PID_LOOP)*PERIMETER_WHEEL_INCHES/TICKS_PER_REVOLUTION);
 	}
 
-	public int getLVal() {
+	public int getLeftValue() {
 		return (int) (frontLeft.getSelectedSensorPosition(PRIMARY_PID_LOOP)*PERIMETER_WHEEL_INCHES/TICKS_PER_REVOLUTION);
 	}
 	
