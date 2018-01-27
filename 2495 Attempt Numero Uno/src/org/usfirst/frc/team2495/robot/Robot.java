@@ -40,10 +40,10 @@ public class Robot extends IterativeRobot {
 
 	HMCamera camera;
 
-	WPI_TalonSRX rr;
-	WPI_TalonSRX rf;
-	WPI_TalonSRX lr;
-	WPI_TalonSRX lf;
+	WPI_TalonSRX rearRight;
+	WPI_TalonSRX frontRight;
+	WPI_TalonSRX rearLeft;
+	WPI_TalonSRX frontLeft;
 
 	Joystick right; // The Joysticks
 	Joystick left;
@@ -88,16 +88,16 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Gera Grabber Left Side With Vision", GearGrabLeftCamera);
 		chooser.addObject("Nothing", Nothing);
 
-		rr = new WPI_TalonSRX(Ports.CAN.RIGHT_REAR); // The CANTalons
-		rf = new WPI_TalonSRX(Ports.CAN.RIGHT_FRONT);
-		lr = new WPI_TalonSRX(Ports.CAN.LEFT_REAR);
-		lf = new WPI_TalonSRX(Ports.CAN.LEFT_FRONT);
+		rearRight = new WPI_TalonSRX(Ports.CAN.RIGHT_REAR); // The CANTalons
+		frontRight = new WPI_TalonSRX(Ports.CAN.RIGHT_FRONT);
+		rearLeft = new WPI_TalonSRX(Ports.CAN.LEFT_REAR);
+		frontLeft = new WPI_TalonSRX(Ports.CAN.LEFT_FRONT);
 		spin = new WPI_TalonSRX(Ports.CAN.SPIN);//intake spin motor
 		climb = new WPI_TalonSRX(Ports.CAN.CLIMB); // climber motor 
 		//basin = new WPI_TalonSRX(Ports.CAN.BASIN);
 
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); // we want to instantiate before we pass to drivetrain		
-		drivetrain = new DriveTrain(rr, rf, lr, lf, gyro, this);
+		drivetrain = new DriveTrain(rearRight, frontRight, rearLeft, frontLeft, gyro, this);
 		camera = new HMCamera("GRIP/myContoursReport");
  
 		compressor = new Compressor();
