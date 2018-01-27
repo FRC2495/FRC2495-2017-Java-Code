@@ -384,7 +384,7 @@ public class Drivetrain implements PIDOutput {
 		frontLeft.configNominalOutputReverse(0, TALON_TIMEOUT_MS);
 	}
 
-	public void joystickControl(Joystick r, Joystick l, boolean held) // sets talons to
+	public void joystickControl(Joystick joyRight, Joystick joyLeft, boolean held) // sets talons to
 														// joystick control
 	{
 		if (!isMoving && !isTurning) // if we are already doing a move or turn we don't take over
@@ -392,22 +392,22 @@ public class Drivetrain implements PIDOutput {
 			if(!held)
 			{
 
-				//frontRight.set(ControlMode.PercentOutput, r.getY() * .75);
-				//frontLeft.set(ControlMode.PercentOutput, l.getY() * .75);
+				//frontRight.set(ControlMode.PercentOutput, joyRight.getY() * .75);
+				//frontLeft.set(ControlMode.PercentOutput, joyLeft.getY() * .75);
 				
-				//differentialDrive.tankDrive(l.getY() * .75, -r.getY() * .75); // right needs to be reversed
+				//differentialDrive.tankDrive(joyLeft.getY() * .75, -joyRight.getY() * .75); // right needs to be reversed
 				
-				differentialDrive.arcadeDrive(-r.getX() * .75, l.getY() * .75); // right needs to be reversed
+				differentialDrive.arcadeDrive(-joyRight.getX() * .75, joyLeft.getY() * .75); // right needs to be reversed
 			}
 			else
 			{
 				
-				//frontRight.set(ControlMode.PercentOutput, r.getY());
-				//frontLeft.set(ControlMode.PercentOutput, l.getY());
+				//frontRight.set(ControlMode.PercentOutput, joyRight.getY());
+				//frontLeft.set(ControlMode.PercentOutput, joyLeft.getY());
 				
-				//differentialDrive.tankDrive(l.getY(), -r.getY()); // right needs to be reversed
+				//differentialDrive.tankDrive(joyLeft.getY(), -joyRight.getY()); // right needs to be reversed
 				
-				differentialDrive.arcadeDrive(-r.getX(), l.getY()); // right needs to be reversed
+				differentialDrive.arcadeDrive(-joyRight.getX(), joyLeft.getY()); // right needs to be reversed
 			}
 		}
 	}

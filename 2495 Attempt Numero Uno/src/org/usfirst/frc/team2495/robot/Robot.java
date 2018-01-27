@@ -45,9 +45,9 @@ public class Robot extends IterativeRobot {
 	WPI_TalonSRX rearLeft;
 	WPI_TalonSRX frontLeft;
 
-	Joystick right; // The Joysticks
-	Joystick left;
-	Joystick operator;
+	Joystick joyRight; // The Joysticks
+	Joystick joyLeft;
+	Joystick gamepad;
 
 	ADXRS450_Gyro gyro; // gyro
 	
@@ -105,12 +105,12 @@ public class Robot extends IterativeRobot {
 
 		take = new Take(spin, climb);
 
-		left = new Joystick(Ports.USB.LEFT);
-		right = new Joystick(Ports.USB.RIGHT);
-		operator = new Joystick(Ports.USB.GAMEPAD);
+		joyLeft = new Joystick(Ports.USB.LEFT);
+		joyRight = new Joystick(Ports.USB.RIGHT);
+		gamepad = new Joystick(Ports.USB.GAMEPAD);
 		
 
-		control = new ControllerBase(operator, left, right);
+		control = new ControllerBase(gamepad, joyLeft, joyRight);
 		
 		//basinControl = new Basin(basin);
 		gyro.calibrate(); 
@@ -269,7 +269,7 @@ public class Robot extends IterativeRobot {
 		
 		// Tankdrive	
 		
-		drivetrain.joystickControl(right, left, (control.getHeld(ControllerBase.Joysticks.LEFT_STICK,ControllerBase.JoystickButtons.BTN1) 
+		drivetrain.joystickControl(joyRight, joyLeft, (control.getHeld(ControllerBase.Joysticks.LEFT_STICK,ControllerBase.JoystickButtons.BTN1) 
 				                || control.getHeld(ControllerBase.Joysticks.RIGHT_STICK, ControllerBase.JoystickButtons.BTN1))); //TODO calibrate joysticks
 		
 		
