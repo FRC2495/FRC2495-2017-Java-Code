@@ -24,8 +24,8 @@ public class Compressor {
 	 * Constructs a new {@code Compressor} with a set {@code DigitalInput} and {@code Relay}.
 	 */
 	public Compressor() {
-		checkPressure = new DigitalInput(0);
-		relay = new Relay(0);
+		checkPressure = new DigitalInput(Ports.Digital.CHECK_PRESSURE);
+		relay = new Relay(Ports.Relay.COMPRESSOR_RELAY);
 	}
 
 	/**
