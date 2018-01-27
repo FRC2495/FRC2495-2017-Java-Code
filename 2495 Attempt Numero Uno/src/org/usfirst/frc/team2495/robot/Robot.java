@@ -53,7 +53,7 @@ public class Robot extends IterativeRobot {
 	
 	PowerDistributionPanel PDP = new PowerDistributionPanel(Ports.CAN.PDP);
 
-	DriveTrain drivetrain; // DriveTrain object from the homemade class
+	Drivetrain drivetrain; // DriveTrain object from the homemade class
 
 	Timer time = new Timer(); // generic timer
 
@@ -97,7 +97,7 @@ public class Robot extends IterativeRobot {
 		//basin = new WPI_TalonSRX(Ports.CAN.BASIN);
 
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); // we want to instantiate before we pass to drivetrain		
-		drivetrain = new DriveTrain(rearRight, frontRight, rearLeft, frontLeft, gyro, this);
+		drivetrain = new Drivetrain(rearRight, frontRight, rearLeft, frontLeft, gyro, this);
 		camera = new HMCamera("GRIP/myContoursReport");
  
 		compressor = new Compressor();

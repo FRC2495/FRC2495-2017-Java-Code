@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 // [GA] please add java doc explaining what the purpose of this class is [SP] no idea how to do javadoc
-public class DriveTrain implements PIDOutput {
+public class Drivetrain implements PIDOutput {
 
 	double ltac, rtac;
 	boolean isMoving, isTurning;
@@ -46,7 +46,7 @@ public class DriveTrain implements PIDOutput {
 	
 	PIDController turnPidController;
 
-	public DriveTrain(WPI_TalonSRX rearRight_in, WPI_TalonSRX frontRight_in, WPI_TalonSRX rearLeft_in, WPI_TalonSRX frontLeft_in, ADXRS450_Gyro gyro_in, Robot robot_in) {
+	public Drivetrain(WPI_TalonSRX rearRight_in, WPI_TalonSRX frontRight_in, WPI_TalonSRX rearLeft_in, WPI_TalonSRX frontLeft_in, ADXRS450_Gyro gyro_in, Robot robot_in) {
 		rearRight = rearRight_in; // sets the talons from the constructor to the talons used here
 		frontRight = frontRight_in;
 		rearLeft = rearLeft_in;
