@@ -318,6 +318,7 @@ public class Drivetrain implements PIDOutput {
 		frontLeft.set(ControlMode.Position, -ltac);
 
 		isMoving = true;
+		onTargetCount = 0;
 	}
 
 	public void moveForward() {		 
